@@ -49,4 +49,12 @@ public class Constants {
           24, 23, 12, -0.446289, true, true, "BackLeft"),
       new SwerveModuleConstant(
           22, 20, 14, 0.302979, true, true, "BackRight"));
+  public static final class ShooterConstants {
+    public static final int shooterUpMotorID1 = 30;
+    public static final int shooterUpMotorID2 = 31;
+    public static final int shooterDownMotorID1 = 32;
+    public static final int shooterDownMotorID2 = 33;
+
+    public static final int angleMotorID = 34;
+  }
 }
