@@ -56,5 +56,16 @@ public class Constants {
     public static final int shooterDownMotorID2 = 33;
 
     public static final int angleMotorID = 34;
+
+    public static final boolean shooterUpMotorInverted = false;
+    public static final boolean shooterDownMotorInverted = true;
+
+    public static final double shooterFeedforwardKs = 0.01;
+    public static final double shooterFeedforwardKv = 0.00207;
+    public static final double shooterFeedforwardKa = 0;
+
+    public static final double angleFeedforwardKs = 0.01;
+    public static final double angleFeedforwardKv = 0.00407;
+    public static final double angleFeedforwardKa = 0;
   }
 }
