@@ -28,10 +28,6 @@ public class ShooterSubsystem extends SubsystemBase {
       ShooterConstants.shooterFeedforwardKa);
 
   private final SparkMax angleMotor = new SparkMax(ShooterConstants.angleMotorID, MotorType.kBrushless);
-  private final SimpleMotorFeedforward angleFeedforward = new SimpleMotorFeedforward(
-      ShooterConstants.angleFeedforwardKs,
-      ShooterConstants.angleFeedforwardKv,
-      ShooterConstants.angleFeedforwardKa);
 
   private RelativeEncoder shooterUpEncoder;
   private RelativeEncoder shooterDownEncoder;
@@ -69,12 +65,18 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   // Shooter
+  private void setShooterVoltage(double voltage) {
+    double feedforwardVoltage = shooterFeedforward.calculate(voltage); // 計算前饋電壓，需要去測看看會不會每顆馬達都不一樣的前饋電壓
+    shooterUpMotor1.setVoltage(feedforwardVoltage);
+    shooterDownMotor1.setVoltage(feedforwardVoltage);
+  }
+
   public void shoot(double targetVelocity) {
-    this.shooterTargetVelocity = targetVelocity;
+    setShooterVoltage(targetVelocity);
   }
 
   public void stopShooter() {
-    this.shooterTargetVelocity = 0;
+    setShooterVoltage(0);
     shooterUpMotor1.setVoltage(0);
     shooterDownMotor1.setVoltage(0);
   }
@@ -124,12 +126,24 @@ public class ShooterSubsystem extends SubsystemBase {
     return cmd;
   }
 
+  public enum AnglePreset {
+    TRANS(ShooterConstants.angleMotorMaxAngle),
+    SHOOT(ShooterConstants.angleMotorShootAngle),
+    //AUTO(), 還沒寫之後再填吧(?
+    CLOSE(ShooterConstants.angleMotorMinAngle);
+
+    public final double angle;
+
+    AnglePreset(double angle) {
+      this.angle = angle;
+    }
+  }
+
+  // Trans
+  // Shoot
+  // Auto
+  // Close
   @Override
   public void periodic() {
-    double feedforwardVoltage = shooterFeedforward.calculate(shooterTargetVelocity);
-    shooterUpMotor1.setVoltage(feedforwardVoltage);
-    shooterDownMotor1.setVoltage(feedforwardVoltage);
-    double angleFeedforwardVoltage = angleFeedforward.calculate(angleTargetVelocity);
-    angleMotor.setVoltage(angleFeedforwardVoltage);
   }
 }

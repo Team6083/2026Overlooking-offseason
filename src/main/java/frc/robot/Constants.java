@@ -74,5 +74,9 @@ public class Constants {
     public static final double angleMotorKp = 0.1;
     public static final double angleMotorKi = 0.01;
     public static final double angleMotorKd = 0.001;
+
+    public static final double angleMotorMaxAngle = 100; // 最大角度
+    public static final double angleMotorShootAngle = 30; // 初始角度(待測)
+    public static final double angleMotorMinAngle = 0; // 最小角度
   }
 }
