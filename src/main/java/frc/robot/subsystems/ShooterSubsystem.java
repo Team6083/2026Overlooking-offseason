@@ -13,6 +13,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
@@ -72,6 +73,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void shoot(double targetVelocity) {
+    this.shooterTargetVelocity = targetVelocity;
     setShooterVoltage(targetVelocity);
   }
 
@@ -79,6 +81,15 @@ public class ShooterSubsystem extends SubsystemBase {
     setShooterVoltage(0);
     shooterUpMotor1.setVoltage(0);
     shooterDownMotor1.setVoltage(0);
+  }
+
+  // Getter
+  private double getShooterVelocity() {
+    return shooterUpEncoder.getVelocity();
+  }
+
+  public boolean isShooterAtSpeed() {
+    return getShooterVelocity() >= shooterTargetVelocity;
   }
 
   // Shooter commands (不打值會使用預設值)
@@ -107,7 +118,6 @@ public class ShooterSubsystem extends SubsystemBase {
   // Angle Motor Sync
   public void angleSync(double targetAngle) {
     double currentAngle = angleEncoder.getPosition();
-    double error = targetAngle - currentAngle;
     double output = pivotFollowPIDController.calculate(currentAngle, targetAngle);
     angleMotor.setVoltage(output);
   }
@@ -126,10 +136,24 @@ public class ShooterSubsystem extends SubsystemBase {
     return cmd;
   }
 
+  // 傳入任意目標角度，轉到指定位置後自動結束 Command
+  public Command angleLocatedTo(double targetAngle) {
+    double tolerance = 0.5; // 容許誤差
+    Command cmd = run(() -> angleSync(targetAngle))
+        .until(() -> Math.abs(angleEncoder.getPosition() - targetAngle) <= tolerance)
+        .finallyDo(interrupted -> stopAngleMotor());
+    cmd.setName("goToAngle_" + targetAngle + "Cmd");
+    return cmd;
+  }
+
+  public Command adjustAngleCmd(AnglePreset preset) {
+    return angleLocatedTo(preset.angle);
+  }
+
   public enum AnglePreset {
     TRANS(ShooterConstants.angleMotorMaxAngle),
     SHOOT(ShooterConstants.angleMotorShootAngle),
-    //AUTO(), 還沒寫之後再填吧(?
+    // AUTO(), 還沒寫之後再填吧(?
     CLOSE(ShooterConstants.angleMotorMinAngle);
 
     public final double angle;
@@ -145,5 +169,9 @@ public class ShooterSubsystem extends SubsystemBase {
   // Close
   @Override
   public void periodic() {
+    SmartDashboard.putBoolean("shooter/shooterAtSpeed", isShooterAtSpeed());
+    SmartDashboard.putNumber("shooter/shooterRPM", getShooterVelocity());
+    SmartDashboard.putNumber("shooter/targetRPM", shooterTargetVelocity);
+    SmartDashboard.putData("shooter/subsystem", this);
   }
 }
