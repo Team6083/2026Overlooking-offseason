@@ -60,12 +60,19 @@ public class Constants {
     public static final boolean shooterUpMotorInverted = false;
     public static final boolean shooterDownMotorInverted = true;
 
-    public static final double shooterFeedforwardKs = 0.01;
-    public static final double shooterFeedforwardKv = 0.00207;
-    public static final double shooterFeedforwardKa = 0;
+    public static final double shooterFeedforwardKs = 0.01;  //起始電壓
+    public static final double shooterFeedforwardKv = 0.00207;  //速度電壓
+    public static final double shooterFeedforwardKa = 0; //加速度電壓
 
-    public static final double angleFeedforwardKs = 0.01;
-    public static final double angleFeedforwardKv = 0.00407;
-    public static final double angleFeedforwardKa = 0;
+    public static final double angleFeedforwardKs = 0.01;  //起始電壓
+    public static final double angleFeedforwardKv = 0.00407;  //速度電壓
+    public static final double angleFeedforwardKa = 0; //加速度電壓
+    
+    public static final double shooterUpNominalTarget = 3000; // 上方轉速
+    public static final double shooterDownNominalTarget = 3000; // 下方轉速
+
+    public static final double angleMotorKp = 0.1;
+    public static final double angleMotorKi = 0.01;
+    public static final double angleMotorKd = 0.001;
   }
 }
