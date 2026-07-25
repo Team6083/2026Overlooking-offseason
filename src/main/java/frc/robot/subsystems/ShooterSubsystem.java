@@ -160,10 +160,10 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public enum AnglePreset {
-    TRANS(() -> ShooterConstants.angleMotorMaxAngle),
-    SHOOT(() -> ShooterConstants.angleMotorShootAngle),
-    CLOSE(() -> ShooterConstants.angleMotorMinAngle),
-    AUTO(ShooterSubsystem::getAutoAngle);
+    TRANS(() -> ShooterConstants.angleMotorMaxAngle),   //100%
+    SHOOT(() -> ShooterConstants.angleMotorShootAngle), //EX:30%
+    CLOSE(() -> ShooterConstants.angleMotorMinAngle),   //00%
+    AUTO(ShooterSubsystem::getAutoAngle);               //??%
 
     private final DoubleSupplier angleSupplier;
 
