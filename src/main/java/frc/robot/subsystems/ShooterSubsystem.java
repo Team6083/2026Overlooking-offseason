@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -39,6 +41,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private double shooterTargetVelocity = 0;
   private double angleTargetVelocity = 0;
+  private double autoAngle = 0;
 
   // shooter = 射球的馬達(Up)
   // complex = 介在傳輸和射球之間的馬達(Down)
@@ -147,19 +150,30 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public Command adjustAngleCmd(AnglePreset preset) {
-    return angleLocatedTo(preset.angle);
+    double targetAngle = preset.getAngle();
+    this.angleTargetVelocity = targetAngle;
+    return angleLocatedTo(targetAngle);
+  }
+
+  public static double getAutoAngle() {
+    return ShooterConstants.angleMotorShootAngle;
   }
 
   public enum AnglePreset {
-    TRANS(ShooterConstants.angleMotorMaxAngle),
-    SHOOT(ShooterConstants.angleMotorShootAngle),
-    // AUTO(), 還沒寫之後再填吧(?
-    CLOSE(ShooterConstants.angleMotorMinAngle);
+    TRANS(() -> ShooterConstants.angleMotorMaxAngle),
+    SHOOT(() -> ShooterConstants.angleMotorShootAngle),
+    CLOSE(() -> ShooterConstants.angleMotorMinAngle),
+    AUTO(ShooterSubsystem::getAutoAngle);
 
-    public final double angle;
+    private final DoubleSupplier angleSupplier;
 
-    AnglePreset(double angle) {
-      this.angle = angle;
+    AnglePreset(DoubleSupplier angleSupplier) {
+      this.angleSupplier = angleSupplier;
+    }
+
+    // 取得當前即時的角度值
+    public double getAngle() {
+      return angleSupplier.getAsDouble();
     }
   }
 
@@ -167,11 +181,13 @@ public class ShooterSubsystem extends SubsystemBase {
   // Shoot
   // Auto
   // Close
+
   @Override
   public void periodic() {
     SmartDashboard.putBoolean("shooter/shooterAtSpeed", isShooterAtSpeed());
     SmartDashboard.putNumber("shooter/shooterRPM", getShooterVelocity());
     SmartDashboard.putNumber("shooter/targetRPM", shooterTargetVelocity);
+    SmartDashboard.putNumber("shooter/angleTarget", angleTargetVelocity);
     SmartDashboard.putData("shooter/subsystem", this);
   }
 }
