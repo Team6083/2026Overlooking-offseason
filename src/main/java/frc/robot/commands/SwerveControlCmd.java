@@ -68,11 +68,11 @@ public class SwerveControlCmd extends Command {
   }
 
   private double getMagnification() {
-    return shouldSprint.get() ? 0.75 : 0.3;
+    return shouldSprint.get() ? 0.65 : 0.2;
   }
 
   private double getRotMagnification() {
-    return shouldSprint.get() ? 0.8 : 0.4;
+    return shouldSprint.get() ? 0.7 : 0.3;
   }
 
   protected double calcSpeedX() {
