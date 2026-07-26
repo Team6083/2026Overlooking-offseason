@@ -50,10 +50,10 @@ public class Constants {
       new SwerveModuleConstant(
           22, 20, 14, 0.302979, true, true, "BackRight"));
   public static final class ShooterConstants {
-    public static final int shooterUpMotorID1 = 30;
-    public static final int shooterUpMotorID2 = 31;
-    public static final int shooterDownMotorID1 = 32;
-    public static final int shooterDownMotorID2 = 33;
+    public static final int shooterMotorID1 = 30;
+    public static final int shooterMotorID2 = 31;
+    public static final int complexMotorID1 = 32;
+    public static final int complexMotorID2 = 33;
 
     public static final int angleMotorID = 34;
 
@@ -71,6 +71,8 @@ public class Constants {
     public static final double shooterUpNominalTarget = 3000; // 上方轉速
     public static final double shooterDownNominalTarget = 3000; // 下方轉速
 
+    public static final double shooterLowGearTarget = 1500;
+
     public static final double angleMotorKp = 0.1;
     public static final double angleMotorKi = 0.01;
     public static final double angleMotorKd = 0.001;
@@ -78,5 +80,7 @@ public class Constants {
     public static final double angleMotorMaxAngle = 100; // 最大角度
     public static final double angleMotorShootAngle = 30; // 初始角度(待測)
     public static final double angleMotorMinAngle = 0; // 最小角度
+
+    public static final double angleExpectedZero = 10;
   }
 }

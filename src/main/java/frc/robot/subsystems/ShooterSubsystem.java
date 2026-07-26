@@ -21,23 +21,24 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
 
 public class ShooterSubsystem extends SubsystemBase {
-  private final SparkMax shooterUpMotor1 = new SparkMax(ShooterConstants.shooterUpMotorID1, MotorType.kBrushless);
-  private final SparkMax shooterUpMotor2 = new SparkMax(ShooterConstants.shooterUpMotorID2, MotorType.kBrushless);
-  private final SparkMax shooterDownMotor1 = new SparkMax(ShooterConstants.shooterDownMotorID1, MotorType.kBrushless);
-  private final SparkMax shooterDownMotor2 = new SparkMax(ShooterConstants.shooterDownMotorID2, MotorType.kBrushless);
+  private final SparkMax shooterMotor1 = new SparkMax(ShooterConstants.shooterMotorID1, MotorType.kBrushless);
+  private final SparkMax shooterMotor2 = new SparkMax(ShooterConstants.shooterMotorID2, MotorType.kBrushless);
+  private final SparkMax complexMotor1 = new SparkMax(ShooterConstants.complexMotorID1, MotorType.kBrushless);
+  private final SparkMax complexMotor2 = new SparkMax(ShooterConstants.complexMotorID2, MotorType.kBrushless);
   private final SimpleMotorFeedforward shooterFeedforward = new SimpleMotorFeedforward(
       ShooterConstants.shooterFeedforwardKs,
       ShooterConstants.shooterFeedforwardKv,
       ShooterConstants.shooterFeedforwardKa);
 
   private final SparkMax angleMotor = new SparkMax(ShooterConstants.angleMotorID, MotorType.kBrushless);
+  private final PIDController pivotFollowPIDController = new PIDController(
+      ShooterConstants.angleMotorKp,
+      ShooterConstants.angleMotorKi,
+      ShooterConstants.angleMotorKd);
 
-  private RelativeEncoder shooterUpEncoder;
-  private RelativeEncoder shooterDownEncoder;
+  private RelativeEncoder shooterEncoder;
+  private RelativeEncoder complexEncoder;
   private RelativeEncoder angleEncoder = angleMotor.getEncoder();
-
-  private final PIDController pivotFollowPIDController = new PIDController(ShooterConstants.angleMotorKp,
-      ShooterConstants.angleMotorKi, ShooterConstants.angleMotorKd);
 
   private double shooterTargetVelocity = 0;
   private double angleTargetVelocity = 0;
@@ -49,30 +50,31 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public ShooterSubsystem() {
     // Up Motor follow Down Motor
-    SparkMaxConfig upConfig = new SparkMaxConfig();
-    SparkMaxConfig upFollowerConfig = new SparkMaxConfig();
-    upConfig.inverted(ShooterConstants.shooterUpMotorInverted);
-    upFollowerConfig.follow(ShooterConstants.shooterUpMotorID1, false); // 馬達平行裝
-    shooterUpMotor1.configure(upConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    shooterUpMotor2.configure(upFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    SparkMaxConfig shooterConfig = new SparkMaxConfig();
+    SparkMaxConfig shooterFollowerConfig = new SparkMaxConfig();
+    shooterConfig.inverted(ShooterConstants.shooterUpMotorInverted);
+    shooterFollowerConfig.follow(ShooterConstants.shooterMotorID1, false); // 馬達平行裝
+    shooterMotor1.configure(shooterConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    shooterMotor2.configure(shooterFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    SparkMaxConfig downConfig = new SparkMaxConfig();
-    SparkMaxConfig downFollowerConfig = new SparkMaxConfig();
-    downConfig.inverted(ShooterConstants.shooterDownMotorInverted);
-    downFollowerConfig.follow(ShooterConstants.shooterDownMotorID1, false); // 馬達平行裝
-    shooterDownMotor1.configure(downConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    shooterDownMotor2.configure(downFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    SparkMaxConfig complexConfig = new SparkMaxConfig();
+    SparkMaxConfig complexFollowerConfig = new SparkMaxConfig();
+    complexConfig.inverted(ShooterConstants.shooterDownMotorInverted);
+    complexFollowerConfig.follow(ShooterConstants.complexMotorID1, false); // 馬達平行裝
+    complexMotor1.configure(complexConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    complexMotor2.configure(complexFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    shooterUpEncoder = shooterUpMotor1.getEncoder();
-    shooterDownEncoder = shooterDownMotor1.getEncoder();
+    shooterEncoder = shooterMotor1.getEncoder();
+    complexEncoder = complexMotor1.getEncoder();
     angleEncoder = angleMotor.getEncoder();
+    angleEncoder.setPosition(ShooterConstants.angleExpectedZero);
   }
 
   // Shooter
   private void setShooterVoltage(double voltage) {
     double feedforwardVoltage = shooterFeedforward.calculate(voltage); // 計算前饋電壓，需要去測看看會不會每顆馬達都不一樣的前饋電壓
-    shooterUpMotor1.setVoltage(feedforwardVoltage);
-    shooterDownMotor1.setVoltage(feedforwardVoltage);
+    shooterMotor1.setVoltage(feedforwardVoltage);
+    complexMotor1.setVoltage(feedforwardVoltage);
   }
 
   public void shoot(double targetVelocity) {
@@ -81,14 +83,25 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void stopShooter() {
-    setShooterVoltage(0);
-    shooterUpMotor1.setVoltage(0);
-    shooterDownMotor1.setVoltage(0);
+    shooterMotor1.setVoltage(0);
+    complexMotor1.setVoltage(0);
+  }
+
+  public void shooterLowGear() { // 低速檔
+    setShooterVoltage(ShooterConstants.shooterLowGearTarget);
   }
 
   // Getter
   private double getShooterVelocity() {
-    return shooterUpEncoder.getVelocity();
+    return shooterEncoder.getVelocity();
+  }
+
+  private double getComplexVelocity() {
+    return complexEncoder.getVelocity();
+  }
+
+  private double getAngleVelocity() {
+    return angleEncoder.getPosition();
   }
 
   public boolean isShooterAtSpeed() {
@@ -111,6 +124,7 @@ public class ShooterSubsystem extends SubsystemBase {
   // Angle Motor
   public void angleMotor(double angleTargetVelocity) {
     this.angleTargetVelocity = angleTargetVelocity;
+    angleMotor.setVoltage(angleTargetVelocity);
   }
 
   public void stopAngleMotor() {
@@ -139,13 +153,12 @@ public class ShooterSubsystem extends SubsystemBase {
     return cmd;
   }
 
-  // 傳入任意目標角度，轉到指定位置後自動結束 Command
   public Command angleLocatedTo(double targetAngle) {
     double tolerance = 0.5; // 容許誤差
     Command cmd = run(() -> angleSync(targetAngle))
         .until(() -> Math.abs(angleEncoder.getPosition() - targetAngle) <= tolerance)
         .finallyDo(interrupted -> stopAngleMotor());
-    cmd.setName("goToAngle_" + targetAngle + "Cmd");
+    cmd.setName("angleLocatedTo" + targetAngle + "Cmd");
     return cmd;
   }
 
@@ -160,10 +173,10 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public enum AnglePreset {
-    TRANS(() -> ShooterConstants.angleMotorMaxAngle),   //100%
-    SHOOT(() -> ShooterConstants.angleMotorShootAngle), //EX:30%
-    CLOSE(() -> ShooterConstants.angleMotorMinAngle),   //00%
-    AUTO(ShooterSubsystem::getAutoAngle);               //??%
+    TRANS(() -> ShooterConstants.angleMotorMaxAngle),
+    SHOOT(() -> ShooterConstants.angleMotorShootAngle),
+    CLOSE(() -> ShooterConstants.angleMotorMinAngle),
+    AUTO(ShooterSubsystem::getAutoAngle);
 
     private final DoubleSupplier angleSupplier;
 
@@ -177,15 +190,17 @@ public class ShooterSubsystem extends SubsystemBase {
     }
   }
 
-  // Trans
-  // Shoot
-  // Auto
-  // Close
+  // Trans 100%
+  // Shoot 30%
+  // Auto ??%
+  // Close 00%
 
   @Override
   public void periodic() {
     SmartDashboard.putBoolean("shooter/shooterAtSpeed", isShooterAtSpeed());
     SmartDashboard.putNumber("shooter/shooterRPM", getShooterVelocity());
+    SmartDashboard.putNumber("shooter/complexRPM", getComplexVelocity());
+    SmartDashboard.putNumber("shooter/angleDegree", getAngleVelocity());
     SmartDashboard.putNumber("shooter/targetRPM", shooterTargetVelocity);
     SmartDashboard.putNumber("shooter/angleTarget", angleTargetVelocity);
     SmartDashboard.putData("shooter/subsystem", this);
