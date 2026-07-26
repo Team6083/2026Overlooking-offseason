@@ -87,10 +87,6 @@ public class ShooterSubsystem extends SubsystemBase {
     complexMotor1.setVoltage(0);
   }
 
-  public void shooterLowGear() { // 低速檔
-    setShooterVoltage(ShooterConstants.shooterLowGearTarget);
-  }
-
   // Getter
   private double getShooterVelocity() {
     return shooterEncoder.getVelocity();
