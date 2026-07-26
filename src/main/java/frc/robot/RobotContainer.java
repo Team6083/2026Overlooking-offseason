@@ -4,20 +4,11 @@
 
 package frc.robot;
 
-import java.io.ObjectInputFilter.Config;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.SwerveControlCmd;
-import frc.robot.subsystems.swervedrive.SwerveDrive;
-import frc.robot.subsystems.swervedrive.WpilibSwerveDrive;
 
 public class RobotContainer {
-  private final SwerveDrive swerveDrive;
-  private final CommandXboxController mainController = new CommandXboxController(0);
   public RobotContainer() {
-    swerveDrive.setDefaultCommand(new SwerveControlCmd(swerveDrive, mainController, null, null););
     configureBindings();
   }
 
