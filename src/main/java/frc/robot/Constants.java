@@ -49,4 +49,11 @@ public class Constants {
           24, 23, 12, -0.446289, true, true, "BackLeft"),
       new SwerveModuleConstant(
           22, 20, 14, 0.302979, true, true, "BackRight"));
+
+  public static final class FeederConstants {
+    public static final int feederMotorId = 0;
+    public static final boolean feederMotorInverted = false;
+    public static final double feederMotorIn = 0.5;
+    public static final double feederMotorOut = -0.5;
+  }
 }
