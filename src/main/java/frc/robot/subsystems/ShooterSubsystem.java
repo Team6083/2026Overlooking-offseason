@@ -41,7 +41,7 @@ public class ShooterSubsystem extends SubsystemBase {
   private RelativeEncoder angleEncoder = angleMotor.getEncoder();
 
   private double shooterTargetVelocity = 0;
-  private double angleTargetVelocity = 0;
+  private double targetAngle = 0;
   private double autoAngle = 0;
 
   // shooter = 射球的馬達(Up)
@@ -71,18 +71,19 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   // Shooter
-  private void setShooterVoltage(double voltage) {
+  private void setShooterVoltage(double voltage) { // 請勿直接使用這個
     double feedforwardVoltage = shooterFeedforward.calculate(voltage); // 計算前饋電壓，需要去測看看會不會每顆馬達都不一樣的前饋電壓
     shooterMotor1.setVoltage(feedforwardVoltage);
     complexMotor1.setVoltage(feedforwardVoltage);
   }
 
-  public void shoot(double targetVelocity) {
-    this.shooterTargetVelocity = targetVelocity;
-    setShooterVoltage(targetVelocity);
+  public void shoot() {
+    this.shooterTargetVelocity = ShooterConstants.shooterNominalTarget;
+    setShooterVoltage(shooterTargetVelocity);
   }
 
   public void stopShooter() {
+    shooterTargetVelocity = 0;
     shooterMotor1.setVoltage(0);
     complexMotor1.setVoltage(0);
   }
@@ -106,25 +107,25 @@ public class ShooterSubsystem extends SubsystemBase {
 
   // Shooter commands (不打值會使用預設值)
   public Command shootCmd() {
-    Command cmd = runEnd(() -> shoot(ShooterConstants.shooterUpNominalTarget), this::stopShooter);
-    cmd.setName("shoot" + ShooterConstants.shooterUpNominalTarget + "Cmd");
+    Command cmd = runEnd(() -> shoot(), this::stopShooter);
+    cmd.setName("shoot" + ShooterConstants.shooterNominalTarget + "Cmd");
     return cmd;
   }
 
   public Command shootCmd(double targetVelocity) {
-    Command cmd = runEnd(() -> shoot(targetVelocity), this::stopShooter);
+    Command cmd = runEnd(() -> setShooterVoltage(targetVelocity), this::stopShooter);
     cmd.setName("shoot+" + targetVelocity + "Cmd");
     return cmd;
   }
 
   // Angle Motor
-  public void angleMotor(double angleTargetVelocity) {
-    this.angleTargetVelocity = angleTargetVelocity;
-    angleMotor.setVoltage(angleTargetVelocity);
+  public void angleMotor(double targetAngle) {
+    this.targetAngle = targetAngle;
+    angleMotor.setVoltage(targetAngle);
   }
 
   public void stopAngleMotor() {
-    this.angleTargetVelocity = 0;
+    this.targetAngle = 0;
     angleMotor.setVoltage(0);
   }
 
@@ -136,9 +137,9 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   // Angle commands
-  public Command angleMotorCmd(double angleTargetVelocity) {
-    Command cmd = runEnd(() -> angleMotor(angleTargetVelocity), this::stopAngleMotor);
-    cmd.setName("angleMotor+" + angleTargetVelocity + "Cmd");
+  public Command angleMotorCmd(double targetAngle) {
+    Command cmd = runEnd(() -> angleMotor(targetAngle), this::stopAngleMotor);
+    cmd.setName("angleMotor+" + targetAngle + "Cmd");
     return cmd;
   }
 
@@ -160,7 +161,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public Command adjustAngleCmd(AnglePreset preset) {
     double targetAngle = preset.getAngle();
-    this.angleTargetVelocity = targetAngle;
+    this.targetAngle = targetAngle;
     return angleLocatedTo(targetAngle);
   }
 
@@ -198,7 +199,7 @@ public class ShooterSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("shooter/complexRPM", getComplexVelocity());
     SmartDashboard.putNumber("shooter/angleDegree", getAngleVelocity());
     SmartDashboard.putNumber("shooter/targetRPM", shooterTargetVelocity);
-    SmartDashboard.putNumber("shooter/angleTarget", angleTargetVelocity);
+    SmartDashboard.putNumber("shooter/angleTarget", targetAngle);
     SmartDashboard.putData("shooter/subsystem", this);
   }
 }

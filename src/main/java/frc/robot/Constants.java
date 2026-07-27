@@ -68,8 +68,8 @@ public class Constants {
     public static final double angleFeedforwardKv = 0.00407;  //速度電壓
     public static final double angleFeedforwardKa = 0; //加速度電壓
     
-    public static final double shooterUpNominalTarget = 3000; // 上方轉速
-    public static final double shooterDownNominalTarget = 3000; // 下方轉速
+    public static final double shooterNominalTarget = 3000; // 上方轉速
+    public static final double complexNominalTarget = 3000; // 下方轉速
 
     public static final double shooterLowGearTarget = 1500;
 
