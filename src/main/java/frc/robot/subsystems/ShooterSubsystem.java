@@ -42,7 +42,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private double shooterTargetVelocity = 0;
   private double targetAngle = 0;
-  private double autoAngle = 0;
 
   // shooter = 射球的馬達(Up)
   // complex = 介在傳輸和射球之間的馬達(Down)
@@ -170,9 +169,16 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public enum AnglePreset {
+    /** 傳輸角度 (Max Angle) */
     TRANS(() -> ShooterConstants.angleMotorMaxAngle),
+
+    /** 射球角度 (Shoot Angle) */
     SHOOT(() -> ShooterConstants.angleMotorShootAngle),
+
+    /** 歸位角度 (Min Angle),過trench使用 */
     CLOSE(() -> ShooterConstants.angleMotorMinAngle),
+
+    /** 自動追蹤角度 (動態計算) */
     AUTO(ShooterSubsystem::getAutoAngle);
 
     private final DoubleSupplier angleSupplier;
