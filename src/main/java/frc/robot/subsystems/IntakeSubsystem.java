@@ -69,17 +69,20 @@ public class IntakeSubsystem extends SubsystemBase {
   // Sync Pivot
   //有 PID 的，會轉到固定角度
   public void pivotDeploy() {
-    runPivotTarget(IntakeConstants.pivotDeployStopPosition);
+    runPivotTarget(IntakeConstants.pivotDeployStopPosition, IntakeConstants.pivotMaxOutput);
   }
 
   public void pivotRetract() {
-    runPivotTarget(IntakeConstants.pivotRetractStopPosition);
+    runPivotTarget(IntakeConstants.pivotRetractStopPosition, IntakeConstants.pivotMaxOutput);
+  }
+  public void pivotRetake() {
+    runPivotTarget(IntakeConstants.pivotRetakeStopPosition, IntakeConstants.pivotRetakeMaxOutput);
   }
 
-  private void runPivotTarget(double targetPosition) {
+  private void runPivotTarget(double targetPosition, double maxOutput) {
     double currentPosition = pivotEncoder.get();
     double pidOutput = pivotFollowPIDController.calculate(currentPosition, targetPosition);
-    pidOutput = MathUtil.clamp(pidOutput, -1.0, 1.0);
+    pidOutput = MathUtil.clamp(pidOutput, -1.0, maxOutput);
     pivotMotor.set(ControlMode.PercentOutput, pidOutput);
   }
 
@@ -102,42 +105,55 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   // manual pivot
-  public Command manualDeployCmd() {
+  public Command manualDeployPivotCmd() {
     Command cmd = runEnd(this::manualPivotDeploy, this::stopRotate);
-    cmd.setName("manualDeployIntakeCmd");
+    cmd.setName("manualDeployPivotCmd");
     return cmd;
   }
   
-  public Command manualRetractCmd() {
+  public Command manualRetractPivotCmd() {
     Command cmd = runEnd(this::manualPivotRetract, this::stopRotate);
-    cmd.setName("manualRetractCmd");
+    cmd.setName("manualRetractPivotCmd");
     return cmd;
   }
 
   // auto pivot
-  public Command autoDeployPivotCmd() {
-    Command cmd = runEnd(this::pivotDeploy, this::stopRotate);
-    cmd.setName("autoDeployIntakeCmd");
-    return cmd;
-  }
-
-  public Command autoRetractPivotCmd() {
-    Command cmd = runEnd(this::pivotRetract, this::stopRotate);
-    cmd.setName("autoRetractIntakeCmd");
-    return cmd;
-  }
-
   public Command deployPivotCmd() {
-    Command cmd = autoDeployPivotCmd()
-        .until(() -> getPivotPosition() >= IntakeConstants.pivotDeployStopPosition);
+    Command cmd = runEnd(this::pivotDeploy, this::stopRotate);
     cmd.setName("deployPivotCmd");
     return cmd;
   }
 
   public Command retractPivotCmd() {
-    Command cmd = autoRetractPivotCmd()
-        .until(() -> getPivotPosition() <= IntakeConstants.pivotRetractStopPosition);
+    Command cmd = runEnd(this::pivotRetract, this::stopRotate);
     cmd.setName("retractPivotCmd");
+    return cmd;
+  }
+
+  public Command retakePivotCmd() {
+    Command cmd = runEnd(this::pivotRetake, this::stopRotate);
+    cmd.setName("retakePivotCmd");
+    return cmd;
+  }
+
+  public Command autoDeployPivotCmd() {
+    Command cmd = deployPivotCmd()
+        .until(() -> getPivotPosition() >= IntakeConstants.pivotDeployStopPosition);
+    cmd.setName("autoDeployPivotCmd");
+    return cmd;
+  }
+
+  public Command autoRetractPivotCmd() {
+    Command cmd = retractPivotCmd()
+        .until(() -> getPivotPosition() <= IntakeConstants.pivotRetractStopPosition);
+    cmd.setName("autoRetractPivotCmd");
+    return cmd;
+  }
+
+  public Command autoRetakePivotCmd() {
+    Command cmd = retakePivotCmd()
+        .until(() -> getPivotPosition() >= IntakeConstants.pivotRetakeStopPosition);
+    cmd.setName("autoRetakePivotCmd");
     return cmd;
   }
 
