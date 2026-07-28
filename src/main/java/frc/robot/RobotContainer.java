@@ -18,9 +18,7 @@ public class RobotContainer {
     configureBindings();
   }
 
-  private void configureBindings() {
-    mainController.a().onTrue(feederSubsystem.feedInCmd());
-  }
+  private void configureBindings() {}
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
