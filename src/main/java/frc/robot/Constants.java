@@ -16,6 +16,10 @@ public class Constants {
   public static final double pivotEncoderFullRange = 360;
   public static final double pivotDeployStopPosition = 93;
   public static final double pivotRetractStopPosition = 11;
+  public static final double pivotRetakeStopPosition = 30;
+
+  public static final double pivotMaxOutput = 1.0;
+  public static final double pivotRetakeMaxOutput = 0.7;
 
   public static final boolean intakeInverted = true;
 
