@@ -14,34 +14,35 @@ import frc.robot.Constants.TransportConstants;
 
 public class TransportSubsystem extends SubsystemBase {
   /** Creates a new TransportSubsystem. */
-  
+
   private final VictorSPX transportMotor = new VictorSPX(TransportConstants.transportMotorID);
 
-    public TransportSubsystem() {
-  transportMotor.setInverted(TransportConstants.transportMotorInverted);
-}
+  public TransportSubsystem() {
+    transportMotor.setInverted(TransportConstants.transportMotorInverted);
+  }
 
   public void transportIn() {
-transportMotor.set(ControlMode.PercentOutput, TransportConstants.transportMoterIn);
-}
+    transportMotor.set(ControlMode.PercentOutput, TransportConstants.transportMoterIn);
+  }
 
   public void transportOut() {
-transportMotor.set(ControlMode.PercentOutput, TransportConstants.transportMoterOut);
-}
-public void stopTransport() {
-transportMotor.set(ControlMode.PercentOutput, 0);
-}
+    transportMotor.set(ControlMode.PercentOutput, TransportConstants.transportMoterOut);
+  }
 
-  public Command transportInCmd(){
-Command cmd = runEnd(this::transportIn, this::stopTransport);
-cmd.setName("transportIn");
-return cmd;
-}
+  public void stopTransport() {
+    transportMotor.set(ControlMode.PercentOutput, 0);
+  }
+
+  public Command transportInCmd() {
+    Command cmd = runEnd(this::transportIn, this::stopTransport);
+    cmd.setName("transportIn");
+    return cmd;
+  }
 
   @Override
-public void periodic() {
-// This method will be called once per scheduler run
-SmartDashboard.putNumber("transportVoltage", transportMotor.getMotorOutputVoltage());
+  public void periodic() {
+    // This method will be called once per scheduler run
+    SmartDashboard.putNumber("transportVoltage", transportMotor.getMotorOutputVoltage());
 
-}
+  }
 }
