@@ -4,10 +4,8 @@
 
 package frc.robot.subsystems.swervedrive;
 
-import edu.wpi.first.wpilibj.Filesystem;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveBaseConstant;
-import java.io.File;
 
 public class SwerveDriveFactory {
   public enum SwerveImplementation {
@@ -21,11 +19,6 @@ public class SwerveDriveFactory {
   }
 
   public static SwerveDrive createSwerveDrive(SwerveImplementation type, RobotVariant variant) {
-    String swerveConfigDirName = switch (variant) {
-      case TEST -> "swerve/test";
-      case COMPETITION -> "swerve/competition";
-    };
-
     DriveBaseConstant driveBaseConstant = switch (variant) {
       case TEST -> Constants.TEST_CONFIG;
       case COMPETITION -> Constants.COMPETITION_CONFIG;
