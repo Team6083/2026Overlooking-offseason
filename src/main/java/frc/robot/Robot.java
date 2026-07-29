@@ -32,11 +32,11 @@ public class Robot extends TimedRobot {
     ntInstance.getStringTopic("/Metadata/GitBranch").publish()
         .set(BuildConstants.GIT_BRANCH);
 
-    SmartDashboard.putString("/Metadata/GitInfo", String.format("%s (%s), %s",
+    SmartDashboard.putString("Metadata/GitInfo", String.format("%s (%s), %s",
         BuildConstants.GIT_SHA,
         BuildConstants.GIT_BRANCH,
         BuildConstants.DIRTY == 1 ? "Dirty" : "Clean"));
-    SmartDashboard.putString("/Metadata/BuildDate", BuildConstants.BUILD_DATE);
+    SmartDashboard.putString("Metadata/BuildDate", BuildConstants.BUILD_DATE);
   }
 
   @Override
