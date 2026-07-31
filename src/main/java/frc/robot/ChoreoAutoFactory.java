@@ -9,10 +9,12 @@ import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.subsystems.IntakeSubsystem;
 
 /** Add your docs here. */
 public class ChoreoAutoFactory {
   private static AutoFactory autofactory;
+  private static IntakeSubsystem intakeSubsystem;
 
   public static void configureAutoBuilder(SwerveDrive swerveDrive) {
     autofactory = new AutoFactory(
@@ -37,6 +39,26 @@ public class ChoreoAutoFactory {
             Stright1m.resetOdometry(),
             Stright1m.cmd()));
     Stright1m.done().onTrue(Turn90.cmd());
+
+    return routine;
+  }
+
+  public AutoRoutine scoringAutoRoutine() {
+    AutoRoutine routine = autofactory.newRoutine("scoringRoutine");
+
+    AutoTrajectory Stright1m = routine.trajectory("Straight1m");
+    AutoTrajectory GetGamePieces = routine.trajectory("GetGamePieces");
+    AutoTrajectory Shoot = routine.trajectory("Shoot");
+
+    routine.active().onTrue(
+        Commands.sequence(
+            Stright1m.resetOdometry(),
+            Stright1m.cmd()));
+    Stright1m.done().onTrue(GetGamePieces.cmd());
+    GetGamePieces.atTime("deployPivot").onTrue(intakeSubsystem.test());
+    GetGamePieces.atTime("intake").onTrue(intakeSubsystem.test());
+    GetGamePieces.done().onTrue(Shoot.cmd());
+    Shoot.atTime("shooter").onTrue(intakeSubsystem.test());
 
     return routine;
   }
