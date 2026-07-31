@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class IntakeSubsystem extends SubsystemBase {
@@ -23,6 +24,12 @@ public class IntakeSubsystem extends SubsystemBase {
   public void manualDeploy() {}
 
   public void manualRetract() {}
+
+  public Command test(){
+    Command cmd = runEnd(this::deploy, this::stopIntake);
+    return cmd;
+    };
+  
 
   @Override
   public void periodic() {
