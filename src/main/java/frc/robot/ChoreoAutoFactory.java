@@ -4,10 +4,13 @@
 
 package frc.robot;
 
+import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.IntakeSubsystem;
 
@@ -15,6 +18,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 public class ChoreoAutoFactory {
   private static AutoFactory autofactory;
   private static IntakeSubsystem intakeSubsystem;
+  private static AutoChooser autoChooser;
 
   public static void configureAutoBuilder(SwerveDrive swerveDrive) {
     autofactory = new AutoFactory(
@@ -27,7 +31,6 @@ public class ChoreoAutoFactory {
         },
         swerveDrive);
   }
-
   public AutoRoutine testAutoRoutine() {
     AutoRoutine routine = autofactory.newRoutine("testRoutine");
 
@@ -62,4 +65,5 @@ public class ChoreoAutoFactory {
 
     return routine;
   }
+
 }
