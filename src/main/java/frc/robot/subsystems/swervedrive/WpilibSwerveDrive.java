@@ -1,0 +1,205 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
+package frc.robot.subsystems.swervedrive;
+
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
+import com.studica.frc.AHRS;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.DriveBaseConstant;
+import frc.robot.Constants.ModuleConstant;
+
+public class WpilibSwerveDrive extends SubsystemBase implements frc.robot.subsystems.swervedrive.SwerveDrive{
+  public final SwerveModule frontLeft;
+  public final SwerveModule frontRight;
+  public final SwerveModule backLeft;
+  public final SwerveModule backRight;
+
+  private final AHRS gyro;
+
+  private final SwerveDriveKinematics kinematics;
+  private final SwerveDrivePoseEstimator poseEstimator;
+
+  private SwerveModuleState[] desiredSwerveModuleStates = new SwerveModuleState[4];
+  private final StructArrayPublisher<SwerveModuleState> swerveDesiredStatePublisher = NetworkTableInstance
+      .getDefault().getStructArrayTopic("DesiredStates", SwerveModuleState.struct).publish();
+  private final StructArrayPublisher<SwerveModuleState> swerveCurrentStatePublisher = NetworkTableInstance
+      .getDefault().getStructArrayTopic("CurrentStates", SwerveModuleState.struct).publish();
+
+  private final StructPublisher<Pose2d> currentPosePublisher = NetworkTableInstance.getDefault()
+      .getStructTopic("currentPose", Pose2d.struct).publish();
+
+  private ChassisSpeeds desiredChassisSpeeds = new ChassisSpeeds();
+  private final StructPublisher<ChassisSpeeds> currentChassisSpeedsPublisher = NetworkTableInstance.getDefault()
+      .getStructTopic("currentChassisSpeeds", ChassisSpeeds.struct).publish();
+  private final StructPublisher<ChassisSpeeds> desiredChassisSpeedsPublisher = NetworkTableInstance.getDefault()
+      .getStructTopic("desiredChassisSpeeds", ChassisSpeeds.struct).publish();
+
+  public WpilibSwerveDrive(DriveBaseConstant driveBaseConstant) {
+    frontLeft = new SwerveModule(driveBaseConstant.frontLeft());
+    frontRight = new SwerveModule(driveBaseConstant.frontRight());
+    backLeft = new SwerveModule(driveBaseConstant.backLeft());
+    backRight = new SwerveModule(driveBaseConstant.backRight());
+
+    gyro = new AHRS(AHRS.NavXComType.kMXP_SPI);
+
+    kinematics = new SwerveDriveKinematics(
+        new Translation2d(+0.27, +0.27),
+        new Translation2d(+0.27, -0.27),
+        new Translation2d(-0.27, +0.27),
+        new Translation2d(-0.27, -0.27));
+
+    poseEstimator = new SwerveDrivePoseEstimator(
+        kinematics,
+        gyro.getRotation2d(),
+        getSwerveModulePosition(),
+        new Pose2d());
+
+    desiredSwerveModuleStates[0] = new SwerveModuleState();
+    desiredSwerveModuleStates[1] = new SwerveModuleState();
+    desiredSwerveModuleStates[2] = new SwerveModuleState();
+    desiredSwerveModuleStates[3] = new SwerveModuleState();
+  }
+
+  public SwerveModulePosition[] getSwerveModulePosition() {
+    return new SwerveModulePosition[] {
+        frontLeft.getPosition(),
+        frontRight.getPosition(),
+        backLeft.getPosition(),
+        backRight.getPosition()
+    };
+  }
+
+  @Override
+  public void addVisionMeasurement(Pose2d visionRobotPose, double timestamp) {
+    // poseEstimator.addVisionMeasurement(visionRobotPose, timestamp);
+  }
+
+  @Override
+  public void addVisionMeasurement(Pose2d visionRobotPose, double timestamp, Vector<N3> visionStdDevs) {
+    // poseEstimator.addVisionMeasurement(visionRobotPose, timestamp, visionStdDevs);
+  }
+
+  @Override
+  public void drive(double vx, double vy, double omega, boolean fieldRelative) {
+    var alliance = DriverStation.getAlliance();
+    var inverted = 1;
+    if (alliance.isPresent() && alliance.get() == Alliance.Red) {
+      inverted = -1;
+    }
+
+    ChassisSpeeds speeds = fieldRelative
+        ? ChassisSpeeds.fromFieldRelativeSpeeds(
+            new ChassisSpeeds(vx * inverted, vy * inverted, omega),
+            gyro.getRotation2d())
+        : new ChassisSpeeds(vx, vy, omega);
+
+    drive(speeds);
+  }
+
+  @Override
+  public void drive(ChassisSpeeds speeds) {
+    desiredChassisSpeeds = speeds;
+    desiredSwerveModuleStates = kinematics.toSwerveModuleStates(desiredChassisSpeeds);
+
+    SwerveDriveKinematics.desaturateWheelSpeeds(desiredSwerveModuleStates,
+        ModuleConstant.kMaxModuleSpeed.in(MetersPerSecond));
+
+    frontLeft.setDesiredState(desiredSwerveModuleStates[0]);
+    frontRight.setDesiredState(desiredSwerveModuleStates[1]);
+    backLeft.setDesiredState(desiredSwerveModuleStates[2]);
+    backRight.setDesiredState(desiredSwerveModuleStates[3]);
+  }
+
+  @Override
+  public void zeroGyro() {
+    gyro.reset();
+  }
+
+  @Override
+  public Command zeroGyroCommand() {
+    Command cmd = runOnce(() -> zeroGyro());
+    return cmd;
+  }
+
+  @Override
+  public Pose2d getPose2d() {
+    return poseEstimator.getEstimatedPosition();
+  }
+
+  @Override
+  public void resetPose(Pose2d pose) {
+    poseEstimator.resetPosition(gyro.getRotation2d(), getSwerveModulePosition(), pose);
+  }
+
+  @Override
+  public ChassisSpeeds getRobotRelativeSpeeds() {
+    return kinematics.toChassisSpeeds(
+        frontLeft.getState(),
+        frontRight.getState(),
+        backLeft.getState(),
+        backRight.getState());
+  }
+
+  @Override
+  public Rotation2d getGyroRotation2d() {
+    return gyro.getRotation2d();
+  }
+
+  @Override
+  public void lockPose() {
+    frontLeft.setDesiredState(new SwerveModuleState(0,
+        kinematics.getModules()[0].getAngle()));
+    frontRight.setDesiredState(new SwerveModuleState(0,
+        kinematics.getModules()[1].getAngle()));
+    backLeft.setDesiredState(new SwerveModuleState(0,
+        kinematics.getModules()[2].getAngle()));
+    backRight.setDesiredState(new SwerveModuleState(0,
+        kinematics.getModules()[3].getAngle()));
+  }
+
+  @Override
+  public void periodic() {
+    poseEstimator.update(gyro.getRotation2d(), getSwerveModulePosition());
+
+    SmartDashboard.putNumber("drive/gyroHeadingDeg", gyro.getRotation2d().getDegrees());
+    SmartDashboard.putNumber("drive/gyroHeedingNonContinuous",
+        Math.toDegrees(MathUtil.angleModulus(gyro.getRotation2d().getRadians())));
+    SmartDashboard.putBoolean("drive/gyroConnected", gyro.isConnected());
+
+    swerveDesiredStatePublisher.set(desiredSwerveModuleStates);
+    swerveCurrentStatePublisher.set(new SwerveModuleState[] {
+        frontLeft.getState(),
+        frontRight.getState(),
+        backLeft.getState(),
+        backRight.getState()
+    });
+    currentPosePublisher.set(getPose2d());
+
+    currentChassisSpeedsPublisher.set(getRobotRelativeSpeeds());
+    desiredChassisSpeedsPublisher.set(desiredChassisSpeeds);
+
+    SmartDashboard.putData("drive/subsystem", this);
+  }
+}
