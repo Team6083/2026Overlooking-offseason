@@ -58,4 +58,14 @@ public class Constants {
           26, 27, 11, 0.403809, true, false, "BackLeft"),
       new SwerveModuleConstant(
           24, 25, 13, -0.242676, true, false, "BackRight"));
+
+public static class AutoConstants {
+    public static final double kpTranslation = 0;
+    public static final double kiTranslation = 0;
+    public static final double kdTranslation = 0;
+    public static final double kpRotation = 0;
+    public static final double kiRotation = 0;
+    public static final double kdRotation = 0;
+  }
+
 }
