@@ -10,6 +10,7 @@ import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -36,6 +37,8 @@ public class ChoreoAutoFactory {
 
     autoChooser.addRoutine("testRoutine", ChoreoAutoFactory::testAutoRoutine);
     autoChooser.addRoutine("scoringRoutine", ChoreoAutoFactory::scoringAutoRoutine);
+
+    SmartDashboard.putData("Auto/ChoreoChooser", autoChooser);
   }
 
   public static AutoChooser getAutoChooser() {
