@@ -24,6 +24,8 @@ public class RobotContainer {
     swerveDrive = SwerveDriveFactory.createSwerveDrive(
         SwerveDriveFactory.SwerveImplementation.WPILIB,
         SwerveDriveFactory.RobotVariant.TEST);
+    ChoreoAutoFactory.configureAutoBuilder(swerveDrive);
+    ChoreoAutoFactory.configureAutoChooser();
     configureBindings();
   }
 
@@ -37,6 +39,7 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
+      return ChoreoAutoFactory.getAutoChooser()
+            .selectedCommand();
   }
 }
