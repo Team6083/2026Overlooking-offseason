@@ -13,22 +13,21 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.swervedrive.SwerveDrive;
 
 /** Add your docs here. */
 public class ChoreoAutoFactory {
   private static AutoFactory autofactory;
   private static IntakeSubsystem intakeSubsystem;
   private static AutoChooser autoChooser;
+  private static SwerveDrive swerveDrive;
 
   public static void configureAutoBuilder(SwerveDrive swerveDrive) {
     autofactory = new AutoFactory(
         swerveDrive::getPose2d,
         swerveDrive::resetPose,
-        swerveDrive::followSample,
-        () -> {
-          var alliance = DriverStation.getAlliance();
-          return alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red;
-        },
+        swerveDrive::followTrajectory,
+        true,
         swerveDrive);
   }
   public AutoRoutine testAutoRoutine() {

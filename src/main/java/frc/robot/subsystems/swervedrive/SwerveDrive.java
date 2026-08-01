@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.swervedrive;
 
+import choreo.trajectory.SwerveSample;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -35,4 +36,6 @@ public interface SwerveDrive extends Subsystem {
   ChassisSpeeds getRobotRelativeSpeeds();
 
   Rotation2d getGyroRotation2d();
+
+  void followTrajectory(SwerveSample sample);
 }
