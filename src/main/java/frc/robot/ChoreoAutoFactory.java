@@ -30,7 +30,19 @@ public class ChoreoAutoFactory {
         true,
         swerveDrive);
   }
-  public AutoRoutine testAutoRoutine() {
+
+  public static void configureAutoChooser() {
+    autoChooser = new AutoChooser();
+
+    autoChooser.addRoutine("testRoutine", ChoreoAutoFactory::testAutoRoutine);
+    autoChooser.addRoutine("scoringRoutine", ChoreoAutoFactory::scoringAutoRoutine);
+  }
+
+  public static AutoChooser getAutoChooser() {
+    return autoChooser;
+  }
+
+  public static AutoRoutine testAutoRoutine() {
     AutoRoutine routine = autofactory.newRoutine("testRoutine");
 
     AutoTrajectory Stright1m = routine.trajectory("Straight1m");
@@ -45,7 +57,7 @@ public class ChoreoAutoFactory {
     return routine;
   }
 
-  public AutoRoutine scoringAutoRoutine() {
+  public static AutoRoutine scoringAutoRoutine() {
     AutoRoutine routine = autofactory.newRoutine("scoringRoutine");
 
     AutoTrajectory Stright1m = routine.trajectory("Straight1m");
