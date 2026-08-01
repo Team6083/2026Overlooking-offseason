@@ -24,13 +24,7 @@ public class IntakeSubsystem extends SubsystemBase {
   public void manualDeploy() {}
 
   public void manualRetract() {}
-
-  public Command test(){
-    Command cmd = runEnd(this::deploy, this::stopIntake);
-    return cmd;
-    };
   
-
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

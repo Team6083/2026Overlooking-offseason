@@ -8,18 +8,13 @@ import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveDrive;
 
 /** Add your docs here. */
 public class ChoreoAutoFactory {
   private static AutoFactory autofactory;
-  private static IntakeSubsystem intakeSubsystem;
   private static AutoChooser autoChooser;
   private static SwerveDrive swerveDrive;
 
@@ -36,7 +31,6 @@ public class ChoreoAutoFactory {
     autoChooser = new AutoChooser();
 
     autoChooser.addRoutine("testRoutine", ChoreoAutoFactory::testAutoRoutine);
-    autoChooser.addRoutine("scoringRoutine", ChoreoAutoFactory::scoringAutoRoutine);
 
     SmartDashboard.putData("Auto/ChoreoChooser", autoChooser);
   }
@@ -56,26 +50,6 @@ public class ChoreoAutoFactory {
             Stright1m.resetOdometry(),
             Stright1m.cmd()));
     Stright1m.done().onTrue(Turn90.cmd());
-
-    return routine;
-  }
-
-  public static AutoRoutine scoringAutoRoutine() {
-    AutoRoutine routine = autofactory.newRoutine("scoringRoutine");
-
-    AutoTrajectory Stright1m = routine.trajectory("Straight1m");
-    AutoTrajectory GetGamePieces = routine.trajectory("GetGamePieces");
-    AutoTrajectory Shoot = routine.trajectory("Shoot");
-
-    routine.active().onTrue(
-        Commands.sequence(
-            Stright1m.resetOdometry(),
-            Stright1m.cmd()));
-    Stright1m.done().onTrue(GetGamePieces.cmd());
-    GetGamePieces.atTime("deployPivot").onTrue(intakeSubsystem.test());
-    GetGamePieces.atTime("intake").onTrue(intakeSubsystem.test());
-    GetGamePieces.done().onTrue(Shoot.cmd());
-    Shoot.atTime("shooter").onTrue(intakeSubsystem.test());
 
     return routine;
   }

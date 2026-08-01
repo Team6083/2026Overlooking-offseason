@@ -32,7 +32,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveBaseConstant;
 import frc.robot.Constants.ModuleConstant;
 
-public class WpilibSwerveDrive extends SubsystemBase implements frc.robot.subsystems.swervedrive.SwerveDrive{
+public class WpilibSwerveDrive extends SubsystemBase implements frc.robot.subsystems.swervedrive.SwerveDrive {
   public final SwerveModule frontLeft;
   public final SwerveModule frontRight;
   public final SwerveModule backLeft;
@@ -61,7 +61,6 @@ public class WpilibSwerveDrive extends SubsystemBase implements frc.robot.subsys
   private final PIDController xController = new PIDController(10.0, 0.0, 0.0);
   private final PIDController yController = new PIDController(10.0, 0.0, 0.0);
   private final PIDController headingController = new PIDController(7.5, 0.0, 0.0);
-
 
   public WpilibSwerveDrive(DriveBaseConstant driveBaseConstant) {
     frontLeft = new SwerveModule(driveBaseConstant.frontLeft());
@@ -107,7 +106,8 @@ public class WpilibSwerveDrive extends SubsystemBase implements frc.robot.subsys
 
   @Override
   public void addVisionMeasurement(Pose2d visionRobotPose, double timestamp, Vector<N3> visionStdDevs) {
-    // poseEstimator.addVisionMeasurement(visionRobotPose, timestamp, visionStdDevs);
+    // poseEstimator.addVisionMeasurement(visionRobotPose, timestamp,
+    // visionStdDevs);
   }
 
   @Override
@@ -190,16 +190,15 @@ public class WpilibSwerveDrive extends SubsystemBase implements frc.robot.subsys
 
   @Override
   public void followTrajectory(SwerveSample sample) {
-      Pose2d pose = getPose2d();
+    Pose2d pose = getPose2d();
 
-      ChassisSpeeds speeds = new ChassisSpeeds(
-          sample.vx + xController.calculate(pose.getX(), sample.x),
-          sample.vy + yController.calculate(pose.getY(), sample.y),
-          sample.omega + headingController.calculate(pose.getRotation().getRadians(), sample.heading)
-        );
+    ChassisSpeeds speeds = new ChassisSpeeds(
+        sample.vx + xController.calculate(pose.getX(), sample.x),
+        sample.vy + yController.calculate(pose.getY(), sample.y),
+        sample.omega + headingController.calculate(pose.getRotation().getRadians(), sample.heading));
 
-        drive(speeds);
-    }
+    drive(speeds);
+  }
 
   @Override
   public void periodic() {
