@@ -41,6 +41,8 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   private void processInputs() {
+    int totalAccepted = 0;
+    int totalRejected = 0;
 
     for (int i = 0; i < inputs.cameras.length; i++) {
       VisionIO.CameraInputs camera = inputs.cameras[i];
@@ -53,19 +55,19 @@ public class VisionSubsystem extends SubsystemBase {
         continue;
 
       if (shouldReject(estimate)) {
-        VisionConstant.totalRejected++;
+        totalRejected++;
         continue;
       }
 
       Matrix<N3, N1> stdDevs = estimate.isMultiTag() ? VisionConstant.multiTagStdDevs : VisionConstant.singleTagStdDevs;
       poseConsumer.accept(estimate.fieldToRobot(), estimate.timestampSeconds(), stdDevs);
-      VisionConstant.totalAccepted++;
+      totalAccepted++;
 
       logCamera(i, estimate);
     }
 
-    SmartDashboard.putNumber("Vision/AcceptedMeasurements", VisionConstant.totalAccepted);
-    SmartDashboard.putNumber("Vision/RejectedMeasurements", VisionConstant.totalRejected);
+    SmartDashboard.putNumber("Vision/AcceptedMeasurements", totalAccepted);
+    SmartDashboard.putNumber("Vision/RejectedMeasurements", totalRejected);
   }
 
   private MegatagPoseEstimate selectBestEstimate(VisionIO.CameraInputs camera) {

@@ -71,9 +71,6 @@ public class Constants {
     public static final Matrix<N3, N1> singleTagStdDevs = VecBuilder.fill(0.9, 0.9, Math.toRadians(10));
     public static final Matrix<N3, N1> multiTagStdDevs = VecBuilder.fill(0.3, 0.3, Math.toRadians(5));
 
-    public static int totalAccepted = 0;
-    public static int totalRejected = 0;
-
     public static final int botposeX = 0;
     public static final int botposeY = 1;
     public static final int botposeZ = 2;
