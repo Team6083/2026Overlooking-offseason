@@ -6,8 +6,13 @@ package frc.robot;
 
 import java.util.function.Supplier;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -20,10 +25,22 @@ public class RobotContainer {
   private final CommandXboxController mainController = new CommandXboxController(0);
   private Supplier<Boolean> shouldSprint = () -> mainController.leftBumper().getAsBoolean();
   private Supplier<Boolean> shouldLockPose = () -> mainController.a().getAsBoolean();
+   private final SendableChooser<Command> autoChooser;
+
   public RobotContainer() {
     swerveDrive = SwerveDriveFactory.createSwerveDrive(
         SwerveDriveFactory.SwerveImplementation.WPILIB,
         SwerveDriveFactory.RobotVariant.TEST);
+
+
+    Auto.configureAutoBuilder(swerveDrive);
+
+    registerCommand();
+
+    autoChooser = AutoBuilder.buildAutoChooser();
+
+    SmartDashboard.putData("autoChooser", autoChooser);
+
     configureBindings();
   }
 
@@ -36,7 +53,12 @@ public class RobotContainer {
     }));
   }
 
-  public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
+   private void registerCommand() {
+    // NamedCommands.registerCommand("deployIntake", intakeSubsystem.deployIntakeCmd());
+      
+   }
+
+   public Command getAutonomousCommand() {
+    return autoChooser.getSelected();
   }
 }
