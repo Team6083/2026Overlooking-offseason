@@ -87,8 +87,7 @@ public class VisionSubsystem extends SubsystemBase {
     double distance = estimate.fieldToRobot()
         .getTranslation()
         .getDistance(poseSupplier.get().getTranslation());
-
-    return distance > VisionConstant.maxPoseJumpMeters;
+      return false;
   }
 
   private void logCamera(int index, MegatagPoseEstimate estimate) {

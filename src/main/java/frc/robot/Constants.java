@@ -66,7 +66,6 @@ public class Constants {
           24, 25, 13, -0.242676, true, false, "BackRight"));
 
   public static final class VisionConstant {
-    public static final double maxPoseJumpMeters = 1.0;
     public static final double minQualityThreshold = 0.3;
     public static final Matrix<N3, N1> singleTagStdDevs = VecBuilder.fill(0.9, 0.9, Math.toRadians(10));
     public static final Matrix<N3, N1> multiTagStdDevs = VecBuilder.fill(0.3, 0.3, Math.toRadians(5));
