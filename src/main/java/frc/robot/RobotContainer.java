@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.SwerveControlCmd;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveDrive;
 import frc.robot.subsystems.swervedrive.SwerveDriveFactory;
 
@@ -26,6 +27,7 @@ public class RobotContainer {
   private Supplier<Boolean> shouldSprint = () -> mainController.leftBumper().getAsBoolean();
   private Supplier<Boolean> shouldLockPose = () -> mainController.a().getAsBoolean();
    private final SendableChooser<Command> autoChooser;
+   private  final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
 
   public RobotContainer() {
     swerveDrive = SwerveDriveFactory.createSwerveDrive(
@@ -54,8 +56,12 @@ public class RobotContainer {
   }
 
    private void registerCommand() {
-    // NamedCommands.registerCommand("deployIntake", intakeSubsystem.deployIntakeCmd());
-      
+    NamedCommands.registerCommand("Intake", Commands.runOnce(() -> intakeSubsystem.intake()));
+    NamedCommands.registerCommand("ReverseIntake", Commands.runOnce(() -> intakeSubsystem.reverseIntake()));
+    NamedCommands.registerCommand("StopIntake", Commands.runOnce(() -> intakeSubsystem.stopIntake()));
+    NamedCommands.registerCommand("DeployIntake", Commands.runOnce(() -> intakeSubsystem.deploy()));
+    NamedCommands.registerCommand("RetractIntake", Commands.runOnce(() -> intakeSubsystem.retract()));
+  
    }
 
    public Command getAutonomousCommand() {
