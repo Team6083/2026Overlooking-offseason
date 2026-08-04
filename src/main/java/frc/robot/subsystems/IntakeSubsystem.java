@@ -33,8 +33,7 @@ public class IntakeSubsystem extends SubsystemBase {
       IntakeConstants.pivotFollowKi,
       IntakeConstants.pivotFollowKd);
 
-  // intakeSubsystem
-  public IntakeSubsystem() {
+  public IntakeSubsystem() { // IntakeSubsystem
     SparkMaxConfig intakeConfig = new SparkMaxConfig();
     intakeConfig.inverted(IntakeConstants.intakeInverted);
     intakeMotor.configure(
@@ -44,7 +43,7 @@ public class IntakeSubsystem extends SubsystemBase {
     pivotFollowPidController.enableContinuousInput(0, IntakeConstants.pivotEncoderFullRange);
   }
 
-  public void intake() { // IntakeSubsystem
+  public void intake() { // Intake
     intakeMotor.set(IntakeConstants.intakeSpeed);
   }
 
