@@ -6,12 +6,19 @@ package frc.robot;
 
 import java.util.function.Supplier;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.SwerveControlCmd;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveDrive;
 import frc.robot.subsystems.swervedrive.SwerveDriveFactory;
 
@@ -20,10 +27,24 @@ public class RobotContainer {
   private final CommandXboxController mainController = new CommandXboxController(0);
   private Supplier<Boolean> shouldSprint = () -> mainController.leftBumper().getAsBoolean();
   private Supplier<Boolean> shouldLockPose = () -> mainController.a().getAsBoolean();
+   private final SendableChooser<Command> autoChooser;
+   private  final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+    private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
+
   public RobotContainer() {
     swerveDrive = SwerveDriveFactory.createSwerveDrive(
         SwerveDriveFactory.SwerveImplementation.WPILIB,
         SwerveDriveFactory.RobotVariant.TEST);
+
+
+    Auto.configureAutoBuilder(swerveDrive);
+
+    registerCommand();
+
+    autoChooser = AutoBuilder.buildAutoChooser();
+
+    SmartDashboard.putData("autoChooser", autoChooser);
+
     configureBindings();
   }
 
@@ -36,7 +57,16 @@ public class RobotContainer {
     }));
   }
 
-  public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
+   private void registerCommand() {
+    NamedCommands.registerCommand("Intake", Commands.runOnce(() -> intakeSubsystem.intake()));
+    NamedCommands.registerCommand("StopIntake", Commands.runOnce(() -> intakeSubsystem.stopIntake()));
+    NamedCommands.registerCommand("DeployIntake", Commands.runOnce(() -> intakeSubsystem.deploy()));
+    NamedCommands.registerCommand("RetractIntake", Commands.runOnce(() -> intakeSubsystem.retract()));
+    NamedCommands.registerCommand("shoot", Commands.runOnce(() -> shooterSubsystem.shoot()));
+  
+   }
+
+   public Command getAutonomousCommand() {
+    return autoChooser.getSelected();
   }
 }
