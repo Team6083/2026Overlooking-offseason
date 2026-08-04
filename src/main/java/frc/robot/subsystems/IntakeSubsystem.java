@@ -44,8 +44,7 @@ public class IntakeSubsystem extends SubsystemBase {
     pivotFollowPidController.enableContinuousInput(0, IntakeConstants.pivotEncoderFullRange);
   }
 
-  // Intake
-  public void intake() {
+  public void intake() { // IntakeSubsystem
     intakeMotor.set(IntakeConstants.intakeSpeed);
   }
 
