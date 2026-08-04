@@ -8,10 +8,9 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
-import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
@@ -21,22 +20,28 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 
 public class IntakeSubsystem extends SubsystemBase {
-  //intake 是把球吸進去的部位，pivot 是把整個 intake 抬降的部位
-  private final SparkMax intakeMotor = new SparkMax(IntakeConstants.intakeTurningMotorId, MotorType.kBrushless);
+  // intake 是把球吸進去的部位，pivot 是把整個 intake 抬降的部位
+  private final SparkMax intakeMotor = new SparkMax(
+      IntakeConstants.intakeTurningMotorId,
+      MotorType.kBrushless);
   private final VictorSPX pivotMotor = new VictorSPX(IntakeConstants.pivotMotorId);
 
   private final DutyCycleEncoder pivotEncoder = new DutyCycleEncoder(IntakeConstants.pivotEncoderId,
       IntakeConstants.pivotEncoderFullRange, IntakeConstants.pivotExpectedZero);
-  private final PIDController pivotFollowPIDController = new PIDController(IntakeConstants.pivotFollowKp,
-      IntakeConstants.pivotFollowKi, IntakeConstants.pivotFollowKd);
+  private final PIDController pivotFollowPidController = new PIDController(
+      IntakeConstants.pivotFollowKp,
+      IntakeConstants.pivotFollowKi,
+      IntakeConstants.pivotFollowKd);
 
+  // intakeSubsystem
   public IntakeSubsystem() {
     SparkMaxConfig intakeConfig = new SparkMaxConfig();
     intakeConfig.inverted(IntakeConstants.intakeInverted);
-    intakeMotor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    intakeMotor.configure(
+        intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     pivotMotor.setInverted(IntakeConstants.motorLeftInverted);
     pivotEncoder.setInverted(IntakeConstants.encoderLeftInverted);
-    pivotFollowPIDController.enableContinuousInput(0, IntakeConstants.pivotEncoderFullRange);
+    pivotFollowPidController.enableContinuousInput(0, IntakeConstants.pivotEncoderFullRange);
   }
 
   // Intake
@@ -53,7 +58,7 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   // Pivot
-  //沒 PID 的，自己手動調到適合的角度
+  // 沒 PID 的，自己手動調到適合的角度
   public void manualPivotDeploy() {
     pivotMotor.set(ControlMode.PercentOutput, IntakeConstants.pivotManualSpeed);
   }
@@ -67,7 +72,7 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   // Sync Pivot
-  //有 PID 的，會轉到固定角度
+  // 有 PID 的，會轉到固定角度
   public void pivotDeploy() {
     runPivotTarget(IntakeConstants.pivotDeployStopPosition, IntakeConstants.pivotMaxOutput);
   }
@@ -75,6 +80,7 @@ public class IntakeSubsystem extends SubsystemBase {
   public void pivotRetract() {
     runPivotTarget(IntakeConstants.pivotRetractStopPosition, IntakeConstants.pivotMaxOutput);
   }
+
   public void pivotRetake() {
     runPivotTarget(IntakeConstants.pivotRetakeStopPosition, IntakeConstants.pivotRetakeMaxOutput);
   }
@@ -110,7 +116,7 @@ public class IntakeSubsystem extends SubsystemBase {
     cmd.setName("manualDeployPivotCmd");
     return cmd;
   }
-  
+
   public Command manualRetractPivotCmd() {
     Command cmd = runEnd(this::manualPivotRetract, this::stopRotate);
     cmd.setName("manualRetractPivotCmd");
