@@ -4,9 +4,9 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.RelativeEncoder;  
-import com.revrobotics.spark.SparkMax;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -85,7 +85,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
   // Shooter
   private void setShooterVoltage(double targetVelocity) { // 請勿直接使用這個
-    double feedforwardVoltage = shooterFeedforward.calculate(targetVelocity); // 計算前饋電壓，需要去測看看會不會每顆馬達都不一樣的前饋電壓
+    double feedforwardVoltage = shooterFeedforward.calculate(targetVelocity);
+    // 計算前饋電壓，需要去測看看會不會每顆馬達都不一樣的前饋電壓
     shooterMotor1.setVoltage(feedforwardVoltage);
     complexMotor1.setVoltage(feedforwardVoltage);
   }
@@ -186,16 +187,16 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public enum AnglePreset {
-    /** 傳輸角度 (Max Angle) */
+    /** 傳輸角度 (Max Angle). */
     TRANS(() -> ShooterConstants.angleMotorMaxAngle),
 
-    /** 射球角度 (Shoot Angle) */
+    /** 射球角度 (Shoot Angle). */
     SHOOT(() -> ShooterConstants.angleMotorShootAngle),
 
-    /** 歸位角度 (Min Angle),過trench使用 */
+    /** 歸位角度 (Min Angle),過trench使用. */
     CLOSE(() -> ShooterConstants.angleMotorMinAngle),
 
-    /** 自動追蹤角度 (動態計算) */
+    /** 自動追蹤角度 (動態計算). */
     AUTO(ShooterSubsystem::getAutoAngle);
 
     private final DoubleSupplier angleSupplier;
