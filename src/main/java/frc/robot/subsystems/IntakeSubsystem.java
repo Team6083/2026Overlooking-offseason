@@ -33,7 +33,7 @@ public class IntakeSubsystem extends SubsystemBase {
       IntakeConstants.pivotFollowKi,
       IntakeConstants.pivotFollowKd);
 
-  public IntakeSubsystem() { // IntakeSubsystem
+  public IntakeSubsystem() {
     SparkMaxConfig intakeConfig = new SparkMaxConfig();
     intakeConfig.inverted(IntakeConstants.intakeInverted);
     intakeMotor.configure(
@@ -43,7 +43,8 @@ public class IntakeSubsystem extends SubsystemBase {
     pivotFollowPidController.enableContinuousInput(0, IntakeConstants.pivotEncoderFullRange);
   }
 
-  public void intake() { // Intake
+  // intake
+  public void intake() {
     intakeMotor.set(IntakeConstants.intakeSpeed);
   }
 
@@ -85,7 +86,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   private void runPivotTarget(double targetPosition, double maxOutput) {
     double currentPosition = pivotEncoder.get();
-    double pidOutput = pivotFollowPIDController.calculate(currentPosition, targetPosition);
+    double pidOutput = pivotFollowPidController.calculate(currentPosition, targetPosition);
     pidOutput = MathUtil.clamp(pidOutput, -1.0, maxOutput);
     pivotMotor.set(ControlMode.PercentOutput, pidOutput);
   }
@@ -168,6 +169,6 @@ public class IntakeSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("intake/pivotLeftVoltage", pivotMotor.getMotorOutputVoltage());
     SmartDashboard.putBoolean("intake/pivotLeftEncoderConnected", pivotEncoder.isConnected());
     SmartDashboard.putData("intake/subsystem", this);
-    SmartDashboard.putData(pivotFollowPIDController);
+    SmartDashboard.putData(pivotFollowPidController);
   }
 }
