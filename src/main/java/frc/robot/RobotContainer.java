@@ -12,14 +12,18 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.SwerveControlCmd;
+import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.ShooterSubsystem.AnglePreset;
 import frc.robot.subsystems.swervedrive.SwerveDrive;
 import frc.robot.subsystems.swervedrive.SwerveDriveFactory;
 
 public class RobotContainer {
   private final SwerveDrive swerveDrive;
+  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
   private final CommandXboxController mainController = new CommandXboxController(0);
   private Supplier<Boolean> shouldSprint = () -> mainController.leftBumper().getAsBoolean();
   private Supplier<Boolean> shouldLockPose = () -> mainController.a().getAsBoolean();
+
   public RobotContainer() {
     swerveDrive = SwerveDriveFactory.createSwerveDrive(
         SwerveDriveFactory.SwerveImplementation.WPILIB,
@@ -29,13 +33,20 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    swerveDrive.setDefaultCommand(new SwerveControlCmd(
-        swerveDrive, mainController, shouldSprint, shouldLockPose));
-    mainController.start().onTrue(Commands.runOnce(() -> {
-      swerveDrive.zeroGyro();
-      swerveDrive.resetPose(new Pose2d(swerveDrive.getPose2d().getTranslation(), Rotation2d.fromDegrees(0)));
-    }));
-  }
+    // swerveDrive.setDefaultCommand(new SwerveControlCmd(
+    // swerveDrive, mainController, shouldSprint, shouldLockPose));
+    // mainController.start().onTrue(Commands.runOnce(() -> {
+    // swerveDrive.zeroGyro();
+    // swerveDrive.resetPose(new Pose2d(swerveDrive.getPose2d().getTranslation(),
+    // Rotation2d.fromDegrees(0)));
+
+    // }));
+    mainController.a().whileTrue(shooterSubsystem.shootCmd());
+    mainController.b().onTrue(shooterSubsystem.adjustAngleCmd(AnglePreset.CLOSE));
+    mainController.x().onTrue(shooterSubsystem.adjustAngleCmd(AnglePreset.SHOOT));
+    mainController.y().onTrue(Commands.runOnce(shooterSubsystem::lockCurrentAngle, shooterSubsystem));
+}
+  
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");

@@ -5,14 +5,19 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -32,12 +37,15 @@ public class ShooterSubsystem extends SubsystemBase {
   private final SparkMax angleMotor = new SparkMax(ShooterConstants.angleMotorID, MotorType.kBrushless);
   private final ArmFeedforward armFeedforward = new ArmFeedforward(
       ShooterConstants.angleFeedforwardKs,
+      ShooterConstants.angleFeedforwardKg,
       ShooterConstants.angleFeedforwardKa,
       ShooterConstants.angleFeedforwardKv);
-  private final PIDController pivotFollowPIDController = new PIDController(
+  private final PIDController angleFollowPIDController = new PIDController(
       ShooterConstants.angleMotorKp,
       ShooterConstants.angleMotorKi,
       ShooterConstants.angleMotorKd);
+
+  private final SlewRateLimiter shooterRateLimiter = new SlewRateLimiter(800);
 
   private RelativeEncoder shooterEncoder;
   private RelativeEncoder complexEncoder;
@@ -45,6 +53,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private double shooterTargetVelocity = 0;
   private double targetAngle = 0;
+  private final SparkClosedLoopController angleController = angleMotor.getClosedLoopController();
 
   // shooter = 射球的馬達(Up)
   // complex = 介在傳輸和射球之間的馬達(Down)
@@ -56,6 +65,7 @@ public class ShooterSubsystem extends SubsystemBase {
     SparkMaxConfig shooterFollowerConfig = new SparkMaxConfig();
     shooterConfig.inverted(ShooterConstants.shooterUpMotorInverted);
     shooterFollowerConfig.follow(ShooterConstants.shooterMotorID1, false); // 馬達平行裝
+    shooterConfig.smartCurrentLimit(ShooterConstants.shooterCurrentLimit);
     shooterMotor1.configure(shooterConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     shooterMotor2.configure(shooterFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
@@ -63,28 +73,37 @@ public class ShooterSubsystem extends SubsystemBase {
     SparkMaxConfig complexFollowerConfig = new SparkMaxConfig();
     complexConfig.inverted(ShooterConstants.shooterDownMotorInverted);
     complexFollowerConfig.follow(ShooterConstants.complexMotorID1, false); // 馬達平行裝
+    complexConfig.smartCurrentLimit(ShooterConstants.complexCurrentLimit);
     complexMotor1.configure(complexConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     complexMotor2.configure(complexFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     // angle Motor limit
     SparkMaxConfig angleConfig = new SparkMaxConfig();
-
+    angleConfig.idleMode(IdleMode.kBrake);
+    angleConfig.smartCurrentLimit(ShooterConstants.angleFreeLimit, ShooterConstants.angleStallLimit);
+    angleConfig.encoder.positionConversionFactor(360.0 / 10);
     angleConfig.softLimit.forwardSoftLimitEnabled(true);
     angleConfig.softLimit.forwardSoftLimit(ShooterConstants.angleMotorMaxAngle);
 
-    angleConfig.softLimit.reverseSoftLimitEnabled(true);
+    angleConfig.softLimit.reverseSoftLimitEnabled(false);
     angleConfig.softLimit.reverseSoftLimit(ShooterConstants.angleMotorMinAngle);
 
-    angleMotor.configure(angleConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    angleConfig.inverted(ShooterConstants.angleInverted);
+    angleConfig.closedLoop.pid(
+        ShooterConstants.angleMotorKp,
+        ShooterConstants.angleMotorKi,
+        ShooterConstants.angleMotorKd);
 
     shooterEncoder = shooterMotor1.getEncoder();
     complexEncoder = complexMotor1.getEncoder();
     angleEncoder = angleMotor.getEncoder();
     angleEncoder.setPosition(ShooterConstants.angleExpectedZero);
+
+    setDefaultCommand(holdAngleCmd());
   }
 
   // Shooter
-  private void setShooterVoltage(double targetVelocity) { // 請勿直接使用這個
+  private void setShooterVoltage(double targetVelocity) {
     double feedforwardVoltage = shooterFeedforward.calculate(targetVelocity);
     // 計算前饋電壓，需要去測看看會不會每顆馬達都不一樣的前饋電壓
     shooterMotor1.setVoltage(feedforwardVoltage);
@@ -92,8 +111,8 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void shoot() {
-    this.shooterTargetVelocity = ShooterConstants.shooterNominalTarget;
-    setShooterVoltage(shooterTargetVelocity);
+    double target = shooterRateLimiter.calculate(ShooterConstants.shooterNominalTarget);
+    setShooterVoltage(target);
   }
 
   public void stopShooter() {
@@ -133,39 +152,43 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   // Angle Motor
-  public void angleMotor(double targetAngleSpeed) {
-    this.targetAngle = targetAngleSpeed;
+  public void angleMotor(double targetAngle) {
+    this.targetAngle = targetAngle;
     angleMotor.setVoltage(targetAngle);
   }
 
   public void stopAngleMotor() {
     this.targetAngle = 0;
-    angleMotor.setVoltage(0);
+    angleMotor(0);
+  }
+
+  public void lockCurrentAngle() {
+    this.targetAngle = angleEncoder.getPosition();
   }
 
   // Angle Motor Sync
   public void angleSync(double targetAngle) {
     double currentAngle = angleEncoder.getPosition();
-    double pidOutput = pivotFollowPIDController.calculate(currentAngle, targetAngle);
+    double pidOutput = angleFollowPIDController.calculate(currentAngle, targetAngle);
     // WPILib 的 ArmFeedforward.calculate 預設是接收 弧度 (Radians)
     double ffOutput = armFeedforward.calculate(
         Math.toRadians(currentAngle),
         0);
-    angleMotor.setVoltage(pidOutput + ffOutput);
+    angleMotor(pidOutput + ffOutput);
   }
 
   // Angle commands
-  public Command angleMotorCmd(double targetAngle) {
-    Command cmd = runEnd(() -> angleMotor(targetAngle), this::stopAngleMotor);
-    cmd.setName("angleMotor+" + targetAngle + "Cmd");
+  public Command angleMotorCmd(double setAngleVoltage) {
+    Command cmd = runEnd(() -> angleMotor(setAngleVoltage), this::stopAngleMotor);
+    cmd.setName("angleMotor+" + setAngleVoltage + "Cmd");
     return cmd;
   }
 
   // Angle Sync command
   public Command angleSyncCmd(double targetAngle) {
-    Command cmd = runEnd(() -> angleSync(targetAngle), this::stopAngleMotor);
-    cmd.setName("angleSync+" + targetAngle + "Cmd");
-    return cmd;
+    return run(() -> angleSync(targetAngle))
+        .finallyDo(() -> lockCurrentAngle())
+        .withName("angleSync+" + targetAngle + "Cmd");
   }
 
   public Command holdAngleCmd() {
@@ -223,7 +246,8 @@ public class ShooterSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("shooter/complexRPM", getComplexVelocity());
     SmartDashboard.putNumber("shooter/angleDegree", getAngleDegree());
     SmartDashboard.putNumber("shooter/targetRPM", shooterTargetVelocity);
-    SmartDashboard.putNumber("shooter/angleTarget", targetAngle);
+    SmartDashboard.putNumber("shooter/angleTargetSet", targetAngle);
+    SmartDashboard.putNumber("shooter/angleTarget", angleMotor.getOutputCurrent());
     SmartDashboard.putData("shooter/subsystem", this);
   }
 }
