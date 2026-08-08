@@ -60,9 +60,8 @@ public class Constants {
           24, 25, 13, -0.242676, true, false, "BackRight"));
 
   public static final class IntakeConstants {
-    public static final int intakeTurningMotorId = 34;
-    public static final int pivotMotorId = 30;
-    public static final int pivotEncoderId = 3;
+    public static final int intakeMotorId = 34;
+    public static final int pivotMotorId = 35;
 
     public static final double pivotExpectedZero = -271;
 
@@ -75,6 +74,7 @@ public class Constants {
     public static final double pivotRetakeMaxOutput = 0.7;
 
     public static final boolean intakeInverted = true;
+    public static final boolean pivotInverted = false;
 
     public static final double intakeSpeed = 0.65;
     public static final double reverseIntakeSpeed = -0.65;

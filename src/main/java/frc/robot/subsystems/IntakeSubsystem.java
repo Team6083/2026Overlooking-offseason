@@ -4,16 +4,14 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.revrobotics.PersistMode;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -22,12 +20,13 @@ import frc.robot.Constants.IntakeConstants;
 public class IntakeSubsystem extends SubsystemBase {
   // intake 是把球吸進去的部位，pivot 是把整個 intake 抬降的部位
   private final SparkMax intakeMotor = new SparkMax(
-      IntakeConstants.intakeTurningMotorId,
+      IntakeConstants.intakeMotorId,
       MotorType.kBrushless);
-  private final VictorSPX pivotMotor = new VictorSPX(IntakeConstants.pivotMotorId);
+  private final SparkMax pivotMotor = new SparkMax(
+      IntakeConstants.pivotMotorId,
+      MotorType.kBrushless);
 
-  private final DutyCycleEncoder pivotEncoder = new DutyCycleEncoder(IntakeConstants.pivotEncoderId,
-      IntakeConstants.pivotEncoderFullRange, IntakeConstants.pivotExpectedZero);
+  private static RelativeEncoder pivotEncoder;
   private final PIDController pivotFollowPidController = new PIDController(
       IntakeConstants.pivotFollowKp,
       IntakeConstants.pivotFollowKi,
@@ -38,8 +37,9 @@ public class IntakeSubsystem extends SubsystemBase {
     intakeConfig.inverted(IntakeConstants.intakeInverted);
     intakeMotor.configure(
         intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    pivotMotor.setInverted(IntakeConstants.motorLeftInverted);
-    pivotEncoder.setInverted(IntakeConstants.encoderLeftInverted);
+    SparkMaxConfig pivotConfig = new SparkMaxConfig();
+    pivotConfig.inverted(IntakeConstants.pivotInverted);
+    pivotMotor.configure(pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     pivotFollowPidController.enableContinuousInput(0, IntakeConstants.pivotEncoderFullRange);
   }
 
@@ -59,15 +59,15 @@ public class IntakeSubsystem extends SubsystemBase {
   // Pivot
   // 沒 PID 的，自己手動調到適合的角度
   public void manualPivotDeploy() {
-    pivotMotor.set(ControlMode.PercentOutput, IntakeConstants.pivotManualSpeed);
+    pivotMotor.set(IntakeConstants.pivotManualSpeed);
   }
 
   public void manualPivotRetract() {
-    pivotMotor.set(ControlMode.PercentOutput, -IntakeConstants.pivotManualSpeed);
+    pivotMotor.set(-IntakeConstants.pivotManualSpeed);
   }
 
   public void stopRotate() {
-    pivotMotor.set(ControlMode.PercentOutput, 0);
+    pivotMotor.set(0);
   }
 
   // Sync Pivot
@@ -85,15 +85,15 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   private void runPivotTarget(double targetPosition, double maxOutput) {
-    double currentPosition = pivotEncoder.get();
+    double currentPosition = pivotEncoder.getPosition();
     double pidOutput = pivotFollowPidController.calculate(currentPosition, targetPosition);
     pidOutput = MathUtil.clamp(pidOutput, -1.0, maxOutput);
-    pivotMotor.set(ControlMode.PercentOutput, pidOutput);
+    pivotMotor.set(pidOutput);
   }
 
   // Getters
   public double getPivotPosition() {
-    return pivotEncoder.get();
+    return pivotEncoder.getPosition();
   }
 
   // intake
@@ -166,8 +166,7 @@ public class IntakeSubsystem extends SubsystemBase {
   public void periodic() {
     SmartDashboard.putNumber("intake/motorVoltage", intakeMotor.getBusVoltage());
     SmartDashboard.putNumber("intake/pivotPositionDeg", getPivotPosition());
-    SmartDashboard.putNumber("intake/pivotLeftVoltage", pivotMotor.getMotorOutputVoltage());
-    SmartDashboard.putBoolean("intake/pivotLeftEncoderConnected", pivotEncoder.isConnected());
+    SmartDashboard.putNumber("intake/pivotVoltage", pivotMotor.getBusVoltage());
     SmartDashboard.putData("intake/subsystem", this);
     SmartDashboard.putData(pivotFollowPidController);
   }
