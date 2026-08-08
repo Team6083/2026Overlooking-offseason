@@ -51,7 +51,7 @@ public class Constants {
           22, 20, 14, 0.302979, true, true, "BackRight"));
 
   public static final class FeederConstants {
-    public static final int feederMotorId = 0;
+    public static final int feederMotorId = 32;
     public static final boolean feederMotorInverted = false;
     public static final double feederMotorIn = 0.5;
     public static final double feederMotorOut = -0.5;
