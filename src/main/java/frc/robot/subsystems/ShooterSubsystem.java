@@ -34,26 +34,12 @@ public class ShooterSubsystem extends SubsystemBase {
       ShooterConstants.shooterFeedforwardKv,
       ShooterConstants.shooterFeedforwardKa);
 
-  private final SparkMax angleMotor = new SparkMax(ShooterConstants.angleMotorID, MotorType.kBrushless);
-  private final ArmFeedforward armFeedforward = new ArmFeedforward(
-      ShooterConstants.angleFeedforwardKs,
-      ShooterConstants.angleFeedforwardKg,
-      ShooterConstants.angleFeedforwardKa,
-      ShooterConstants.angleFeedforwardKv);
-  private final PIDController angleFollowPIDController = new PIDController(
-      ShooterConstants.angleMotorKp,
-      ShooterConstants.angleMotorKi,
-      ShooterConstants.angleMotorKd);
-
   private final SlewRateLimiter shooterRateLimiter = new SlewRateLimiter(800);
 
   private RelativeEncoder shooterEncoder;
   private RelativeEncoder complexEncoder;
-  private RelativeEncoder angleEncoder = angleMotor.getEncoder();
 
   private double shooterTargetVelocity = 0;
-  private double targetAngle = 0;
-  private final SparkClosedLoopController angleController = angleMotor.getClosedLoopController();
 
   // shooter = 射球的馬達(Up)
   // complex = 介在傳輸和射球之間的馬達(Down)
@@ -76,30 +62,6 @@ public class ShooterSubsystem extends SubsystemBase {
     complexConfig.smartCurrentLimit(ShooterConstants.complexCurrentLimit);
     complexMotor1.configure(complexConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     complexMotor2.configure(complexFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-    // angle Motor limit
-    SparkMaxConfig angleConfig = new SparkMaxConfig();
-    angleConfig.idleMode(IdleMode.kBrake);
-    angleConfig.smartCurrentLimit(ShooterConstants.angleFreeLimit, ShooterConstants.angleStallLimit);
-    angleConfig.encoder.positionConversionFactor(360.0 / 10);
-    angleConfig.softLimit.forwardSoftLimitEnabled(true);
-    angleConfig.softLimit.forwardSoftLimit(ShooterConstants.angleMotorMaxAngle);
-
-    angleConfig.softLimit.reverseSoftLimitEnabled(false);
-    angleConfig.softLimit.reverseSoftLimit(ShooterConstants.angleMotorMinAngle);
-
-    angleConfig.inverted(ShooterConstants.angleInverted);
-    angleConfig.closedLoop.pid(
-        ShooterConstants.angleMotorKp,
-        ShooterConstants.angleMotorKi,
-        ShooterConstants.angleMotorKd);
-
-    shooterEncoder = shooterMotor1.getEncoder();
-    complexEncoder = complexMotor1.getEncoder();
-    angleEncoder = angleMotor.getEncoder();
-    angleEncoder.setPosition(ShooterConstants.angleExpectedZero);
-
-    setDefaultCommand(holdAngleCmd());
   }
 
   // Shooter
@@ -130,10 +92,6 @@ public class ShooterSubsystem extends SubsystemBase {
     return complexEncoder.getVelocity();
   }
 
-  private double getAngleDegree() {
-    return angleEncoder.getPosition();
-  }
-
   public boolean isShooterAtSpeed() {
     return getShooterVelocity() >= shooterTargetVelocity;
   }
@@ -151,103 +109,13 @@ public class ShooterSubsystem extends SubsystemBase {
     return cmd;
   }
 
-  // Angle Motor
-  public void angleMotor(double targetAngle) {
-    this.targetAngle = targetAngle;
-    angleMotor.setVoltage(targetAngle);
-  }
-
-  public void stopAngleMotor() {
-    this.targetAngle = 0;
-    angleMotor(0);
-  }
-
-  public void lockCurrentAngle() {
-    this.targetAngle = angleEncoder.getPosition();
-  }
-
-  // Angle Motor Sync
-  public void angleSync(double targetAngle) {
-    double currentAngle = angleEncoder.getPosition();
-    double pidOutput = angleFollowPIDController.calculate(currentAngle, targetAngle);
-    // WPILib 的 ArmFeedforward.calculate 預設是接收 弧度 (Radians)
-    double ffOutput = armFeedforward.calculate(
-        Math.toRadians(currentAngle),
-        0);
-    angleMotor(pidOutput + ffOutput);
-  }
-
-  // Angle commands
-  public Command angleMotorCmd(double setAngleVoltage) {
-    Command cmd = runEnd(() -> angleMotor(setAngleVoltage), this::stopAngleMotor);
-    cmd.setName("angleMotor+" + setAngleVoltage + "Cmd");
-    return cmd;
-  }
-
-  // Angle Sync command
-  public Command angleSyncCmd(double targetAngle) {
-    return run(() -> angleSync(targetAngle))
-        .finallyDo(() -> lockCurrentAngle())
-        .withName("angleSync+" + targetAngle + "Cmd");
-  }
-
-  public Command holdAngleCmd() {
-    return run(() -> angleSync(this.targetAngle))
-        .withName("holdAngleCmd");
-  }
-
-  public Command adjustAngleCmd(AnglePreset preset) {
-    double targetAngle = preset.getAngle();
-    this.targetAngle = targetAngle;
-    Command cmd = run(() -> angleSync(targetAngle))
-        .until(() -> Math.abs(angleEncoder.getPosition() - targetAngle) <= ShooterConstants.angleTolerance);
-    cmd.setName("angleLocatedTo" + preset.name() + "Cmd");
-    return cmd;
-  }
-
-  public static double getAutoAngle() {
-    return ShooterConstants.angleMotorShootAngle;
-  }
-
-  public enum AnglePreset {
-    /** 傳輸角度 (Max Angle). */
-    TRANS(() -> ShooterConstants.angleMotorMaxAngle),
-
-    /** 射球角度 (Shoot Angle). */
-    SHOOT(() -> ShooterConstants.angleMotorShootAngle),
-
-    /** 歸位角度 (Min Angle),過trench使用. */
-    CLOSE(() -> ShooterConstants.angleMotorMinAngle),
-
-    /** 自動追蹤角度 (動態計算). */
-    AUTO(ShooterSubsystem::getAutoAngle);
-
-    private final DoubleSupplier angleSupplier;
-
-    AnglePreset(DoubleSupplier angleSupplier) {
-      this.angleSupplier = angleSupplier;
-    }
-
-    // 取得當前即時的角度值
-    public double getAngle() {
-      return angleSupplier.getAsDouble();
-    }
-  }
-
-  // Trans 100%
-  // Shoot 30%
-  // Auto ??%
-  // Close 00%
 
   @Override
   public void periodic() {
     SmartDashboard.putBoolean("shooter/shooterAtSpeed", isShooterAtSpeed());
     SmartDashboard.putNumber("shooter/shooterRPM", getShooterVelocity());
     SmartDashboard.putNumber("shooter/complexRPM", getComplexVelocity());
-    SmartDashboard.putNumber("shooter/angleDegree", getAngleDegree());
     SmartDashboard.putNumber("shooter/targetRPM", shooterTargetVelocity);
-    SmartDashboard.putNumber("shooter/angleTargetSet", targetAngle);
-    SmartDashboard.putNumber("shooter/angleTarget", angleMotor.getOutputCurrent());
     SmartDashboard.putData("shooter/subsystem", this);
   }
 }

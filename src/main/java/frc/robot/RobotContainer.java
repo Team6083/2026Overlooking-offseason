@@ -12,14 +12,16 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.SwerveControlCmd;
+import frc.robot.subsystems.AngleSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.ShooterSubsystem.AnglePreset;
+import frc.robot.subsystems.AngleSubsystem.AnglePreset;
 import frc.robot.subsystems.swervedrive.SwerveDrive;
 import frc.robot.subsystems.swervedrive.SwerveDriveFactory;
 
 public class RobotContainer {
   private final SwerveDrive swerveDrive;
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
+  private final AngleSubsystem angleSubsystem = new AngleSubsystem();
   private final CommandXboxController mainController = new CommandXboxController(0);
   private Supplier<Boolean> shouldSprint = () -> mainController.leftBumper().getAsBoolean();
   private Supplier<Boolean> shouldLockPose = () -> mainController.a().getAsBoolean();
@@ -42,9 +44,9 @@ public class RobotContainer {
 
     // }));
     mainController.a().whileTrue(shooterSubsystem.shootCmd());
-    mainController.b().onTrue(shooterSubsystem.adjustAngleCmd(AnglePreset.CLOSE));
-    mainController.x().onTrue(shooterSubsystem.adjustAngleCmd(AnglePreset.SHOOT));
-    mainController.y().onTrue(Commands.runOnce(shooterSubsystem::lockCurrentAngle, shooterSubsystem));
+    mainController.b().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.CLOSE));
+    mainController.x().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.SHOOT));
+    mainController.y().onTrue(Commands.runOnce(angleSubsystem::lockCurrentAngle, angleSubsystem));
 }
   
 

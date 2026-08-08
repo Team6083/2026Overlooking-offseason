@@ -67,39 +67,41 @@ public class Constants {
         public static final int complexMotorID1 = 30;
         public static final int complexMotorID2 = 31;
 
-        public static final int angleMotorID = 33;
-
         public static final boolean shooterUpMotorInverted = true;
         public static final boolean shooterDownMotorInverted = false;
-
-        public static final boolean angleInverted = true;
 
         public static final double shooterFeedforwardKs = 0.01; // 起始電壓
         public static final double shooterFeedforwardKv = 0.00207; // 速度電壓
         public static final double shooterFeedforwardKa = 0; // 加速度電壓
+
+        public static final int shooterCurrentLimit = 40; // NEO 550 用 20，NEO/Vortex 常見 40~60
+        public static final int complexCurrentLimit = 40;
+
+        public static final double shooterNominalTarget = 2000; // 上方轉速
+        public static final double complexNominalTarget = 2000; // 下方轉速
+
+        public static final double shooterLowGearTarget = 1500;
+    }
+
+    public static final class AngleConstants {
+        public static final int angleMotorID = 33;
+        public static final boolean angleInverted = true;
+
+        public static final int angleFreeLimit = 30; // 角度機構通常不需要太大電流
+        public static final int angleStallLimit = 20;
 
         public static final double angleFeedforwardKs = 0.01; // 起始電壓
         public static final double angleFeedforwardKv = 0.00407; // 速度電壓
         public static final double angleFeedforwardKa = 0.05; // 加速度電壓
         public static final double angleFeedforwardKg = 0.8; // 重力電壓
 
-        public static final int shooterCurrentLimit = 40; // NEO 550 用 20，NEO/Vortex 常見 40~60
-        public static final int complexCurrentLimit = 40;
-        public static final int angleFreeLimit = 30; // 角度機構通常不需要太大電流
-        public static final int angleStallLimit = 20;
-
-        public static final double shooterNominalTarget = 2000; // 上方轉速
-        public static final double complexNominalTarget = 2000; // 下方轉速
-
-        public static final double shooterLowGearTarget = 1500;
+        public static final double angleMotorMaxAngle = 50; // 最大角度
+        public static final double angleMotorShootAngle = 30; // 初始角度(待測)
+        public static final double angleMotorMinAngle = 0; // 最小角度
 
         public static final double angleMotorKp = 0.12;
         public static final double angleMotorKi = 0;
         public static final double angleMotorKd = 0;
-
-        public static final double angleMotorMaxAngle = 50; // 最大角度
-        public static final double angleMotorShootAngle = 30; // 初始角度(待測)
-        public static final double angleMotorMinAngle = 0; // 最小角度
 
         public static final double angleTolerance = 0.2;
 
