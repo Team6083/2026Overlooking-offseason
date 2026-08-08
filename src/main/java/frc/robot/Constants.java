@@ -34,21 +34,23 @@ public class Constants {
     public static final Distance kWheelRadius = Inches.of(2);
     public static final LinearVelocity kMaxModuleSpeed = MetersPerSecond.of(4);
   }
+
   public static final class SwerveControlConstants {
     public static final double kFastMagnification = 0.6;
     public static final double kSlowMagnification = 0.3;
     public static final double kFastRotMagnification = 0.8;
     public static final double kSlowRotMagnification = 0.4;
   }
+
   public static final DriveBaseConstant TEST_CONFIG = new DriveBaseConstant(
       new SwerveModuleConstant(
-          20, 21, 12, 0.348145, true, false, "FrontLeft"),
+          23, 22, 11, 0.350342, true, true, "FrontLeft"),
       new SwerveModuleConstant(
-          22, 23, 14, 0.482666, true, false, "FrontRight"),
+          20, 21, 13, 0.319336, true, true, "FrontRight"),
       new SwerveModuleConstant(
-          26, 27, 11, 0.403809, true, false, "BackLeft"),
+          27, 26, 12, 0.431641, true, true, "BackLeft"),
       new SwerveModuleConstant(
-          24, 25, 13, -0.242676, true, false, "BackRight"));
+          24, 25, 14, -0.237305, true, true, "BackRight"));
   public static final DriveBaseConstant COMPETITION_CONFIG = new DriveBaseConstant(
       new SwerveModuleConstant(
           20, 21, 12, 0.348145, true, false, "FrontLeft"),
