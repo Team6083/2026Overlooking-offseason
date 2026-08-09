@@ -54,7 +54,8 @@ public class Constants {
       new SwerveModuleConstant(
           26, 27, 11, 0.403809, true, false, "BackLeft"),
       new SwerveModuleConstant(
-          24, 25, 13, -0.242676, true, false, "BackRight"));
+          22, 20, 14, 0.302979, true, true, "BackRight"));
+
   public static final DriveBaseConstant COMPETITION_CONFIG = new DriveBaseConstant(
       new SwerveModuleConstant(
           20, 21, 12, 0.348145, true, false, "FrontLeft"),
@@ -93,5 +94,10 @@ public class Constants {
     public static final double baseTranslationStd = 0.1;
 
     public static final double untrustedStd = 9999.0;
+  public final class FeederConstants {
+    public static final int feederMotorId = 32;
+    public static final boolean feederMotorInverted = false;
+    public static final double feederMotorIn = 0.5;
+    public static final double feederMotorOut = -0.5;
   }
 }
