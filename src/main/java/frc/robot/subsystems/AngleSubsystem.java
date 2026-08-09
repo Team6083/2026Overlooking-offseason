@@ -83,6 +83,7 @@ public class AngleSubsystem extends SubsystemBase {
   // Angle Motor Sync
   public void angleSync(double targetAngle) {
     double currentAngle = angleEncoder.getPosition();
+    this.targetAngle = targetAngle;
     double pidOutput = angleFollowPIDController.calculate(currentAngle, targetAngle);
     // WPILib 的 ArmFeedforward.calculate 預設是接收 弧度 (Radians)
     double ffOutput = armFeedforward.calculate(
@@ -112,7 +113,6 @@ public class AngleSubsystem extends SubsystemBase {
 
   public Command adjustAngleCmd(AnglePreset preset) {
     double targetAngle = preset.getAngle();
-    this.targetAngle = targetAngle;
     Command cmd = run(() -> angleSync(targetAngle))
         .until(() -> Math.abs(angleEncoder.getPosition() - targetAngle) <= AngleConstants.angleTolerance);
     cmd.setName("angleLocatedTo" + preset.name() + "Cmd");

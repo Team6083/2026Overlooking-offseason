@@ -30,7 +30,6 @@ public class RobotContainer {
         SwerveDriveFactory.SwerveImplementation.WPILIB,
         SwerveDriveFactory.RobotVariant.TEST);
     configureBindings();
-
   }
 
   private void configureBindings() {
@@ -40,12 +39,11 @@ public class RobotContainer {
     // swerveDrive.zeroGyro();
     // swerveDrive.resetPose(new Pose2d(swerveDrive.getPose2d().getTranslation(),
     // Rotation2d.fromDegrees(0)));
-
     // }));
-    mainController.a().whileTrue(shooterSubsystem.shootCmd());
-    mainController.b().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.TRANS));
-    mainController.x().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.SHOOT));
-    mainController.y().onTrue(Commands.runOnce(angleSubsystem::lockCurrentAngle, angleSubsystem));
+    mainController.a().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.TRANS));
+    mainController.b().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.MAX));
+    mainController.x().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.CLOSE));
+    mainController.y().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.SHOOT));
   }
 
   public Command getAutonomousCommand() {
