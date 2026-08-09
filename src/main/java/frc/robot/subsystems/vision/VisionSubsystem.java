@@ -81,12 +81,9 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   private boolean shouldReject(MegatagPoseEstimate estimate) {
-    if (estimate.quality() < VisionConstant.minQualityThreshold)
+    if (estimate.quality() < VisionConstant.minQualityThreshold){
       return true;
-
-    double distance = estimate.fieldToRobot()
-        .getTranslation()
-        .getDistance(poseSupplier.get().getTranslation());
+    }
       return false;
   }
 
