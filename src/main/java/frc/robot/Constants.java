@@ -96,7 +96,14 @@ public class Constants {
     public static final double untrustedStd = 9999.0;
   }
 
-  public static final class FeederConstants {
+  public static final class TransportConstants {
+    public static final int transportMotorID = 36;
+    public static final double transportMoterIn = 0.5;
+    public static final double transportMoterOut = -0.5;
+    public static final boolean transportMotorInverted = true;
+  }
+
+  public final class FeederConstants {
     public static final int feederMotorId = 32;
     public static final boolean feederMotorInverted = false;
     public static final double feederMotorIn = 0.5;
