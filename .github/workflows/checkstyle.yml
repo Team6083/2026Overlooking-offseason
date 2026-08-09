@@ -1,0 +1,21 @@
+name: Checkstyle
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  checkstyle:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: dbelyaev/action-checkstyle@master
+      with:
+        checkstyle_config: checkstyle.xml
+        filter_mode: diff_context
+        level: error
