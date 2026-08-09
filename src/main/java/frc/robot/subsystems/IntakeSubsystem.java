@@ -5,7 +5,6 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.PersistMode;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
@@ -39,6 +38,7 @@ public class IntakeSubsystem extends SubsystemBase {
     pivotConfig.inverted(IntakeConstants.pivotInverted);
     pivotMotor.configure(pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     pivotFollowPidController.enableContinuousInput(0, IntakeConstants.pivotEncoderFullRange);
+    pivotMotor.getEncoder().setPosition(IntakeConstants.pivotExpectedZero);
   }
 
   // intake
@@ -91,7 +91,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   // Getters
   public double getPivotPosition() {
-    return pivotMotor.getEncoder().getPosition();
+    return pivotMotor.getEncoder().getPosition() * 360.0;
   }
 
   // intake
