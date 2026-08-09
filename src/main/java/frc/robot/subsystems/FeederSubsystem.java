@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.SparkMax;
@@ -21,6 +23,7 @@ public class FeederSubsystem extends SubsystemBase {
   public FeederSubsystem() {
   SparkMaxConfig feederMotorConfig = new SparkMaxConfig();
   feederMotorConfig.inverted(FeederConstants.feederMotorInverted);
+  feederMotor.configure(feederMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   public void feedIn() {
