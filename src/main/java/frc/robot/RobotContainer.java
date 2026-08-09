@@ -44,7 +44,7 @@ public class RobotContainer {
 
     // }));
     mainController.a().whileTrue(shooterSubsystem.shootCmd());
-    mainController.b().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.CLOSE));
+    mainController.b().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.TRANS));
     mainController.x().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.SHOOT));
     mainController.y().onTrue(Commands.runOnce(angleSubsystem::lockCurrentAngle, angleSubsystem));
 }

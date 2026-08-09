@@ -43,21 +43,20 @@ public class AngleSubsystem extends SubsystemBase {
   public AngleSubsystem() {
     SparkMaxConfig angleConfig = new SparkMaxConfig();
     angleConfig.idleMode(IdleMode.kBrake);
-    angleConfig.smartCurrentLimit(AngleConstants.angleFreeLimit, AngleConstants.angleStallLimit);
-    angleConfig.encoder.positionConversionFactor(360.0 / 10);
+    angleConfig.encoder.positionConversionFactor(45);
     angleConfig.softLimit.forwardSoftLimitEnabled(true);
     angleConfig.softLimit.forwardSoftLimit(AngleConstants.angleMotorMaxAngle);
 
-    angleConfig.softLimit.reverseSoftLimitEnabled(false);
+    angleConfig.softLimit.reverseSoftLimitEnabled(true);
     angleConfig.softLimit.reverseSoftLimit(AngleConstants.angleMotorMinAngle);
-    
-    angleMotor.configure(angleConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     angleConfig.inverted(AngleConstants.angleInverted);
     angleConfig.closedLoop.pid(
         AngleConstants.angleMotorKp,
         AngleConstants.angleMotorKi,
         AngleConstants.angleMotorKd);
+
+    angleMotor.configure(angleConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     angleEncoder = angleMotor.getEncoder();
     angleEncoder.setPosition(AngleConstants.angleExpectedZero);
@@ -117,8 +116,7 @@ public class AngleSubsystem extends SubsystemBase {
     double targetAngle = preset.getAngle();
     this.targetAngle = targetAngle;
     Command cmd = run(() -> angleSync(targetAngle))
-        .until(() -> Math.abs(angleEncoder.getPosition() - targetAngle) <= AngleConstants.angleTolerance)
-        .finallyDo(() -> this.targetAngle = targetAngle); 
+        .until(() -> Math.abs(angleEncoder.getPosition() - targetAngle) <= AngleConstants.angleTolerance);
     cmd.setName("angleLocatedTo" + preset.name() + "Cmd");
     return cmd;
   }
@@ -128,8 +126,9 @@ public class AngleSubsystem extends SubsystemBase {
   }
 
   public enum AnglePreset {
+    MAX(() -> AngleConstants.angleMotorMaxAngle),
     /** 傳輸角度 (Max Angle). */
-    TRANS(() -> AngleConstants.angleMotorMaxAngle),
+    TRANS(() -> AngleConstants.angleMotorTransAngle),
 
     /** 射球角度 (Shoot Angle). */
     SHOOT(() -> AngleConstants.angleMotorShootAngle),
