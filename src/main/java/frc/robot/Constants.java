@@ -94,7 +94,9 @@ public class Constants {
     public static final double baseTranslationStd = 0.1;
 
     public static final double untrustedStd = 9999.0;
-  public final class FeederConstants {
+  }
+
+  public static final class FeederConstants {
     public static final int feederMotorId = 32;
     public static final boolean feederMotorInverted = false;
     public static final double feederMotorIn = 0.5;
