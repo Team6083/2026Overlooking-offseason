@@ -32,9 +32,8 @@ public class RobotContainer {
     swerveDrive = SwerveDriveFactory.createSwerveDrive(
         SwerveDriveFactory.SwerveImplementation.WPILIB,
         SwerveDriveFactory.RobotVariant.TEST);
+    configureBindings();
   }
-
-
 
   private void configureBindings() {
     swerveDrive.setDefaultCommand(new SwerveControlCmd(
