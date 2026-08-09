@@ -25,8 +25,6 @@ public class IntakeSubsystem extends SubsystemBase {
   private final SparkMax pivotMotor = new SparkMax(
       IntakeConstants.pivotMotorId,
       MotorType.kBrushless);
-
-  private static RelativeEncoder pivotEncoder;
   private final PIDController pivotFollowPidController = new PIDController(
       IntakeConstants.pivotFollowKp,
       IntakeConstants.pivotFollowKi,
@@ -85,7 +83,7 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   private void runPivotTarget(double targetPosition, double maxOutput) {
-    double currentPosition = pivotEncoder.getPosition();
+    double currentPosition = pivotMotor.getEncoder().getPosition();
     double pidOutput = pivotFollowPidController.calculate(currentPosition, targetPosition);
     pidOutput = MathUtil.clamp(pidOutput, -1.0, maxOutput);
     pivotMotor.set(pidOutput);
@@ -93,7 +91,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   // Getters
   public double getPivotPosition() {
-    return pivotEncoder.getPosition();
+    return pivotMotor.getEncoder().getPosition();
   }
 
   // intake
@@ -164,9 +162,9 @@ public class IntakeSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("intake/motorVoltage", intakeMotor.getBusVoltage());
+    SmartDashboard.putNumber("intake/intakeVoltage", intakeMotor.getBusVoltage() * intakeMotor.getAppliedOutput());
     SmartDashboard.putNumber("intake/pivotPositionDeg", getPivotPosition());
-    SmartDashboard.putNumber("intake/pivotVoltage", pivotMotor.getBusVoltage());
+    SmartDashboard.putNumber("intake/pivotVoltage", pivotMotor.getBusVoltage() * pivotMotor.getAppliedOutput());
     SmartDashboard.putData("intake/subsystem", this);
     SmartDashboard.putData(pivotFollowPidController);
   }
