@@ -62,6 +62,9 @@ public class ShooterSubsystem extends SubsystemBase {
     complexConfig.smartCurrentLimit(ShooterConstants.complexCurrentLimit);
     complexMotor1.configure(complexConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     complexMotor2.configure(complexFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+    shooterEncoder = shooterMotor1.getEncoder();
+    complexEncoder = complexMotor1.getEncoder();
   }
 
   // Shooter
@@ -108,7 +111,6 @@ public class ShooterSubsystem extends SubsystemBase {
     cmd.setName("shoot+" + targetVelocity + "Cmd");
     return cmd;
   }
-
 
   @Override
   public void periodic() {

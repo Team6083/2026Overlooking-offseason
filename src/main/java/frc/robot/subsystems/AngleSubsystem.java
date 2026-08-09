@@ -7,6 +7,8 @@ package frc.robot.subsystems;
 import java.util.function.DoubleSupplier;
 
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
@@ -48,6 +50,8 @@ public class AngleSubsystem extends SubsystemBase {
 
     angleConfig.softLimit.reverseSoftLimitEnabled(false);
     angleConfig.softLimit.reverseSoftLimit(AngleConstants.angleMotorMinAngle);
+    
+    angleMotor.configure(angleConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     angleConfig.inverted(AngleConstants.angleInverted);
     angleConfig.closedLoop.pid(
