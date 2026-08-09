@@ -15,10 +15,12 @@ public record MegatagPoseEstimate(
     implements StructSerializable {
 
   public MegatagPoseEstimate {
-    if (fieldToRobot == null)
+    if (fieldToRobot == null) {
       fieldToRobot = new Pose2d();
-    if (fiducialIds == null)
+    }
+    if (fiducialIds == null) {
       fiducialIds = new int[0];
+    }
   }
 
   public boolean isMultiTag() {
