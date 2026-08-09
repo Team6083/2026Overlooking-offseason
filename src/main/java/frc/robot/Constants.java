@@ -112,6 +112,7 @@ public class Constants {
     public static final double kToleranceDeg = 1.0;
     public static final double kMaxRotOutput = 1.5;
     public static final double kAlignDebounceSec = 0.1;
+    public static final double kDriverRotDeadband = 0.1;
 
     public static final double kBallSpeedMps = 12.0;
   }

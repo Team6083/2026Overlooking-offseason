@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.AimAssistConstant;
 import frc.robot.Constants.FieldConstant;
 import frc.robot.subsystems.swervedrive.SwerveDrive;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 public class AimAssistCmd extends SwerveControlCmd {
@@ -25,11 +26,18 @@ public class AimAssistCmd extends SwerveControlCmd {
   private final PIDController yawPid;
   private final Debouncer alignedDebouncer =
       new Debouncer(AimAssistConstant.kAlignDebounceSec, Debouncer.DebounceType.kRising);
+  private final BooleanSupplier poseTrusted;
   private boolean aligned;
 
   public AimAssistCmd(SwerveDrive swerveDrive, CommandXboxController mainController,
       Supplier<Boolean> shouldSprint, Supplier<Boolean> shouldLock) {
+    this(swerveDrive, mainController, shouldSprint, shouldLock, null);
+  }
+
+  public AimAssistCmd(SwerveDrive swerveDrive, CommandXboxController mainController,
+      Supplier<Boolean> shouldSprint, Supplier<Boolean> shouldLock, BooleanSupplier poseTrusted) {
     super(swerveDrive, mainController, shouldSprint, shouldLock);
+    this.poseTrusted = poseTrusted;
 
     yawPid = new PIDController(AimAssistConstant.kP, AimAssistConstant.kI, AimAssistConstant.kD);
     yawPid.enableContinuousInput(-180, 180);
@@ -46,6 +54,15 @@ public class AimAssistCmd extends SwerveControlCmd {
 
   @Override
   protected double calcRotSpeed() {
+    if (Math.abs(mainController.getRightX()) > AimAssistConstant.kDriverRotDeadband) {
+      aligned = false;
+      return super.calcRotSpeed();
+    }
+    if (poseTrusted != null && !poseTrusted.getAsBoolean()) {
+      aligned = false;
+      return super.calcRotSpeed();
+    }
+
     Pose2d pose = swerveDrive.getPose2d();
     double currentDeg = pose.getRotation().getDegrees();
     double targetDeg = desiredHeading(pose).getDegrees();
