@@ -44,13 +44,13 @@ public class Constants {
 
   public static final DriveBaseConstant TEST_CONFIG = new DriveBaseConstant(
       new SwerveModuleConstant(
-          23, 22, 11, 0.350342, true, true, "FrontLeft"),
+          23, 22, 11, 0.338623, true, true, "FrontLeft"),
       new SwerveModuleConstant(
-          20, 21, 13, 0.319336, true, true, "FrontRight"),
+          20, 21, 13, 0.320068, true, true, "FrontRight"),
       new SwerveModuleConstant(
-          27, 26, 12, 0.431641, true, true, "BackLeft"),
+          26, 27, 12, 0.406250, true, true, "BackLeft"),
       new SwerveModuleConstant(
-          24, 25, 14, -0.237305, true, true, "BackRight"));
+          24, 25, 14, -0.239990, true, true, "BackRight"));
   public static final DriveBaseConstant COMPETITION_CONFIG = new DriveBaseConstant(
       new SwerveModuleConstant(
           20, 21, 12, 0.348145, true, false, "FrontLeft"),
