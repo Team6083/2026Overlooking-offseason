@@ -9,13 +9,13 @@ on:
 jobs:
   checkstyle:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    permissions:
+      contents: read
 
-      - name: Checkstyle for Java
-        uses: dbelyaev/action-checkstyle@v1.7.0
-        with:
-          github_token: ${{ github.token }}
-          reporter: github-pr-check
-          level: warning
+    steps:
+    - uses: actions/checkout@v4
+    - uses: dbelyaev/action-checkstyle@master
+      with:
+        checkstyle_config: checkstyle.xml
+        filter_mode: diff_context
+        level: error
