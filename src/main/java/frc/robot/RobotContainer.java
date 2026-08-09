@@ -22,16 +22,16 @@ import frc.robot.subsystems.swervedrive.SwerveDriveFactory;
 
 public class RobotContainer {
   private final CommandXboxController mainController = new CommandXboxController(0);
-  private final SwerveDrive swerveDrive;
-  private final FeederSubsystem feederSubsystem;
-  public RobotContainer() {
-    feederSubsystem = new FeederSubsystem();
-    swerveDrive = SwerveDriveFactory.createSwerveDrive(
-        SwerveDriveFactory.SwerveImplementation.WPILIB,
-        SwerveDriveFactory.RobotVariant.TEST);
-  private Supplier<Boolean> shouldSprint = () -> mainController.leftBumper().getAsBoolean();
-  private Supplier<Boolean> shouldLockPose = () -> mainController.a().getAsBoolean();
-    swerveDrive = SwerveDriveFactory.createSwerveDrive(
+  private SwerveDrive swerveDrive;
+    private final FeederSubsystem feederSubsystem;
+    public RobotContainer() {
+      feederSubsystem = new FeederSubsystem();
+      swerveDrive = SwerveDriveFactory.createSwerveDrive(
+          SwerveDriveFactory.SwerveImplementation.WPILIB,
+          SwerveDriveFactory.RobotVariant.TEST);
+    Supplier<Boolean> shouldSprint = () -> mainController.leftBumper().getAsBoolean();
+    Supplier<Boolean> shouldLockPose = () -> mainController.a().getAsBoolean();
+      swerveDrive = SwerveDriveFactory.createSwerveDrive(
         SwerveDriveFactory.SwerveImplementation.WPILIB,
         SwerveDriveFactory.RobotVariant.TEST);
     configureBindings();
