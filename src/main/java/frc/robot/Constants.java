@@ -63,7 +63,7 @@ public class Constants {
     public static final int intakeMotorId = 34;
     public static final int pivotMotorId = 35;
 
-    public static final double pivotExpectedZero = -271;
+    public static final double pivotExpectedZero = 0;
 
     public static final double pivotEncoderFullRange = 360;
     public static final double pivotDeployStopPosition = 93;
@@ -79,19 +79,11 @@ public class Constants {
     public static final double intakeSpeed = 0.65;
     public static final double reverseIntakeSpeed = -0.65;
 
-    public static final double deployPivotSpeed = 0.8;
-    public static final double retractPivotSpeed = -1;
-
     public static final double pivotManualSpeed = 0.2;
 
     public static final double pivotFollowKp = 0.03;
     public static final double pivotFollowKi = 0;
     public static final double pivotFollowKd = 0;
-
-    public static final boolean motorLeftInverted = false;
-    public static final boolean motorRightInverted = true;
-    public static final boolean encoderLeftInverted = true;
-    public static final boolean encoderRightInverted = false;
   }
 
 
