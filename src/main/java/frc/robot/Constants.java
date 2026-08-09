@@ -50,7 +50,8 @@ public class Constants {
       new SwerveModuleConstant(
           26, 27, 11, 0.403809, true, false, "BackLeft"),
       new SwerveModuleConstant(
-          24, 25, 13, -0.242676, true, false, "BackRight"));
+          22, 20, 14, 0.302979, true, true, "BackRight"));
+
   public static final DriveBaseConstant COMPETITION_CONFIG = new DriveBaseConstant(
       new SwerveModuleConstant(
           20, 21, 12, 0.348145, true, false, "FrontLeft"),
@@ -95,10 +96,10 @@ public class Constants {
     public static final double angleFeedforwardKa = 0.02; // 加速度電壓
     public static final double angleFeedforwardKg = 0.04; // 重力電壓
 
-    public static final double angleMotorMaxAngle = 55; // 最大角度        
+    public static final double angleMotorMaxAngle = 55; // 最大角度
     public static final double angleMotorShootAngle = 25; // 初始角度(待測)
     public static final double angleMotorMinAngle = 0; // 最小角度
-    public static final double angleMotorTransAngle = 45;     
+    public static final double angleMotorTransAngle = 45;
 
     public static final double angleMotorKp = 0.105;
     public static final double angleMotorKi = 0.0001;
@@ -107,5 +108,19 @@ public class Constants {
     public static final double angleTolerance = 0.5;
 
     public static final double angleExpectedZero = 0;
+  }
+
+  public static final class TransportConstants {
+    public static final int transportMotorID = 36;
+    public static final double transportMoterIn = 0.5;
+    public static final double transportMoterOut = -0.5;
+    public static final boolean transportMotorInverted = true;
+  }
+
+  public final class FeederConstants {
+    public static final int feederMotorId = 32;
+    public static final boolean feederMotorInverted = false;
+    public static final double feederMotorIn = 0.5;
+    public static final double feederMotorOut = -0.5;
   }
 }

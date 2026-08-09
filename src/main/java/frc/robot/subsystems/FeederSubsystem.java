@@ -4,20 +4,48 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.FeederConstants;
 
 public class FeederSubsystem extends SubsystemBase {
   /** Creates a new FeederSubsystem. */
-  public FeederSubsystem() {}
+  SparkMax feederMotor = new SparkMax(FeederConstants.feederMotorId, MotorType.kBrushless);
 
-  public void feedIn() {}
+  public FeederSubsystem() {
+  SparkMaxConfig feederMotorConfig = new SparkMaxConfig();
+  feederMotorConfig.inverted(FeederConstants.feederMotorInverted);
+  feederMotor.configure(feederMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+  }
 
-  public void feedOut() {}
+  public void feedIn() {
+    feederMotor.set(FeederConstants.feederMotorIn);;
+  }
 
-  public void stopFeeder() {}
+  public void feedOut() {
+    feederMotor.set(FeederConstants.feederMotorOut);
+  }
+
+  public void feedStop() {
+    feederMotor.set(0);
+  }
+
+  public Command feedInCmd() {
+    Command cmd = runEnd(this::feedIn, this::feedStop);
+    cmd.setName("feedInCmd");
+    return cmd;
+  }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-  }
+    SmartDashboard.putNumber("feeder/feederVoltage", feederMotor.getOutputCurrent());
+    SmartDashboard.putData("feeder/subsystem", this);
+     // This method will be called once per scheduler run
+  } 
 }
