@@ -120,7 +120,7 @@ public class IntakeSubsystem extends SubsystemBase {
     return cmd;
   }
 
-  // auto pivot
+  // auto pivot （還不能用）
   public Command deployPivotCmd() {
     Command cmd = runEnd(this::pivotDeploy, this::stopRotate);
     cmd.setName("deployPivotCmd");
@@ -166,6 +166,7 @@ public class IntakeSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("intake/pivotPositionDeg", getPivotPosition());
     SmartDashboard.putNumber("intake/pivotVoltage", pivotMotor.getBusVoltage() * pivotMotor.getAppliedOutput());
     SmartDashboard.putData("intake/subsystem", this);
+    SmartDashboard.putNumber("intake/Encoder", getPivotPosition());
     SmartDashboard.putData(pivotFollowPidController);
   }
 }

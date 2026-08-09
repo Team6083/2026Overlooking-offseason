@@ -44,7 +44,8 @@ public class RobotContainer {
     mainController.povUp().whileTrue(intakeSubsystem.manualRetractPivotCmd());
     mainController.povDown().whileTrue(intakeSubsystem.manualDeployPivotCmd());
     mainController.y().onTrue(intakeSubsystem.autoDeployPivotCmd());
-    mainController.a().onTrue(intakeSubsystem.autoRetractPivotCmd());
+    mainController.x().onTrue(intakeSubsystem.autoRetractPivotCmd());
+    mainController.povLeft().whileTrue(intakeSubsystem.retakePivotCmd());
   }
 
   public Command getAutonomousCommand() {
