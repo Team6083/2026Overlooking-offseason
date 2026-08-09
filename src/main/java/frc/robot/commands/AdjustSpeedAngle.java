@@ -13,38 +13,59 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.AngleConstants;
 import frc.robot.Constants.FieldConstants;
+import frc.robot.Constants.FieldZones;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.subsystems.AngleSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveDrive;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class CalculateSpeedShooterCmd extends Command {
+public class AdjustSpeedAngle extends Command {
   private final ShooterSubsystem shooterSubsystem;
+  private final AngleSubsystem angleSubsystem;
   private final SwerveDrive swerveDrive;
 
   private double targetVelocity;
+  private double targetAngle;
 
-  /** Creates a new CalculateSpeedShooterCmd. */
-  public CalculateSpeedShooterCmd(ShooterSubsystem shooterSubsystem,
+  /** Creates a new AdjustSpeedAngle. */
+  public AdjustSpeedAngle(ShooterSubsystem shooterSubsystem,
+      AngleSubsystem angleSubsystem,
       SwerveDrive swerveDrive) {
     this.shooterSubsystem = shooterSubsystem;
+    this.angleSubsystem = angleSubsystem;
     this.swerveDrive = swerveDrive;
-    addRequirements(shooterSubsystem);
+    addRequirements(shooterSubsystem, angleSubsystem);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    Distance dis = Meters.of(swerveDrive.getPose2d().getTranslation().getDistance(getHubPosition()));
+    Translation2d robotPos = swerveDrive.getPose2d().getTranslation();
+    Distance dis = Meters.of(robotPos.getDistance(getHubPosition()));
+    boolean inTrench = FieldZones.trenchZoneWithMargin.contains(robotPos);
 
     targetVelocity = MathUtil.clamp(ShooterConstants.shooterDistanceMultiplier
         * Math.exp(ShooterConstants.shooterDistanceExponent * dis.in(Centimeters)),
         0.0, ShooterConstants.maxShooterVelocity); // 2207.31e^0.0017x
 
+    if (inTrench) {
+      // 過trench/bump時角度壓到最低，避免卡到障礙
+      targetAngle = AngleConstants.angleMotorMinAngle;
+    } else {
+      targetAngle = MathUtil.clamp(AngleConstants.angleDistanceMultiplier
+          * Math.exp(AngleConstants.angleDistanceExponent * dis.in(Centimeters)),
+          AngleConstants.angleMotorMinAngle, AngleConstants.angleMotorMaxAngle); // 待測公式
+    }
+
     shooterSubsystem.shoot(targetVelocity + 100);
+    angleSubsystem.angleSync(targetAngle);
 
     SmartDashboard.putNumber("shooterDistance", dis.in(Centimeters));
+    SmartDashboard.putNumber("shooterTargetAngle", targetAngle);
+    SmartDashboard.putBoolean("shooter/inTrench", inTrench);
   }
 
   private double getHubPositionX() {
@@ -71,5 +92,6 @@ public class CalculateSpeedShooterCmd extends Command {
   @Override
   public void end(boolean interrupted) {
     shooterSubsystem.stopShooter();
+    angleSubsystem.lockCurrentAngle();
   }
 }
