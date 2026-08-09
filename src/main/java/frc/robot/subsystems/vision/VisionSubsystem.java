@@ -15,7 +15,6 @@ public class VisionSubsystem extends SubsystemBase {
 
   private final VisionIO io;
   private final VisionIO.VisionIOInputs inputs = new VisionIO.VisionIOInputs();
-  private final Supplier<Pose2d> poseSupplier;
   private final TriConsumer<Pose2d, Double, Matrix<N3, N1>> poseConsumer;
 
   public VisionSubsystem(
@@ -23,7 +22,6 @@ public class VisionSubsystem extends SubsystemBase {
       Supplier<Pose2d> poseSupplier,
       TriConsumer<Pose2d, Double, Matrix<N3, N1>> poseConsumer) {
     this.io = io;
-    this.poseSupplier = poseSupplier;
     this.poseConsumer = poseConsumer;
   }
 
@@ -47,12 +45,14 @@ public class VisionSubsystem extends SubsystemBase {
     for (int i = 0; i < inputs.cameras.length; i++) {
       VisionIO.CameraInputs camera = inputs.cameras[i];
 
-      if (!camera.seesTarget)
+      if (!camera.seesTarget) {
         continue;
+      }
 
       MegatagPoseEstimate estimate = selectBestEstimate(camera);
-      if (estimate == null)
+      if (estimate == null) {
         continue;
+      }
 
       if (shouldReject(estimate)) {
         totalRejected++;
@@ -81,10 +81,10 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   private boolean shouldReject(MegatagPoseEstimate estimate) {
-    if (estimate.quality() < VisionConstant.minQualityThreshold){
+    if (estimate.quality() < VisionConstant.minQualityThreshold) {
       return true;
     }
-      return false;
+    return false;
   }
 
   private void logCamera(int index, MegatagPoseEstimate estimate) {
