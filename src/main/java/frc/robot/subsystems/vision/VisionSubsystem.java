@@ -7,18 +7,17 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstant;
-
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 public class VisionSubsystem extends SubsystemBase {
 
-  private final VisionIO io;
-  private final VisionIO.VisionIOInputs inputs = new VisionIO.VisionIOInputs();
+  private final VisionIo io;
+  private final VisionIo.VisionIoInputs inputs = new VisionIo.VisionIoInputs();
   private final TriConsumer<Pose2d, Double, Matrix<N3, N1>> poseConsumer;
 
   public VisionSubsystem(
-      VisionIO io,
+      VisionIo io,
       Supplier<Pose2d> poseSupplier,
       TriConsumer<Pose2d, Double, Matrix<N3, N1>> poseConsumer) {
     this.io = io;
@@ -26,7 +25,7 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   public VisionSubsystem(
-      VisionIO io,
+      VisionIo io,
       Supplier<Pose2d> poseSupplier,
       BiConsumer<Pose2d, Double> poseConsumer) {
     this(io, poseSupplier, (pose, ts, stdDevs) -> poseConsumer.accept(pose, ts));
@@ -43,7 +42,7 @@ public class VisionSubsystem extends SubsystemBase {
     int totalRejected = 0;
 
     for (int i = 0; i < inputs.cameras.length; i++) {
-      VisionIO.CameraInputs camera = inputs.cameras[i];
+      VisionIo.CameraInputs camera = inputs.cameras[i];
 
       if (!camera.seesTarget) {
         continue;
@@ -70,7 +69,7 @@ public class VisionSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Vision/RejectedMeasurements", totalRejected);
   }
 
-  private MegatagPoseEstimate selectBestEstimate(VisionIO.CameraInputs camera) {
+  private MegatagPoseEstimate selectBestEstimate(VisionIo.CameraInputs camera) {
     if (camera.megatag2PoseEstimate != null && camera.megatag2PoseEstimate.isValid()) {
       return camera.megatag2PoseEstimate;
     }
