@@ -27,7 +27,7 @@ public class ShooterSubsystem extends SubsystemBase {
       ShooterConstants.shooterFeedforwardKv,
       ShooterConstants.shooterFeedforwardKa);
 
-  private final SlewRateLimiter shooterRateLimiter = new SlewRateLimiter(800);
+  private final SlewRateLimiter shooterRateLimiter = new SlewRateLimiter(ShooterConstants.shooterAccelLimit);
 
   private RelativeEncoder shooterEncoder;
   private RelativeEncoder complexEncoder;
@@ -59,18 +59,16 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterEncoder = shooterMotor1.getEncoder();
     complexEncoder = complexMotor1.getEncoder();
   }
-
-  // Shooter
+  
   private void setShooterVoltage(double targetVelocity) {
     double feedforwardVoltage = shooterFeedforward.calculate(targetVelocity);
-    // 計算前饋電壓，需要去測看看會不會每顆馬達都不一樣的前饋電壓
     shooterMotor1.setVoltage(feedforwardVoltage);
     complexMotor1.setVoltage(feedforwardVoltage);
-  }
+}
 
-  public void shoot() {
-    double target = shooterRateLimiter.calculate(ShooterConstants.shooterNominalTarget);
-    setShooterVoltage(target);
+  public void shoot(double targetVelocity) {
+    this.shooterTargetVelocity = shooterRateLimiter.calculate(targetVelocity);
+    setShooterVoltage(this.shooterTargetVelocity);
   }
 
   public void stopShooter() {
@@ -94,7 +92,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   // Shooter commands (不打值會使用預設值)
   public Command shootCmd() {
-    Command cmd = runEnd(() -> shoot(), this::stopShooter);
+    Command cmd = runEnd(() -> shoot(ShooterConstants.shooterNominalTarget), this::stopShooter);
     cmd.setName("shoot" + ShooterConstants.shooterNominalTarget + "Cmd");
     return cmd;
   }

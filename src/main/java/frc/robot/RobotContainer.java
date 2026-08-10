@@ -20,6 +20,7 @@ import frc.robot.subsystems.AngleSubsystem;
 import frc.robot.subsystems.AngleSubsystem.AnglePreset;
 import frc.robot.subsystems.FeederSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.TransportSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveDrive;
 import frc.robot.subsystems.swervedrive.SwerveDriveFactory;
 import java.util.function.Supplier;
@@ -30,6 +31,7 @@ public class RobotContainer {
   private final FeederSubsystem feederSubsystem;
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
   private final AngleSubsystem angleSubsystem = new AngleSubsystem();
+  private final TransportSubsystem transportSubsystem = new TransportSubsystem();
   private final Supplier<Boolean> shouldSprint = () -> mainController.leftBumper().getAsBoolean();
   private final Supplier<Boolean> shouldLockPose = () -> mainController.a().getAsBoolean();
   private final ShotTable shotTable = new ShotTable("shooting_table.csv");
@@ -60,7 +62,8 @@ public class RobotContainer {
     mainController.y().onTrue(Commands.runOnce(angleSubsystem::lockCurrentAngle, angleSubsystem));
     mainController.leftBumper().whileTrue(shooterSubsystem.shootCmd());
     mainController.leftTrigger().whileTrue(
-    new AutoShootCmd(shooterSubsystem, angleSubsystem, swerveDrive, shotTable));
+    new AutoShootCmd(shooterSubsystem, angleSubsystem, feederSubsystem, transportSubsystem,
+        swerveDrive, shotTable));
   }
 
   public Command getAutonomousCommand() {

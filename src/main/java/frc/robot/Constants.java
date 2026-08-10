@@ -219,15 +219,19 @@ public class Constants {
     public static final int shooterCurrentLimit = 40; // NEO 550 用 20，NEO/Vortex 常見 40~60
     public static final int complexCurrentLimit = 40;
 
-    public static final double shooterNominalTarget = 5000; // 上方轉速
-    public static final double complexNominalTarget = 5000; // 下方轉速
+    public static final double shooterNominalTarget = 3000; // 上方轉速
+    public static final double complexNominalTarget = 3000; // 下方轉速
 
     public static final double shooterLowGearTarget = 1500;
 
     public static final double shooterDistanceMultiplier = 2207.31;
     public static final double shooterDistanceExponent = 0.0017;
     public static final double maxShooterVelocity = 5000;
-    public static final double passVelocity = 3500;
+    public static final double passVelocity = 2000;
+
+    public static final double shooterVelocityTolerance = 100; // RPM，待實測調整
+
+    public static final double shooterAccelLimit = 800;
   }
 
   public static final class AngleConstants {
