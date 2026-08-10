@@ -50,7 +50,7 @@ public class Constants {
       new SwerveModuleConstant(
           26, 27, 11, 0.403809, true, false, "BackLeft"),
       new SwerveModuleConstant(
-          22, 20, 14, 0.302979, true, true, "BackRight"));
+          31, 32, 13, 0.302979, true, true, "BackRight"));
 
   public static final DriveBaseConstant COMPETITION_CONFIG = new DriveBaseConstant(
       new SwerveModuleConstant(
