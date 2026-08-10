@@ -222,7 +222,7 @@ public class Constants {
     public static final double shooterNominalTarget = 3000; // 上方轉速
     public static final double complexNominalTarget = 3000; // 下方轉速
 
-    public static final double shooterLowGearTarget = 1500;
+    public static final double shooterLowGearTarget = 1000;
 
     public static final double shooterDistanceMultiplier = 2207.31;
     public static final double shooterDistanceExponent = 0.0017;

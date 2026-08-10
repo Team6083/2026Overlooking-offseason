@@ -6,7 +6,6 @@ package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.Centimeters;
 import static edu.wpi.first.units.Units.Meters;
-
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -24,12 +23,6 @@ import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TransportSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveDrive;
 
-/**
- * 全場自動射球:
- * - trench (含緩衝) -> shooter/feeder/transport 全部強制停止，角度歸零，方便過trench/bump
- * - ALLIANCE ZONE -> 依距離查ShotTable瞄準hub，轉速到位才餵球
- * - NEUTRAL ZONE -> 固定平飛角度+固定傳球轉速，轉速到位才餵球
- */
 public class AutoShootCmd extends Command {
   private final ShooterSubsystem shooterSubsystem;
   private final AngleSubsystem angleSubsystem;
@@ -41,6 +34,12 @@ public class AutoShootCmd extends Command {
   private double targetVelocity;
   private double targetAngle;
 
+  /**
+   * 全場自動射球:
+   * | Trench (含緩衝) -> Shooter/Feeder/Transport 全部強制停止，角度歸零，方便過Trench/Bump 
+   * | Alliance zone -> 依距離查ShotTable瞄準Hub，轉速到位才餵球 
+   * | Neutral ZONE -> 固定平飛角度+固定傳球轉速，轉速到位才餵球 |
+   */
   public AutoShootCmd(ShooterSubsystem shooterSubsystem,
       AngleSubsystem angleSubsystem,
       FeederSubsystem feederSubsystem,
@@ -63,7 +62,7 @@ public class AutoShootCmd extends Command {
     boolean inOwnZone = isInOwnZone(robotPos);
 
     String zoneLabel;
-    boolean hasValidTarget = true; 
+    boolean hasValidTarget = true;
 
     if (inTrench) {
       targetAngle = AngleConstants.angleMotorMinAngle;
@@ -72,7 +71,7 @@ public class AutoShootCmd extends Command {
       transportSubsystem.stopTransport();
       angleSubsystem.angleSync(targetAngle);
 
-      SmartDashboard.putString("shooter/autoZone", "trench");
+      SmartDashboard.putString("autoShooter/autoZone", "trench");
       return;
     }
 
@@ -85,9 +84,9 @@ public class AutoShootCmd extends Command {
         targetAngle = solution.angleDeg();
         targetVelocity = solution.velocityRpm();
       } else {
-        hasValidTarget = false; 
+        hasValidTarget = false;
       }
-      SmartDashboard.putNumber("shooterDistance", dis.in(Centimeters));
+      SmartDashboard.putNumber("autoShooterDistance", dis.in(Centimeters));
       zoneLabel = "own";
 
     } else {
@@ -107,12 +106,13 @@ public class AutoShootCmd extends Command {
       transportSubsystem.stopTransport();
     }
 
-    SmartDashboard.putString("shooter/autoZone", zoneLabel);
-    SmartDashboard.putNumber("shooter/autoAngle", targetAngle);
-    SmartDashboard.putNumber("shooter/autoVelocity", targetVelocity);
-    SmartDashboard.putBoolean("shooter/atSpeed", shooterSubsystem.isShooterAtSpeed());
-    SmartDashboard.putBoolean("shooter/hasValidTarget", hasValidTarget); 
+    SmartDashboard.putString("autoShooter/autoZone", zoneLabel);
+    SmartDashboard.putNumber("autoShooter/autoAngle", targetAngle);
+    SmartDashboard.putNumber("autoShooter/autoVelocity", targetVelocity);
+    SmartDashboard.putBoolean("autoShooter/atSpeed", shooterSubsystem.isShooterAtSpeed());
+    SmartDashboard.putBoolean("autoShooter/hasValidTarget", hasValidTarget);
   }
+
   private boolean isInOwnZone(Translation2d robotPos) {
     double x = robotPos.getX();
     if (DriverStation.getAlliance().isPresent()

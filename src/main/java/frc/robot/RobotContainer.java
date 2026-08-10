@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.FieldConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.AutoShootCmd;
 import frc.robot.commands.SwerveControlCmd;
 import frc.robot.lib.shooting.ShotTable;
@@ -55,15 +56,16 @@ public class RobotContainer {
       swerveDrive.zeroGyro();
       swerveDrive.resetPose(new Pose2d(swerveDrive.getPose2d().getTranslation(), Rotation2d.fromDegrees(0)));
     }));
-
+    
+    shooterSubsystem.setDefaultCommand(shooterSubsystem.shootCmd(ShooterConstants.shooterLowGearTarget));
     mainController.a().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.TRANS));
     mainController.b().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.MAX));
     mainController.x().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.CLOSE));
     mainController.y().onTrue(Commands.runOnce(angleSubsystem::lockCurrentAngle, angleSubsystem));
     mainController.leftBumper().whileTrue(shooterSubsystem.shootCmd());
     mainController.leftTrigger().whileTrue(
-    new AutoShootCmd(shooterSubsystem, angleSubsystem, feederSubsystem, transportSubsystem,
-        swerveDrive, shotTable));
+        new AutoShootCmd(shooterSubsystem, angleSubsystem, feederSubsystem, transportSubsystem,
+            swerveDrive, shotTable));
   }
 
   public Command getAutonomousCommand() {

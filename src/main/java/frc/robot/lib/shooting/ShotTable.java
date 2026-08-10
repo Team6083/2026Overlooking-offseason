@@ -12,20 +12,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
 import edu.wpi.first.wpilibj.Filesystem;
 
 /**
- * 讀取實測射球網格資料(距離, 角度, 轉速)，並提供查詢/內插/挑選策略。
- * CSV 格式: distance_cm,angle_deg,velocity_rpm (第一行 header)
+ * 讀取實測射球網格資料(距離, 角度, 轉速)，並提供查詢
+ * CSV 格式: distance_cm,angle_deg,velocity_rpm (第一行不讀取)
  */
 public class ShotTable {
 
-  /** 單一候選解: 在某角度下命中該距離所需的轉速 */
+  /** 在某角度下命中該距離所需的轉速 */
   public record Candidate(double angleDeg, double velocityRpm) {
   }
 
-  // 依角度分組，每組內是 (距離 -> 轉速) 的排序表，方便沿單一角度做距離內插
+  // 依角度分組，每組內是 (距離 -> 轉速) 的排序，方便沿單一角度做距離內插
   private final Map<Double, TreeMap<Double, Double>> byAngle = new TreeMap<>();
 
   private boolean loaded = false;
@@ -106,7 +105,7 @@ public class ShotTable {
     return y0 + t * (y1 - y0);
   }
 
-  /** 策略: 在候選解中，挑選轉速與目前飛輪轉速差距最小的一組(省 spin-up 時間) */
+  /** 在候選解中，挑選轉速與目前飛輪轉速差距最小的一組(省 spin-up 時間) */
   public Candidate pickClosestVelocity(double distanceCm, double currentVelocityRpm) {
     List<Candidate> candidates = getCandidates(distanceCm);
     if (candidates.isEmpty()) {
@@ -124,7 +123,7 @@ public class ShotTable {
     return best;
   }
 
-  /** 策略: 在候選解中，挑選轉速最低的一組(最省電) */
+  /** 在候選解中，挑選轉速最低的一組(最省電) */
   public Candidate pickLowestVelocity(double distanceCm) {
     List<Candidate> candidates = getCandidates(distanceCm);
     if (candidates.isEmpty()) {
