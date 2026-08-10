@@ -62,7 +62,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("StopIntake", Commands.runOnce(() -> intakeSubsystem.stopIntake()));
     NamedCommands.registerCommand("DeployIntake", Commands.runOnce(() -> intakeSubsystem.deploy()));
     NamedCommands.registerCommand("RetractIntake", Commands.runOnce(() -> intakeSubsystem.retract()));
-    NamedCommands.registerCommand("shoot", Commands.runOnce(() -> shooterSubsystem.shoot()));
+    NamedCommands.registerCommand("Shoot", Commands.runOnce(() -> shooterSubsystem.shoot()));
   
    }
 
