@@ -26,9 +26,9 @@ import frc.robot.subsystems.swervedrive.SwerveDrive;
 
 /**
  * 全場自動射球:
- * - trench 區(含緩衝) -> shooter/feeder/transport 全部強制停止，角度歸零，方便過trench/bump
- * - 本方區 -> 依距離查ShotTable瞄準hub，轉速到位才餵球
- * - 中場 -> 固定平飛角度+固定傳球轉速，轉速到位才餵球
+ * - trench (含緩衝) -> shooter/feeder/transport 全部強制停止，角度歸零，方便過trench/bump
+ * - ALLIANCE ZONE -> 依距離查ShotTable瞄準hub，轉速到位才餵球
+ * - NEUTRAL ZONE -> 固定平飛角度+固定傳球轉速，轉速到位才餵球
  */
 public class AutoShootCmd extends Command {
   private final ShooterSubsystem shooterSubsystem;
@@ -63,9 +63,9 @@ public class AutoShootCmd extends Command {
     boolean inOwnZone = isInOwnZone(robotPos);
 
     String zoneLabel;
+    boolean hasValidTarget = true; 
 
     if (inTrench) {
-      // trench 優先權最高: shooter 必須完全停止，角度歸零方便過障礙
       targetAngle = AngleConstants.angleMotorMinAngle;
       shooterSubsystem.stopShooter();
       feederSubsystem.feedStop();
@@ -73,7 +73,7 @@ public class AutoShootCmd extends Command {
       angleSubsystem.angleSync(targetAngle);
 
       SmartDashboard.putString("shooter/autoZone", "trench");
-      return; // trench 時提早結束，不執行下面的餵球判斷
+      return;
     }
 
     if (inOwnZone) {
@@ -84,6 +84,8 @@ public class AutoShootCmd extends Command {
       if (solution != null) {
         targetAngle = solution.angleDeg();
         targetVelocity = solution.velocityRpm();
+      } else {
+        hasValidTarget = false; 
       }
       SmartDashboard.putNumber("shooterDistance", dis.in(Centimeters));
       zoneLabel = "own";
@@ -97,7 +99,7 @@ public class AutoShootCmd extends Command {
     shooterSubsystem.shoot(targetVelocity);
     angleSubsystem.angleSync(targetAngle);
 
-    if (shooterSubsystem.isShooterAtSpeed()) {
+    if (hasValidTarget && shooterSubsystem.isShooterAtSpeed()) {
       feederSubsystem.feedIn();
       transportSubsystem.transportIn();
     } else {
@@ -109,8 +111,8 @@ public class AutoShootCmd extends Command {
     SmartDashboard.putNumber("shooter/autoAngle", targetAngle);
     SmartDashboard.putNumber("shooter/autoVelocity", targetVelocity);
     SmartDashboard.putBoolean("shooter/atSpeed", shooterSubsystem.isShooterAtSpeed());
+    SmartDashboard.putBoolean("shooter/hasValidTarget", hasValidTarget); 
   }
-
   private boolean isInOwnZone(Translation2d robotPos) {
     double x = robotPos.getX();
     if (DriverStation.getAlliance().isPresent()
