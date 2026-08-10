@@ -43,7 +43,7 @@ public class AdjustSpeedAngle extends Command {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-public void execute() {
+  public void execute() {
     Translation2d robotPos = swerveDrive.getPose2d().getTranslation();
     Distance dis = Meters.of(robotPos.getDistance(getHubPosition()));
     boolean inTrench = FieldZones.trenchZoneWithMargin.contains(robotPos);
@@ -64,7 +64,7 @@ public void execute() {
     SmartDashboard.putNumber("shooterDistance", dis.in(Centimeters));
     SmartDashboard.putNumber("shooterTargetAngle", targetAngle);
     SmartDashboard.putBoolean("shooter/inTrench", inTrench);
-}
+  }
 
   private double getHubPositionX() {
     if (DriverStation.getAlliance().isPresent()

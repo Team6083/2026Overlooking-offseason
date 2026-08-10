@@ -114,15 +114,17 @@ public class AngleSubsystem extends SubsystemBase {
   }
 
   public Command adjustAngleCmd(AnglePreset preset) {
-    double targetAngle = preset.getAngle(this); // this 就是當下的 AngleSubsystem 實例
+    double targetAngle = preset.getAngle(this);
     this.targetAngle = targetAngle;
     Command cmd = run(() -> angleSync(targetAngle))
         .until(() -> Math.abs(angleEncoder.getPosition() - targetAngle) <= AngleConstants.angleTolerance);
     cmd.setName("angleLocatedTo" + preset.name() + "Cmd");
     return cmd;
-}
+  }
+  // AdjustSpeedAngle 會使用這個方法，將目前離 hub 的距離傳入 AngleSubsystem，讓 AngleSubsystem
+  // 可以計算出自動角度 (Auto Angle)。
 
-  /** 由外部(例如 AdjustSpeedAngle)每個 loop 呼叫，更新目前離 hub 的距離。 */
+  /** 由外部 (AdjustSpeedAngle) 每個 loop 呼叫，更新目前離 hub 的距離. */
   public void setDistanceSupplier(DoubleSupplier distanceSupplierCm) {
     this.distanceSupplierCm = distanceSupplierCm;
   }
