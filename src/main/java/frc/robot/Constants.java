@@ -224,6 +224,10 @@ public class Constants {
     public static final double complexNominalTarget = 5000; // 下方轉速
 
     public static final double shooterLowGearTarget = 1500;
+
+    public static final double shooterDistanceMultiplier = 2207.31;
+    public static final double shooterDistanceExponent = 0.0017;
+    public static final double maxShooterVelocity = 5000;
   }
 
   public static final class AngleConstants {
@@ -250,5 +254,8 @@ public class Constants {
     public static final double angleTolerance = 0.5;
 
     public static final double angleExpectedZero = 1.1;
+
+    public static final double angleDistanceMultiplier = 40;
+    public static final double angleDistanceExponent = -0.001;
   }
 }

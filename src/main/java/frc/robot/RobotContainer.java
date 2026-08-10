@@ -7,6 +7,8 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Constants.FieldConstants;
+import frc.robot.commands.AdjustSpeedAngle;
 import frc.robot.subsystems.AngleSubsystem;
 import frc.robot.subsystems.AngleSubsystem.AnglePreset;
 import frc.robot.subsystems.FeederSubsystem;
@@ -33,9 +35,9 @@ public class RobotContainer {
         SwerveDriveFactory.SwerveImplementation.WPILIB,
         SwerveDriveFactory.RobotVariant.TEST);
 
-    angleSubsystem
-        .setDistanceSupplier(() -> Meters.of(swerveDrive.getPose2d().getTranslation().getDistance(getHubPosition()))
-            .in(Centimeters));
+    angleSubsystem.setDistanceSupplier(() -> Meters.of(swerveDrive.getPose2d().getTranslation()
+        .getDistance(FieldConstants.getHubPosition()))
+        .in(Centimeters));
     configureBindings();
   }
 
@@ -50,7 +52,10 @@ public class RobotContainer {
     mainController.a().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.TRANS));
     mainController.b().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.MAX));
     mainController.x().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.CLOSE));
-    mainController.y().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.AUTO));
+    mainController.y().onTrue(Commands.runOnce(angleSubsystem::lockCurrentAngle, angleSubsystem));
+
+    mainController.rightBumper().whileTrue(
+        new AdjustSpeedAngle(shooterSubsystem, angleSubsystem, swerveDrive));
   }
 
   public Command getAutonomousCommand() {
