@@ -166,7 +166,6 @@ public class IntakeSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("intake/pivotPositionDeg", getPivotPosition());
     SmartDashboard.putNumber("intake/pivotVoltage", pivotMotor.getBusVoltage() * pivotMotor.getAppliedOutput());
     SmartDashboard.putData("intake/subsystem", this);
-    SmartDashboard.putNumber("intake/Encoder", getPivotPosition());
     SmartDashboard.putData(pivotFollowPidController);
   }
 }
