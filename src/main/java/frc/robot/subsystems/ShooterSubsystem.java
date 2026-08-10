@@ -80,7 +80,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   // Getter
-  private double getShooterVelocity() {
+  public double getShooterVelocity() {
     return shooterEncoder.getVelocity();
   }
 

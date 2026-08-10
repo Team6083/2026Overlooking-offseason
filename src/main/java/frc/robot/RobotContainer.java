@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.commands.AdjustSpeedAngle;
+import frc.robot.lib.shooting.ShotTable;
 import frc.robot.subsystems.AngleSubsystem;
 import frc.robot.subsystems.AngleSubsystem.AnglePreset;
 import frc.robot.subsystems.FeederSubsystem;
@@ -27,6 +28,7 @@ public class RobotContainer {
   private final AngleSubsystem angleSubsystem = new AngleSubsystem();
   private final Supplier<Boolean> shouldSprint = () -> mainController.leftBumper().getAsBoolean();
   private final Supplier<Boolean> shouldLockPose = () -> mainController.a().getAsBoolean();
+  private final ShotTable shotTable = new ShotTable("shooting_table.csv");
 
   public RobotContainer() {
     feederSubsystem = new FeederSubsystem();
@@ -52,9 +54,9 @@ public class RobotContainer {
     mainController.b().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.MAX));
     mainController.x().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.CLOSE));
     mainController.y().onTrue(Commands.runOnce(angleSubsystem::lockCurrentAngle, angleSubsystem));
-
+    mainController.leftBumper().whileTrue(shooterSubsystem.shootCmd());
     mainController.rightBumper().whileTrue(
-        new AdjustSpeedAngle(shooterSubsystem, angleSubsystem, swerveDrive));
+        new AdjustSpeedAngle(shooterSubsystem, angleSubsystem, swerveDrive,shotTable));
   }
 
   public Command getAutonomousCommand() {
