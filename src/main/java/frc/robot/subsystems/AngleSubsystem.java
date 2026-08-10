@@ -12,6 +12,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -36,6 +37,7 @@ public class AngleSubsystem extends SubsystemBase {
 
   private final SparkClosedLoopController angleController = angleMotor.getClosedLoopController();
   private double targetAngle = 0;
+  private DoubleSupplier distanceSupplierCm = () -> 0.0;
 
   /** Creates a new AngleSubsystem. */
   public AngleSubsystem() {
@@ -112,30 +114,38 @@ public class AngleSubsystem extends SubsystemBase {
   }
 
   public Command adjustAngleCmd(AnglePreset preset) {
-    double targetAngle = preset.getAngle();
+    double targetAngle = preset.getAngle(this); // this 就是當下的 AngleSubsystem 實例
+    this.targetAngle = targetAngle;
     Command cmd = run(() -> angleSync(targetAngle))
         .until(() -> Math.abs(angleEncoder.getPosition() - targetAngle) <= AngleConstants.angleTolerance);
     cmd.setName("angleLocatedTo" + preset.name() + "Cmd");
     return cmd;
+}
+
+  /** 由外部(例如 AdjustSpeedAngle)每個 loop 呼叫，更新目前離 hub 的距離。 */
+  public void setDistanceSupplier(DoubleSupplier distanceSupplierCm) {
+    this.distanceSupplierCm = distanceSupplierCm;
   }
 
-  public static double getAutoAngle() {
-    return AngleConstants.angleMotorShootAngle;
+  public double getAutoAngle() {
+    return MathUtil.clamp(
+        AngleConstants.angleDistanceMultiplier
+            * Math.exp(AngleConstants.angleDistanceExponent * distanceSupplierCm.getAsDouble()),
+        AngleConstants.angleMotorMinAngle,
+        AngleConstants.angleMotorMaxAngle);
   }
 
   public enum AnglePreset {
+    /** 最大角度 (Max Angle). */
     MAX(() -> AngleConstants.angleMotorMaxAngle),
-    /** 傳輸角度 (Max Angle). */
+    /** 傳輸角度 (Trans Angle). */
     TRANS(() -> AngleConstants.angleMotorTransAngle),
-
     /** 射球角度 (Shoot Angle). */
     SHOOT(() -> AngleConstants.angleMotorShootAngle),
-
-    /** 歸位角度 (Min Angle),過trench使用. */
+    /** 最小角度 (Min Angle). */
     CLOSE(() -> AngleConstants.angleMotorMinAngle),
-
-    /** 自動追蹤角度 (動態計算). */
-    AUTO(AngleSubsystem::getAutoAngle);
+    /** 自動角度 (Auto Angle). */
+    AUTO(null); // 特殊處理，見下方 getAngle()
 
     private final DoubleSupplier angleSupplier;
 
@@ -143,8 +153,10 @@ public class AngleSubsystem extends SubsystemBase {
       this.angleSupplier = angleSupplier;
     }
 
-    // 取得當前即時的角度值
-    public double getAngle() {
+    public double getAngle(AngleSubsystem subsystem) {
+      if (this == AUTO) {
+        return subsystem.getAutoAngle();
+      }
       return angleSupplier.getAsDouble();
     }
   }

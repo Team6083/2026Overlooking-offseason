@@ -18,6 +18,7 @@ import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.FieldZones;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.AngleSubsystem;
+import frc.robot.subsystems.AngleSubsystem.AnglePreset;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveDrive;
 
@@ -42,31 +43,28 @@ public class AdjustSpeedAngle extends Command {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
+public void execute() {
     Translation2d robotPos = swerveDrive.getPose2d().getTranslation();
     Distance dis = Meters.of(robotPos.getDistance(getHubPosition()));
     boolean inTrench = FieldZones.trenchZoneWithMargin.contains(robotPos);
 
     targetVelocity = MathUtil.clamp(ShooterConstants.shooterDistanceMultiplier
         * Math.exp(ShooterConstants.shooterDistanceExponent * dis.in(Centimeters)),
-        0.0, ShooterConstants.maxShooterVelocity); // 2207.31e^0.0017x
+        0.0, ShooterConstants.maxShooterVelocity);
 
     if (inTrench) {
-      // 過trench/bump時角度壓到最低，避免卡到障礙
       targetAngle = AngleConstants.angleMotorMinAngle;
     } else {
-      targetAngle = MathUtil.clamp(AngleConstants.angleDistanceMultiplier
-          * Math.exp(AngleConstants.angleDistanceExponent * dis.in(Centimeters)),
-          AngleConstants.angleMotorMinAngle, AngleConstants.angleMotorMaxAngle); // 待測公式
+      targetAngle = AnglePreset.AUTO.getAngle(angleSubsystem); // 多傳 angleSubsystem
     }
 
-    shooterSubsystem.shoot(targetVelocity + 100);
+    shooterSubsystem.shootCmd(targetVelocity + 100);
     angleSubsystem.angleSync(targetAngle);
 
     SmartDashboard.putNumber("shooterDistance", dis.in(Centimeters));
     SmartDashboard.putNumber("shooterTargetAngle", targetAngle);
     SmartDashboard.putBoolean("shooter/inTrench", inTrench);
-  }
+}
 
   private double getHubPositionX() {
     if (DriverStation.getAlliance().isPresent()

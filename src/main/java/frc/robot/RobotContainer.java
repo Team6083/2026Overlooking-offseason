@@ -13,6 +13,9 @@ import frc.robot.subsystems.FeederSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveDrive;
 import frc.robot.subsystems.swervedrive.SwerveDriveFactory;
+
+import static edu.wpi.first.units.Units.Centimeters;
+import static edu.wpi.first.units.Units.Meters;
 import java.util.function.Supplier;
 
 public class RobotContainer {
@@ -29,6 +32,10 @@ public class RobotContainer {
     swerveDrive = SwerveDriveFactory.createSwerveDrive(
         SwerveDriveFactory.SwerveImplementation.WPILIB,
         SwerveDriveFactory.RobotVariant.TEST);
+
+    angleSubsystem
+        .setDistanceSupplier(() -> Meters.of(swerveDrive.getPose2d().getTranslation().getDistance(getHubPosition()))
+            .in(Centimeters));
     configureBindings();
   }
 
@@ -43,7 +50,7 @@ public class RobotContainer {
     mainController.a().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.TRANS));
     mainController.b().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.MAX));
     mainController.x().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.CLOSE));
-    mainController.y().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.SHOOT));
+    mainController.y().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.AUTO));
   }
 
   public Command getAutonomousCommand() {
