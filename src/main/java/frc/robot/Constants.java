@@ -227,6 +227,7 @@ public class Constants {
     public static final double shooterDistanceMultiplier = 2207.31;
     public static final double shooterDistanceExponent = 0.0017;
     public static final double maxShooterVelocity = 5000;
+    public static final double passVelocity = 3500;
   }
 
   public static final class AngleConstants {

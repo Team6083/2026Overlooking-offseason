@@ -6,11 +6,15 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Centimeters;
 import static edu.wpi.first.units.Units.Meters;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.FieldConstants;
-import frc.robot.commands.AdjustSpeedAngle;
+import frc.robot.commands.AutoShootCmd;
+import frc.robot.commands.SwerveControlCmd;
 import frc.robot.lib.shooting.ShotTable;
 import frc.robot.subsystems.AngleSubsystem;
 import frc.robot.subsystems.AngleSubsystem.AnglePreset;
@@ -43,20 +47,20 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    // swerveDrive.setDefaultCommand(new SwerveControlCmd(
-    // swerveDrive, mainController, shouldSprint, shouldLockPose));
-    // mainController.start().onTrue(Commands.runOnce(() -> {
-    // swerveDrive.zeroGyro();
-    // swerveDrive.resetPose(new Pose2d(swerveDrive.getPose2d().getTranslation(),
-    // Rotation2d.fromDegrees(0)));
-    // }));
+    swerveDrive.setDefaultCommand(new SwerveControlCmd(
+        swerveDrive, mainController, shouldSprint, shouldLockPose));
+    mainController.start().onTrue(Commands.runOnce(() -> {
+      swerveDrive.zeroGyro();
+      swerveDrive.resetPose(new Pose2d(swerveDrive.getPose2d().getTranslation(), Rotation2d.fromDegrees(0)));
+    }));
+
     mainController.a().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.TRANS));
     mainController.b().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.MAX));
     mainController.x().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.CLOSE));
     mainController.y().onTrue(Commands.runOnce(angleSubsystem::lockCurrentAngle, angleSubsystem));
     mainController.leftBumper().whileTrue(shooterSubsystem.shootCmd());
-    mainController.rightBumper().whileTrue(
-        new AdjustSpeedAngle(shooterSubsystem, angleSubsystem, swerveDrive,shotTable));
+    mainController.leftTrigger().whileTrue(
+    new AutoShootCmd(shooterSubsystem, angleSubsystem, swerveDrive, shotTable));
   }
 
   public Command getAutonomousCommand() {
