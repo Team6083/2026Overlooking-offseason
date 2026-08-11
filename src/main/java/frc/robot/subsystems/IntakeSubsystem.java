@@ -38,7 +38,6 @@ public class IntakeSubsystem extends SubsystemBase {
     SparkMaxConfig pivotConfig = new SparkMaxConfig();
     pivotConfig.inverted(IntakeConstants.pivotInverted);
     pivotMotor.configure(pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    //pivotFollowPidController.enableContinuousInput(0, IntakeConstants.pivotEncoderFullRange);
     pivotMotor.getEncoder().setPosition(IntakeConstants.pivotExpectedZero);
   }
 
@@ -61,11 +60,11 @@ public class IntakeSubsystem extends SubsystemBase {
     pivotMotor.set(IntakeConstants.pivotManualSpeed);
   }
 
-  public void manualPivotReverse() {
+  public void manualPivotRetract() {
     pivotMotor.set(-IntakeConstants.pivotManualSpeed);
   }
 
-  public void manualPivotReverseRetake() {
+  public void manualPivotRetake() {
     pivotMotor.set(IntakeConstants.PivotRetakeSpeed);
   }
 
@@ -120,28 +119,14 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public Command manualRetractPivotCmd() {
-    Command cmd = runEnd(this::manualPivotReverse, this::stopRotate);
+    Command cmd = runEnd(this::manualPivotRetract, this::stopRotate);
     cmd.setName("manualRetractPivotCmd");
     return cmd;
   }
 
-  // public Command pivotRetakeCmd() {
-  //   Command cmd = Commands.repeatingSequence(
-  //       Commands.run(
-  //         this::manualPivotReverseRetake
-  //       ).withTimeout(2),
-
-  //       Commands.run(
-  //         this::manualPivotDeploy()
-  //       ).withTimeout(1)
-  //   );
-  //   cmd.setName("pivotRetakeCmd");
-  //   return cmd;
-  // }
-
-  public Command retakePivotCmd() {
-    Command cmd = runEnd(this::manualPivotReverseRetake, this::stopRotate);
-    cmd.setName("retakePivotCmd");
+  public Command manualRetakePivotCmd() {
+    Command cmd = runEnd(this::manualPivotRetake, this::stopRotate);
+    cmd.setName("manualRetakePivotCmd");
     return cmd;
   }
 
