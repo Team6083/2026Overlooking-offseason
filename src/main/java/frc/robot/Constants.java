@@ -242,8 +242,8 @@ public class Constants {
 
     public static final double angleFeedforwardKs = 0.01; // 起始電壓
     public static final double angleFeedforwardKv = 0.00407; // 速度電壓
-    public static final double angleFeedforwardKa = 0.02; // 加速度電壓
-    public static final double angleFeedforwardKg = 0.04; // 重力電壓
+    public static final double angleFeedforwardKa = 0.01; // 加速度電壓
+    public static final double angleFeedforwardKg = 0.02; // 重力電壓
 
     public static final double angleMotorMaxAngle = 55; // 最大角度
     public static final double angleMotorShootAngle = 25; // 初始角度(待測)
