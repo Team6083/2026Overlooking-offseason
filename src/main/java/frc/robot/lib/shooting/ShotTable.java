@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 public class ShotTable {
 
   /** 在某角度下命中該距離所需的轉速 */
-  public record Candidate(double angleDeg, double velocityRpm) {
+  public record CanShootInSpeed(double angleDeg, double velocityRpm) {
   }
 
   // 依角度分組，每組內是 (距離 -> 轉速) 的排序，方便沿單一角度做距離內插
@@ -68,8 +68,8 @@ public class ShotTable {
    * 給定距離，回傳所有角度中「有實測資料涵蓋這個距離範圍」的候選解。
    * 若某角度的實測範圍不包含這個距離，該角度會被跳過(不外插)。
    */
-  public List<Candidate> getCandidates(double distanceCm) {
-    List<Candidate> candidates = new ArrayList<>();
+  public List<CanShootInSpeed> getCandidates(double distanceCm) {
+    List<CanShootInSpeed> candidates = new ArrayList<>();
 
     for (Map.Entry<Double, TreeMap<Double, Double>> entry : byAngle.entrySet()) {
       double angle = entry.getKey();
@@ -77,7 +77,7 @@ public class ShotTable {
 
       Double interpolated = interpolate(distanceToVelocity, distanceCm);
       if (interpolated != null) {
-        candidates.add(new Candidate(angle, interpolated));
+        candidates.add(new CanShootInSpeed(angle, interpolated));
       }
     }
 
@@ -106,14 +106,14 @@ public class ShotTable {
   }
 
   /** 在候選解中，挑選轉速與目前飛輪轉速差距最小的一組(省 spin-up 時間) */
-  public Candidate pickClosestVelocity(double distanceCm, double currentVelocityRpm) {
-    List<Candidate> candidates = getCandidates(distanceCm);
+  public CanShootInSpeed pickClosestVelocity(double distanceCm, double currentVelocityRpm) {
+    List<CanShootInSpeed> candidates = getCandidates(distanceCm);
     if (candidates.isEmpty()) {
       return null;
     }
-    Candidate best = candidates.get(0);
+    CanShootInSpeed best = candidates.get(0);
     double bestDiff = Math.abs(best.velocityRpm() - currentVelocityRpm);
-    for (Candidate c : candidates) {
+    for (CanShootInSpeed c : candidates) {
       double diff = Math.abs(c.velocityRpm() - currentVelocityRpm);
       if (diff < bestDiff) {
         best = c;
@@ -124,13 +124,13 @@ public class ShotTable {
   }
 
   /** 在候選解中，挑選轉速最低的一組(最省電) */
-  public Candidate pickLowestVelocity(double distanceCm) {
-    List<Candidate> candidates = getCandidates(distanceCm);
+  public CanShootInSpeed pickLowestVelocity(double distanceCm) {
+    List<CanShootInSpeed> candidates = getCandidates(distanceCm);
     if (candidates.isEmpty()) {
       return null;
     }
-    Candidate best = candidates.get(0);
-    for (Candidate c : candidates) {
+    CanShootInSpeed best = candidates.get(0);
+    for (CanShootInSpeed c : candidates) {
       if (c.velocityRpm() < best.velocityRpm()) {
         best = c;
       }

@@ -16,7 +16,7 @@ import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.FieldZones;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.lib.shooting.ShotTable;
-import frc.robot.lib.shooting.ShotTable.Candidate;
+import frc.robot.lib.shooting.ShotTable.CanShootInSpeed;
 import frc.robot.subsystems.AngleSubsystem;
 import frc.robot.subsystems.FeederSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -77,7 +77,7 @@ public class AutoShootCmd extends Command {
 
     if (inOwnZone) {
       Distance dis = Meters.of(robotPos.getDistance(FieldConstants.getHubPosition()));
-      Candidate solution = shotTable.pickClosestVelocity(
+      CanShootInSpeed solution = shotTable.pickClosestVelocity(
           dis.in(Centimeters), shooterSubsystem.getShooterVelocity());
 
       if (solution != null) {

@@ -56,7 +56,7 @@ public class RobotContainer {
       swerveDrive.zeroGyro();
       swerveDrive.resetPose(new Pose2d(swerveDrive.getPose2d().getTranslation(), Rotation2d.fromDegrees(0)));
     }));
-    
+
     shooterSubsystem.setDefaultCommand(shooterSubsystem.shootCmd(ShooterConstants.shooterLowGearTarget));
     mainController.a().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.TRANS));
     mainController.b().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.MAX));
@@ -66,6 +66,10 @@ public class RobotContainer {
     mainController.leftTrigger().whileTrue(
         new AutoShootCmd(shooterSubsystem, angleSubsystem, feederSubsystem, transportSubsystem,
             swerveDrive, shotTable));
+    mainController.povUp().onTrue(angleSubsystem.angleSyncCmd(20));
+    mainController.povDown().onTrue(angleSubsystem.angleSyncCmd(30));
+    mainController.povLeft().onTrue(angleSubsystem.angleSyncCmd(40));
+    mainController.povRight().onTrue(angleSubsystem.angleSyncCmd(50));
   }
 
   public Command getAutonomousCommand() {
