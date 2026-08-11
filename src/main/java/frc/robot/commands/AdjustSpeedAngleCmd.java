@@ -18,6 +18,7 @@ import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.AngleSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.AngleSubsystem.AnglePreset;
 import frc.robot.subsystems.swervedrive.SwerveDrive;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
@@ -47,7 +48,7 @@ public class AdjustSpeedAngleCmd extends Command {
         * Math.exp(ShooterConstants.shooterDistanceExponent * dis.in(Centimeters)),
         0.0, ShooterConstants.maxShooterVelocity); // 2207.31e^0.0017x
 
-    angleSubsystem.angleSync(AngleConstants.angleMotorShootAngle);
+    angleSubsystem.adjustAngleCmd(AnglePreset.SHOOT);
     shooterSubsystem.shoot(targetVelocity + 100);
 
     SmartDashboard.putNumber("shooterDistance", dis.in(Centimeters));

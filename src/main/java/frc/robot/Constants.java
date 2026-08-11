@@ -133,7 +133,7 @@ public class Constants {
       public static final int transportMotorID = 36;
       public static final double transportMoterIn = 0.5;
       public static final double transportMoterOut = -0.5;
-      public static final boolean transportMotorInverted = true;
+      public static final boolean transportMotorInverted = false;
     }
 
     public final class FeederConstants {
@@ -250,8 +250,8 @@ public class Constants {
       public static final double shooterDistanceMultiplier = 2207.31;
       public static final double shooterDistanceExponent = 0.0017;
 
-      public static final double shooterNominalTarget = 3000.00 / 1.5; // 上方轉速
-      public static final double complexNominalTarget = 3000.00 / 1.5; // 下方轉速
+      public static final double shooterNominalTarget = 5100.00 / 1.5; // 上方轉速
+      public static final double complexNominalTarget = 5100.00 / 1.5; // 下方轉速
       public static final double shooterLowGearTarget = 1500.00 / 1.5;
       public static final double maxShooterVelocity = 6000.00 / 1.5;
       public static final double passVelocity = 2100.00 / 1.5;
@@ -274,7 +274,7 @@ public class Constants {
       public static final double angleFeedforwardKg = 0.02; // 重力電壓
 
       public static final double angleMotorMaxAngle = 55; // 最大角度
-      public static final double angleMotorShootAngle = 25; // 初始角度(待測)
+      public static final double angleMotorShootAngle = 15; // 初始角度(待測)
       public static final double angleMotorMinAngle = 0; // 最小角度
       public static final double angleMotorTransAngle = 45;
 

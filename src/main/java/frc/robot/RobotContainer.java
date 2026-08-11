@@ -29,21 +29,24 @@ import frc.robot.subsystems.swervedrive.SwerveDriveFactory;
 import java.util.function.Supplier;
 
 public class RobotContainer {
-  private final CommandXboxController copilotController = new CommandXboxController(1);
   private final CommandXboxController mainController = new CommandXboxController(0);
-  
+  private final CommandXboxController copilotController = new CommandXboxController(1);
+
   private SwerveDrive swerveDrive;
   private final IntakeSubsystem intakeSubsystem;
   private final FeederSubsystem feederSubsystem;
-  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
-  private final AngleSubsystem angleSubsystem = new AngleSubsystem();
-  private final TransportSubsystem transportSubsystem = new TransportSubsystem();
-  private final Supplier<Boolean> shouldSprint = () -> mainController.rightTrigger().getAsBoolean();
+  private final ShooterSubsystem shooterSubsystem;
+  private final AngleSubsystem angleSubsystem;
+  private final TransportSubsystem transportSubsystem;
+  private final Supplier<Boolean> shouldSprint = () -> mainController.x().getAsBoolean();
   private final Supplier<Boolean> shouldLockPose = () -> mainController.a().getAsBoolean();
 
-  
   public RobotContainer() {
     feederSubsystem = new FeederSubsystem();
+    intakeSubsystem = new IntakeSubsystem();
+    shooterSubsystem = new ShooterSubsystem();
+    angleSubsystem = new AngleSubsystem();
+    transportSubsystem = new TransportSubsystem();
     swerveDrive = SwerveDriveFactory.createSwerveDrive(
         SwerveDriveFactory.SwerveImplementation.WPILIB,
         SwerveDriveFactory.RobotVariant.TEST);
@@ -51,9 +54,8 @@ public class RobotContainer {
     angleSubsystem.setDistanceSupplier(() -> Meters.of(swerveDrive.getPose2d().getTranslation()
         .getDistance(FieldConstants.getHubPosition()))
         .in(Centimeters));
-    angleSubsystem.angleSyncCmd(20).schedule();
-    //angleSubsystem.setDefaultCommand(new AutoAngleCmd(angleSubsystem, swerveDrive));
-    intakeSubsystem = new IntakeSubsystem();
+    angleSubsystem.angleSyncCmd(15);
+
     configureBindings();
   }
 
@@ -64,24 +66,27 @@ public class RobotContainer {
       swerveDrive.zeroGyro();
       swerveDrive.resetPose(new Pose2d(swerveDrive.getPose2d().getTranslation(), Rotation2d.fromDegrees(0)));
     }));
+    angleSubsystem.setDefaultCommand(new AutoAngleCmd(angleSubsystem,
+        swerveDrive));
 
-    // shooterSubsystem.setDefaultCommand(shooterSubsystem.shootCmd(ShooterConstants.shooterLowGearTarget));
-    mainController.povUp().onTrue(new AutoAngleCmd(angleSubsystem, swerveDrive));
+    // 主 Driver
+    mainController.rightTrigger().onTrue(intakeSubsystem.intakeCmd());
+    mainController.rightBumper().onTrue(intakeSubsystem.reverseIntakeCmd());
     mainController.leftTrigger().whileTrue(
-        new AdjustSpeedAngleCmd(shooterSubsystem,angleSubsystem, swerveDrive));
-            //.alongWith(aimAtHubCmd()));
+        new AdjustSpeedAngleCmd(shooterSubsystem, angleSubsystem, swerveDrive));
 
-    copilotController.povUp().onTrue(angleSubsystem.angleSyncCmd(20));
-    copilotController.povDown().onTrue(angleSubsystem.angleSyncCmd(30));
-    copilotController.povLeft().onTrue(angleSubsystem.angleSyncCmd(40));
-    copilotController.povRight().onTrue(angleSubsystem.angleSyncCmd(50));
-    mainController.a().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.TRANS));
-    mainController.b().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.MAX));
-    mainController.x().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.CLOSE));
-    mainController.y().onTrue(Commands.runOnce(angleSubsystem::lockCurrentAngle, angleSubsystem));
-    mainController.leftBumper().whileTrue(shooterSubsystem.shootCmd());
+    // 副 Driver
+    copilotController.a().whileTrue(intakeSubsystem.deployPivotCmd());
+    copilotController.y().whileTrue(intakeSubsystem.retractPivotCmd());
+    copilotController.b().whileTrue(intakeSubsystem.retakePivotCmd());
+    copilotController.x()
+        .onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.CLOSE).
+        alongWith(shooterSubsystem.shootCmd(0)));
 
-    copilotController.rightBumper().whileTrue(feederSubsystem.feedInCmd());
+    copilotController.rightTrigger().whileTrue(transportSubsystem.transportInCmd());
+    copilotController.leftTrigger().whileTrue(feederSubsystem.feedInCmd());
+    copilotController.povUp().whileTrue(shooterSubsystem.shootCmd());
+
   }
 
   public Command getAutonomousCommand() {
