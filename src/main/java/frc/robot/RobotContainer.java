@@ -7,6 +7,8 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Centimeters;
 import static edu.wpi.first.units.Units.Meters;
 
+import com.fasterxml.jackson.databind.MappingIterator;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -21,6 +23,7 @@ import frc.robot.subsystems.AngleSubsystem.AnglePreset;
 import frc.robot.subsystems.FeederSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TransportSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveDrive;
 import frc.robot.subsystems.swervedrive.SwerveDriveFactory;
 import java.util.function.Supplier;
@@ -28,7 +31,9 @@ import java.util.function.Supplier;
 public class RobotContainer {
   private final CommandXboxController copilotController = new CommandXboxController(1);
   private final CommandXboxController mainController = new CommandXboxController(0);
+  
   private SwerveDrive swerveDrive;
+  private final IntakeSubsystem intakeSubsystem;
   private final FeederSubsystem feederSubsystem;
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
   private final AngleSubsystem angleSubsystem = new AngleSubsystem();
@@ -36,6 +41,7 @@ public class RobotContainer {
   private final Supplier<Boolean> shouldSprint = () -> mainController.rightTrigger().getAsBoolean();
   private final Supplier<Boolean> shouldLockPose = () -> mainController.a().getAsBoolean();
 
+  
   public RobotContainer() {
     feederSubsystem = new FeederSubsystem();
     swerveDrive = SwerveDriveFactory.createSwerveDrive(
@@ -47,6 +53,7 @@ public class RobotContainer {
         .in(Centimeters));
     angleSubsystem.angleSyncCmd(20).schedule();
     //angleSubsystem.setDefaultCommand(new AutoAngleCmd(angleSubsystem, swerveDrive));
+    intakeSubsystem = new IntakeSubsystem();
     configureBindings();
   }
 
