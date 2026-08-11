@@ -12,7 +12,7 @@ import frc.robot.subsystems.AngleSubsystem;
 
 /**
  * 副手用左搖桿手動控制角度:
- * - 搖桿往上推到底(<= -deadband附近全速) -> 逼近最大角度
+ * - 搖桿往上推到底(<= -deadLine附近全速) -> 逼近最大角度
  * - 搖桿往下推到底 -> 逼近最低可用角度(10度，不是完全歸零，避免誤觸直接關到底損害shooter)
  * - 搖桿推多少幅度，角度變化速度就跟著多快(比例控制，不是選固定preset)
  */
@@ -22,7 +22,7 @@ public class ManualAngleJoystickCmd extends Command {
 
   private double targetAngle;
 
-  private static final double deadband = 0.1; // 搖桿死區，避免手把飄移誤觸發
+  private static final double deadLine = 0.1; // 搖桿死區，避免手把飄移誤觸發
   private static final double maxDegreesPerSecond = 60; // 搖桿推到底時，每秒最多轉多少度，需依機構實測調整
   private static final double loopPeriodSeconds = 0.02; // 標準 20ms loop
 
@@ -41,7 +41,7 @@ public class ManualAngleJoystickCmd extends Command {
   public void execute() {
     double rawY = copilotController.getLeftY(); // Xbox: 上推通常是負值
 
-    double stickValue = MathUtil.applyDeadband(rawY, deadband);
+    double stickValue = MathUtil.applyDeadband(rawY, deadLine);
 
     // 上推(負值)要對應角度增加，所以取負號
     double angleDelta = -stickValue * maxDegreesPerSecond * loopPeriodSeconds;
