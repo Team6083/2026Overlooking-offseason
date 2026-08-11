@@ -101,16 +101,16 @@ public class AimAssistCmd extends SwerveControlCmd {
     }
     Translation2d dir = toHub.div(norm);
 
-    double vAlong =
+    double alongSpeed =
         fieldRel.vxMetersPerSecond * dir.getX() + fieldRel.vyMetersPerSecond * dir.getY();
-    double vPerp =
+    double sidewaysSpeed =
         -fieldRel.vxMetersPerSecond * dir.getY() + fieldRel.vyMetersPerSecond * dir.getX();
 
-    double effectiveBallSpeed = AimAssistConstant.kBallSpeedMps + vAlong;
+    double effectiveBallSpeed = AimAssistConstant.kBallSpeedMps + alongSpeed;
     if (effectiveBallSpeed <= 1e-6) {
       return Rotation2d.kZero;
     }
-    return new Rotation2d(Math.atan2(-vPerp, effectiveBallSpeed));
+    return new Rotation2d(Math.atan2(-sidewaysSpeed, effectiveBallSpeed));
   }
 
   private Translation2d hubPosition() {
