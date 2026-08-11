@@ -36,9 +36,9 @@ public class AutoShootCmd extends Command {
 
   /**
    * 全場自動射球:
-   * | Trench (含緩衝) -> Shooter/Feeder/Transport 全部強制停止，角度歸零，方便過Trench/Bump 
-   * | Alliance zone -> 依距離查ShotTable瞄準Hub，轉速到位才餵球 
-   * | Neutral ZONE -> 固定平飛角度+固定傳球轉速，轉速到位才餵球 |
+   * | Trench (含緩衝) -> Shooter/Feeder/Transport 全部強制停止，角度歸零，方便過Trench/Bump
+   * | Alliance zone -> 依距離查 ShotTable 瞄準 Hub，轉速到位才餵球
+   * | Neutral zone -> 固定平飛角度 + 固定傳球轉速，轉速到位才餵球 |
    */
   public AutoShootCmd(ShooterSubsystem shooterSubsystem,
       AngleSubsystem angleSubsystem,
@@ -71,7 +71,7 @@ public class AutoShootCmd extends Command {
       transportSubsystem.stopTransport();
       angleSubsystem.angleSync(targetAngle);
 
-      SmartDashboard.putString("autoShooter/autoZone", "trench");
+      SmartDashboard.putString("autoShooter/autoZone", "Trench");
       return;
     }
 
@@ -87,12 +87,12 @@ public class AutoShootCmd extends Command {
         hasValidTarget = false;
       }
       SmartDashboard.putNumber("autoShooterDistance", dis.in(Centimeters));
-      zoneLabel = "own";
+      zoneLabel = "Alliance zone";
 
     } else {
       targetAngle = AngleConstants.angleMotorTransAngle;
       targetVelocity = ShooterConstants.passVelocity;
-      zoneLabel = "middle";
+      zoneLabel = "Neutral zone";
     }
 
     shooterSubsystem.shoot(targetVelocity);
