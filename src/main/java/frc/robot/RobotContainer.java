@@ -42,19 +42,12 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    // swerveDrive.setDefaultCommand(new SwerveControlCmd(
-    //     swerveDrive, mainController, shouldSprint, shouldLockPose));
-    // mainController.start().onTrue(Commands.runOnce(() -> {
-    //   swerveDrive.zeroGyro();
-    //   swerveDrive.resetPose(new Pose2d(swerveDrive.getPose2d().getTranslation(), Rotation2d.fromDegrees(0)));
-    // }));
-    mainController.a().whileTrue(intakeSubsystem.reverseIntakeCmd());
-    mainController.b().whileTrue(intakeSubsystem.intakeCmd());
-    mainController.povUp().whileTrue(intakeSubsystem.manualRetractPivotCmd());
-    mainController.povDown().whileTrue(intakeSubsystem.manualDeployPivotCmd());
-    mainController.y().onTrue(intakeSubsystem.autoDeployPivotCmd());
-    mainController.x().onTrue(intakeSubsystem.autoRetractPivotCmd());
-    mainController.povLeft().whileTrue(intakeSubsystem.retakePivotCmd());
+    swerveDrive.setDefaultCommand(new SwerveControlCmd(
+        swerveDrive, mainController, shouldSprint, shouldLockPose));
+    mainController.start().onTrue(Commands.runOnce(() -> {
+      swerveDrive.zeroGyro();
+      swerveDrive.resetPose(new Pose2d(swerveDrive.getPose2d().getTranslation(), Rotation2d.fromDegrees(0)));
+    }));
   }
 
   public Command getAutonomousCommand() {

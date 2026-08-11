@@ -13,6 +13,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 
@@ -37,7 +38,7 @@ public class IntakeSubsystem extends SubsystemBase {
     SparkMaxConfig pivotConfig = new SparkMaxConfig();
     pivotConfig.inverted(IntakeConstants.pivotInverted);
     pivotMotor.configure(pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    pivotFollowPidController.enableContinuousInput(0, IntakeConstants.pivotEncoderFullRange);
+    //pivotFollowPidController.enableContinuousInput(0, IntakeConstants.pivotEncoderFullRange);
     pivotMotor.getEncoder().setPosition(IntakeConstants.pivotExpectedZero);
   }
 
@@ -60,8 +61,12 @@ public class IntakeSubsystem extends SubsystemBase {
     pivotMotor.set(IntakeConstants.pivotManualSpeed);
   }
 
-  public void manualPivotRetract() {
+  public void manualPivotReverse() {
     pivotMotor.set(-IntakeConstants.pivotManualSpeed);
+  }
+
+  public void manualPivotReverseRetake() {
+    pivotMotor.set(IntakeConstants.PivotRetakeSpeed);
   }
 
   public void stopRotate() {
@@ -83,15 +88,15 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   private void runPivotTarget(double targetPosition, double maxOutput) {
-    double currentPosition = pivotMotor.getEncoder().getPosition();
+    double currentPosition = pivotMotor.getEncoder().getPosition() / 9;
     double pidOutput = pivotFollowPidController.calculate(currentPosition, targetPosition);
-    pidOutput = MathUtil.clamp(pidOutput, -1.0, maxOutput);
+    pidOutput = MathUtil.clamp(pidOutput, -1.8, maxOutput);
     pivotMotor.set(pidOutput);
   }
 
   // Getters
   public double getPivotPosition() {
-    return pivotMotor.getEncoder().getPosition() * 360.0;
+    return pivotMotor.getEncoder().getPosition() / 9;
   }
 
   // intake
@@ -115,8 +120,28 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public Command manualRetractPivotCmd() {
-    Command cmd = runEnd(this::manualPivotRetract, this::stopRotate);
+    Command cmd = runEnd(this::manualPivotReverse, this::stopRotate);
     cmd.setName("manualRetractPivotCmd");
+    return cmd;
+  }
+
+  // public Command pivotRetakeCmd() {
+  //   Command cmd = Commands.repeatingSequence(
+  //       Commands.run(
+  //         this::manualPivotReverseRetake
+  //       ).withTimeout(2),
+
+  //       Commands.run(
+  //         this::manualPivotDeploy()
+  //       ).withTimeout(1)
+  //   );
+  //   cmd.setName("pivotRetakeCmd");
+  //   return cmd;
+  // }
+
+  public Command retakePivotCmd() {
+    Command cmd = runEnd(this::manualPivotReverseRetake, this::stopRotate);
+    cmd.setName("retakePivotCmd");
     return cmd;
   }
 
@@ -133,12 +158,6 @@ public class IntakeSubsystem extends SubsystemBase {
     return cmd;
   }
 
-  public Command retakePivotCmd() {
-    Command cmd = runEnd(this::pivotRetake, this::stopRotate);
-    cmd.setName("retakePivotCmd");
-    return cmd;
-  }
-
   public Command autoDeployPivotCmd() {
     Command cmd = deployPivotCmd()
         .until(() -> getPivotPosition() >= IntakeConstants.pivotDeployStopPosition);
@@ -150,13 +169,6 @@ public class IntakeSubsystem extends SubsystemBase {
     Command cmd = retractPivotCmd()
         .until(() -> getPivotPosition() <= IntakeConstants.pivotRetractStopPosition);
     cmd.setName("autoRetractPivotCmd");
-    return cmd;
-  }
-
-  public Command autoRetakePivotCmd() {
-    Command cmd = retakePivotCmd()
-        .until(() -> getPivotPosition() >= IntakeConstants.pivotRetakeStopPosition);
-    cmd.setName("autoRetakePivotCmd");
     return cmd;
   }
 
