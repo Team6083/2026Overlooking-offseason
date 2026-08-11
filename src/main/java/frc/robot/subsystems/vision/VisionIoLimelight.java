@@ -8,25 +8,24 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants.VisionConstant;
-
 import java.util.function.DoubleSupplier;
 
-public class VisionIOLimelight implements VisionIO {
+public class VisionIoLimelight implements VisionIo {
 
   private final String[] cameraNames;
   private final NetworkTable[] tables;
   private final DoubleSupplier timeSource;
   private final DoubleSupplier yawSupplierDegrees;
 
-  public VisionIOLimelight(String... cameraNames) {
+  public VisionIoLimelight(String... cameraNames) {
     this(NetworkTableInstance.getDefault(), Timer::getFPGATimestamp, null, cameraNames);
   }
 
-  public VisionIOLimelight(DoubleSupplier yawSupplierDegrees, String... cameraNames) {
+  public VisionIoLimelight(DoubleSupplier yawSupplierDegrees, String... cameraNames) {
     this(NetworkTableInstance.getDefault(), Timer::getFPGATimestamp, yawSupplierDegrees, cameraNames);
   }
 
-  VisionIOLimelight(
+  VisionIoLimelight(
       NetworkTableInstance nt,
       DoubleSupplier timeSource,
       DoubleSupplier yawSupplierDegrees,
@@ -44,7 +43,7 @@ public class VisionIOLimelight implements VisionIO {
   }
 
   @Override
-  public void updateInputs(VisionIOInputs inputs) {
+  public void updateInputs(VisionIoInputs inputs) {
     if (inputs.cameras.length != cameraNames.length) {
       inputs.cameras = new CameraInputs[cameraNames.length];
       for (int i = 0; i < cameraNames.length; i++) {

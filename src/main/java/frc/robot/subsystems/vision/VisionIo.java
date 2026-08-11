@@ -2,7 +2,7 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.Pose3d;
 
-public interface VisionIO {
+public interface VisionIo {
 
   class CameraInputs {
     public boolean seesTarget = false;
@@ -22,9 +22,9 @@ public interface VisionIO {
     public FiducialObservation[] fiducials = new FiducialObservation[0];
   }
 
-  class VisionIOInputs {
+  class VisionIoInputs {
     public CameraInputs[] cameras = new CameraInputs[0];
   }
 
-  void updateInputs(VisionIOInputs inputs);
+  void updateInputs(VisionIoInputs inputs);
 }

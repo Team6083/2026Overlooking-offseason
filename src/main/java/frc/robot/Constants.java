@@ -50,14 +50,13 @@ public class Constants {
 
   public static final DriveBaseConstant TEST_CONFIG = new DriveBaseConstant(
       new SwerveModuleConstant(
-          20, 21, 12, 0.348145, true, false, "FrontLeft"),
+          23, 22, 11, 0.338623, true, false, "FrontLeft"),
       new SwerveModuleConstant(
-          22, 23, 14, 0.482666, true, false, "FrontRight"),
+          20, 21, 13, 0.320068, true, false, "FrontRight"),
       new SwerveModuleConstant(
-          26, 27, 11, 0.403809, true, false, "BackLeft"),
+          26, 27, 12, 0.406250, true, false, "BackLeft"),
       new SwerveModuleConstant(
-          22, 20, 14, 0.302979, true, true, "BackRight"));
-
+          24, 25, 14, -0.239990, true, false, "BackRight"));
   public static final DriveBaseConstant COMPETITION_CONFIG = new DriveBaseConstant(
       new SwerveModuleConstant(
           20, 21, 12, 0.348145, true, false, "FrontLeft"),
@@ -98,6 +97,20 @@ public class Constants {
     public static final double untrustedStd = 9999.0;
   }
 
+  public static final class TransportConstants {
+    public static final int transportMotorID = 36;
+    public static final double transportMoterIn = 0.5;
+    public static final double transportMoterOut = -0.5;
+    public static final boolean transportMotorInverted = true;
+  }
+
+  public final class FeederConstants {
+    public static final int feederMotorId = 32;
+    public static final boolean feederMotorInverted = false;
+    public static final double feederMotorIn = 0.5;
+    public static final double feederMotorOut = -0.5;
+  }
+
   public static final class FieldConstant {
     public static final Translation2d kBlueHub = new Translation2d(4.611624, 4.021328);
     public static final Translation2d kRedHub = new Translation2d(11.901424, 4.021328);
@@ -116,12 +129,5 @@ public class Constants {
     public static final double kDriverRotDeadband = 0.1;
 
     public static final double kBallSpeedMps = 12.0;
-  }
-
-  public final class FeederConstants {
-    public static final int feederMotorId = 32;
-    public static final boolean feederMotorInverted = false;
-    public static final double feederMotorIn = 0.5;
-    public static final double feederMotorOut = -0.5;
   }
 }
