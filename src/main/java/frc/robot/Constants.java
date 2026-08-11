@@ -60,12 +60,12 @@ public class Constants {
           24, 25, 13, -0.242676, true, false, "BackRight"));
 
 public static class AutoConstants {
-    public static final double kpTranslation = 0;
-    public static final double kiTranslation = 0;
-    public static final double kdTranslation = 0;
-    public static final double kpRotation = 0;
-    public static final double kiRotation = 0;
-    public static final double kdRotation = 0;
+    public static final double kpTranslation = 5.75;
+    public static final double kiTranslation = 0.0;
+    public static final double kdTranslation = 0.75;
+    public static final double kpRotation = 4.5;
+    public static final double kiRotation = 0.0;
+    public static final double kdRotation = 0.5;
   }
 
 }
