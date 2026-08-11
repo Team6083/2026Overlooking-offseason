@@ -4,34 +4,51 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.subsystems.FeederSubsystem;
-import java.util.function.Supplier;
+import static edu.wpi.first.units.Units.Centimeters;
+import static edu.wpi.first.units.Units.Meters;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants.FieldConstants;
+import frc.robot.Constants.ShooterConstants;
+import frc.robot.commands.AutoAngleCmd;
+import frc.robot.commands.AutoFireCmd;
 import frc.robot.commands.SwerveControlCmd;
+import frc.robot.lib.shooting.ShotTable;
+import frc.robot.subsystems.AngleSubsystem;
+import frc.robot.subsystems.AngleSubsystem.AnglePreset;
+import frc.robot.subsystems.FeederSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.TransportSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveDrive;
 import frc.robot.subsystems.swervedrive.SwerveDriveFactory;
+import java.util.function.Supplier;
 
 public class RobotContainer {
+  private final CommandXboxController copilotController = new CommandXboxController(1);
   private final CommandXboxController mainController = new CommandXboxController(0);
   private SwerveDrive swerveDrive;
   private final FeederSubsystem feederSubsystem;
-  private final Supplier<Boolean> shouldSprint = () -> mainController.leftBumper().getAsBoolean();
+  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
+  private final AngleSubsystem angleSubsystem = new AngleSubsystem();
+  private final TransportSubsystem transportSubsystem = new TransportSubsystem();
+  private final Supplier<Boolean> shouldSprint = () -> mainController.rightTrigger().getAsBoolean();
   private final Supplier<Boolean> shouldLockPose = () -> mainController.a().getAsBoolean();
+  private final ShotTable shotTable = new ShotTable("shooting_table.csv");
 
   public RobotContainer() {
     feederSubsystem = new FeederSubsystem();
     swerveDrive = SwerveDriveFactory.createSwerveDrive(
         SwerveDriveFactory.SwerveImplementation.WPILIB,
         SwerveDriveFactory.RobotVariant.TEST);
+
+    angleSubsystem.setDistanceSupplier(() -> Meters.of(swerveDrive.getPose2d().getTranslation()
+        .getDistance(FieldConstants.getHubPosition()))
+        .in(Centimeters));
+    angleSubsystem.angleSyncCmd(20).schedule();
     configureBindings();
   }
 
@@ -42,6 +59,25 @@ public class RobotContainer {
       swerveDrive.zeroGyro();
       swerveDrive.resetPose(new Pose2d(swerveDrive.getPose2d().getTranslation(), Rotation2d.fromDegrees(0)));
     }));
+
+    // shooterSubsystem.setDefaultCommand(shooterSubsystem.shootCmd(ShooterConstants.shooterLowGearTarget));
+    mainController.a().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.TRANS));
+    mainController.b().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.MAX));
+    mainController.x().onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.CLOSE));
+    mainController.y().onTrue(Commands.runOnce(angleSubsystem::lockCurrentAngle, angleSubsystem));
+    mainController.leftBumper().whileTrue(shooterSubsystem.shootCmd());
+    // 副Driver: 按著就自動追蹤角度
+    copilotController.leftBumper().whileTrue(
+        new AutoAngleCmd(angleSubsystem, swerveDrive));
+    // 主Driver: 按著就依距離自動決定轉速+餵球
+    mainController.leftBumper().whileTrue(
+        new AutoFireCmd(shooterSubsystem, feederSubsystem, transportSubsystem, swerveDrive, shotTable));
+    // alongWith
+    mainController.povUp().onTrue(angleSubsystem.angleSyncCmd(20));
+    mainController.povDown().onTrue(angleSubsystem.angleSyncCmd(30));
+    mainController.povLeft().onTrue(angleSubsystem.angleSyncCmd(40));
+    mainController.povRight().onTrue(angleSubsystem.angleSyncCmd(50));
+    mainController.rightBumper().whileTrue(feederSubsystem.feedInCmd());
   }
 
   public Command getAutonomousCommand() {
