@@ -9,6 +9,8 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.Distance;
@@ -107,5 +109,25 @@ public class Constants {
     public static final boolean feederMotorInverted = false;
     public static final double feederMotorIn = 0.5;
     public static final double feederMotorOut = -0.5;
+  }
+
+  public static final class FieldConstant {
+    public static final Translation2d kBlueHub = new Translation2d(4.611624, 4.021328);
+    public static final Translation2d kRedHub = new Translation2d(11.901424, 4.021328);
+  }
+
+  public static final class AimAssistConstant {
+    public static final Rotation2d kShooterYawOffset = Rotation2d.fromDegrees(180);
+
+    public static final double kP = 0.07;
+    public static final double kI = 0.002;
+    public static final double kD = 0.0;
+    public static final double kIZoneDeg = 3.0;
+    public static final double kToleranceDeg = 1.0;
+    public static final double kMaxRotOutput = 1.5;
+    public static final double kAlignDebounceSec = 0.1;
+    public static final double kDriverRotDeadband = 0.1;
+
+    public static final double kBallSpeedMps = 12.0;
   }
 }
