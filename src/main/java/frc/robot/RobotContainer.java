@@ -4,11 +4,7 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.subsystems.FeederSubsystem;
+
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -17,21 +13,26 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.SwerveControlCmd;
+import frc.robot.subsystems.FeederSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveDrive;
 import frc.robot.subsystems.swervedrive.SwerveDriveFactory;
 
 public class RobotContainer {
   private final CommandXboxController mainController = new CommandXboxController(0);
+  private Supplier<Boolean> shouldSprint = () -> mainController.leftBumper().getAsBoolean();
+  private Supplier<Boolean> shouldLockPose = () -> mainController.a().getAsBoolean();
+  
   private SwerveDrive swerveDrive;
+  private final IntakeSubsystem intakeSubsystem;
   private final FeederSubsystem feederSubsystem;
-  private final Supplier<Boolean> shouldSprint = () -> mainController.leftBumper().getAsBoolean();
-  private final Supplier<Boolean> shouldLockPose = () -> mainController.a().getAsBoolean();
-
+  
   public RobotContainer() {
     feederSubsystem = new FeederSubsystem();
     swerveDrive = SwerveDriveFactory.createSwerveDrive(
         SwerveDriveFactory.SwerveImplementation.WPILIB,
         SwerveDriveFactory.RobotVariant.TEST);
+    intakeSubsystem = new IntakeSubsystem();
     configureBindings();
   }
 
