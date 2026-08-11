@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.commands.AdjustSpeedAngleCmd;
 import frc.robot.commands.AutoAngleCmd;
+import frc.robot.commands.ManualAngleJoystickCmd;
 import frc.robot.commands.SwerveControlCmd;
 import frc.robot.subsystems.AngleSubsystem;
 import frc.robot.subsystems.AngleSubsystem.AnglePreset;
@@ -80,13 +81,13 @@ public class RobotContainer {
     copilotController.y().whileTrue(intakeSubsystem.retractPivotCmd());
     copilotController.b().whileTrue(intakeSubsystem.retakePivotCmd());
     copilotController.x()
-        .onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.CLOSE).
-        alongWith(shooterSubsystem.shootCmd(0)));
+        .onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.CLOSE).alongWith(shooterSubsystem.shootCmd(0)));
 
     copilotController.rightTrigger().whileTrue(transportSubsystem.transportInCmd());
     copilotController.leftTrigger().whileTrue(feederSubsystem.feedInCmd());
     copilotController.povUp().whileTrue(shooterSubsystem.shootCmd());
-
+    copilotController.leftBumper().whileTrue(
+        new ManualAngleJoystickCmd(angleSubsystem, copilotController));
   }
 
   public Command getAutonomousCommand() {

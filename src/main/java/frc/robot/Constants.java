@@ -288,5 +288,7 @@ public class Constants {
 
       public static final double angleDistanceMultiplier = 40;
       public static final double angleDistanceExponent = -0.001;
+
+      public static final double angleMinManualAngle = 10;
     }
   }

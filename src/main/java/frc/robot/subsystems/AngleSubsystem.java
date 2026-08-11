@@ -82,6 +82,10 @@ public class AngleSubsystem extends SubsystemBase {
     this.targetAngle = angleEncoder.getPosition();
   }
 
+  public double getCurrentTargetAngle() {
+    return this.targetAngle;
+  }
+
   // Angle Motor Sync
   public void angleSync(double targetAngle) {
     double currentAngle = angleEncoder.getPosition();
