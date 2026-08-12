@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-<<<<<<< HEAD
 import static edu.wpi.first.units.Units.Centimeters;
 import static edu.wpi.first.units.Units.Meters;
 
@@ -128,9 +127,9 @@ public class RobotContainer {
    private void registerCommand() {
     NamedCommands.registerCommand("Intake", Commands.runOnce(() -> intakeSubsystem.intake()));
     NamedCommands.registerCommand("StopIntake", Commands.runOnce(() -> intakeSubsystem.stopIntake()));
-    NamedCommands.registerCommand("DeployIntake", Commands.runOnce(() -> intakeSubsystem.deploy()));
-    NamedCommands.registerCommand("RetractIntake", Commands.runOnce(() -> intakeSubsystem.retract()));
-    NamedCommands.registerCommand("Shoot", Commands.runOnce(() -> shooterSubsystem.shoot()));
+    NamedCommands.registerCommand("DeployIntake", Commands.runOnce(() -> intakeSubsystem.deployPivotCmd()));
+    NamedCommands.registerCommand("RetractIntake", Commands.runOnce(() -> intakeSubsystem.retractPivotCmd()));
+    NamedCommands.registerCommand("Shoot", Commands.runOnce(() -> shooterSubsystem.shootCmd()));
   
    }
 
