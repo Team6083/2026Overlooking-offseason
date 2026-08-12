@@ -169,14 +169,6 @@ public class Constants {
       public static final Distance trenchZoneLength = Meters.of(4);
 
       public static final double trenchAngleMargin = 0.3;
-
-      public static Translation2d getHubPosition() {
-        if (DriverStation.getAlliance().isPresent()
-            && DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
-          return new Translation2d(FieldConstants.redHubX, FieldConstants.redHubY);
-        }
-        return new Translation2d(FieldConstants.blueHubX, FieldConstants.blueHubY);
-      }
     }
 
     public static class FieldZones {
