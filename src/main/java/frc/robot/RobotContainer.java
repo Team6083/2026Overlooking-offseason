@@ -42,7 +42,7 @@ public class RobotContainer {
 
   private Supplier<Boolean> shouldSprint = () -> mainController.leftBumper().getAsBoolean();
   private Supplier<Boolean> shouldLockPose = () -> mainController.a().getAsBoolean();
-   private final SendableChooser<Command> autoChooser;
+  private final SendableChooser<Command> autoChooser;
   private SwerveDrive swerveDrive;
   private final IntakeSubsystem intakeSubsystem;
   private final FeederSubsystem feederSubsystem;
@@ -124,16 +124,16 @@ public class RobotContainer {
         new ManualAngleJoystickCmd(angleSubsystem, copilotController));
   }
 
-   private void registerCommand() {
+  private void registerCommand() {
     NamedCommands.registerCommand("Intake", Commands.runOnce(() -> intakeSubsystem.intake()));
     NamedCommands.registerCommand("StopIntake", Commands.runOnce(() -> intakeSubsystem.stopIntake()));
     NamedCommands.registerCommand("DeployIntake", Commands.runOnce(() -> intakeSubsystem.deployPivotCmd()));
     NamedCommands.registerCommand("RetractIntake", Commands.runOnce(() -> intakeSubsystem.retractPivotCmd()));
     NamedCommands.registerCommand("Shoot", Commands.runOnce(() -> shooterSubsystem.shootCmd()));
-  
-   }
 
-   public Command getAutonomousCommand() {
+  }
+
+  public Command getAutonomousCommand() {
     return autoChooser.getSelected();
   }
 }
