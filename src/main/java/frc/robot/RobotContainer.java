@@ -25,6 +25,8 @@ import frc.robot.subsystems.TransportSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveDrive;
 import frc.robot.subsystems.swervedrive.SwerveDriveFactory;
+import frc.robot.subsystems.vision.VisionIoLimelight;
+import frc.robot.subsystems.vision.VisionSubsystem;
 import java.util.function.Supplier;
 
 public class RobotContainer {
@@ -37,6 +39,7 @@ public class RobotContainer {
   private final ShooterSubsystem shooterSubsystem;
   private final AngleSubsystem angleSubsystem;
   private final TransportSubsystem transportSubsystem;
+  private final VisionSubsystem visionSubsystem;
   private final Supplier<Boolean> shouldSprint = () -> mainController.x().getAsBoolean();
   private final Supplier<Boolean> shouldLockPose = () -> mainController.b().getAsBoolean();
 
@@ -49,6 +52,11 @@ public class RobotContainer {
     swerveDrive = SwerveDriveFactory.createSwerveDrive(
         SwerveDriveFactory.SwerveImplementation.WPILIB,
         SwerveDriveFactory.RobotVariant.TEST);
+
+    visionSubsystem = new VisionSubsystem(
+        new VisionIoLimelight(() -> swerveDrive.getGyroRotation2d().getDegrees(), "limelight"),
+        swerveDrive::getPose2d,
+        (pose, timestamp, stdDevs) -> swerveDrive.addVisionMeasurement(pose, timestamp, stdDevs));
 
     angleSubsystem.setDistanceSupplier(() -> Meters.of(swerveDrive.getPose2d().getTranslation()
         .getDistance(FieldUtil.getHubPosition()))
@@ -79,7 +87,8 @@ public class RobotContainer {
             transportSubsystem, feederSubsystem,
             intakeSubsystem, angleSubsystem,
             () -> true)
-            .alongWith(new AimAssistCmd(swerveDrive, mainController, shouldSprint, shouldLockPose)));
+            .alongWith(new AimAssistCmd(swerveDrive, mainController, shouldSprint, shouldLockPose,
+                visionSubsystem::isPoseTrusted)));
 
     // 副 Driver
     copilotController.a().whileTrue(intakeSubsystem.deployPivotCmd());
