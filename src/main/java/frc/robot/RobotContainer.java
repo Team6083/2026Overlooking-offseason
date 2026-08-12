@@ -54,7 +54,8 @@ public class RobotContainer {
         SwerveDriveFactory.RobotVariant.TEST);
 
     visionSubsystem = new VisionSubsystem(
-        new VisionIoLimelight(() -> swerveDrive.getGyroRotation2d().getDegrees(), "limelight"),
+        new VisionIoLimelight(() -> swerveDrive.getGyroRotation2d().getDegrees(),
+            "limelight-intake", "limelight-shooter"),
         swerveDrive::getPose2d,
         (pose, timestamp, stdDevs) -> swerveDrive.addVisionMeasurement(pose, timestamp, stdDevs));
 
