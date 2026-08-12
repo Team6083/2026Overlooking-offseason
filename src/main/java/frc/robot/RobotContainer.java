@@ -14,6 +14,8 @@ import java.util.function.Supplier;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import static edu.wpi.first.units.Units.Centimeters;
+import static edu.wpi.first.units.Units.Meters;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -21,24 +23,48 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.AimAssistCmd;
+import frc.robot.commands.AutoAngleCmd;
+import frc.robot.commands.ManualAngleJoystickCmd;
+import frc.robot.commands.ShooterComboCmd;
 import frc.robot.commands.SwerveControlCmd;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.lib.FieldUtil;
+import frc.robot.subsystems.AngleSubsystem;
+import frc.robot.subsystems.AngleSubsystem.AnglePreset;
+import frc.robot.subsystems.FeederSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.TransportSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveDrive;
 import frc.robot.subsystems.swervedrive.SwerveDriveFactory;
+import frc.robot.subsystems.vision.VisionIoLimelight;
+import frc.robot.subsystems.vision.VisionSubsystem;
+import java.util.function.Supplier;
 
 public class RobotContainer {
   private final CommandXboxController mainController = new CommandXboxController(0);
   private Supplier<Boolean> shouldSprint = () -> mainController.leftBumper().getAsBoolean();
   private Supplier<Boolean> shouldLockPose = () -> mainController.a().getAsBoolean();
    private final SendableChooser<Command> autoChooser;
-   private  final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-    private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
+  private final CommandXboxController copilotController = new CommandXboxController(1);
+
   private SwerveDrive swerveDrive;
+  private final IntakeSubsystem intakeSubsystem;
   private final FeederSubsystem feederSubsystem;
+  private final ShooterSubsystem shooterSubsystem;
+  private final AngleSubsystem angleSubsystem;
+  private final TransportSubsystem transportSubsystem;
+  private final VisionSubsystem visionSubsystem;
+
 
   public RobotContainer() {
     feederSubsystem = new FeederSubsystem();
+    intakeSubsystem = new IntakeSubsystem();
+    shooterSubsystem = new ShooterSubsystem();
+    angleSubsystem = new AngleSubsystem();
+    transportSubsystem = new TransportSubsystem();
     swerveDrive = SwerveDriveFactory.createSwerveDrive(
         SwerveDriveFactory.SwerveImplementation.WPILIB,
         SwerveDriveFactory.RobotVariant.TEST);
@@ -51,26 +77,66 @@ public class RobotContainer {
     autoChooser = AutoBuilder.buildAutoChooser();
 
     SmartDashboard.putData("autoChooser", autoChooser);
+    visionSubsystem = new VisionSubsystem(
+        new VisionIoLimelight(() -> swerveDrive.getGyroRotation2d().getDegrees(),
+            "limelight-intake", "limelight-shooter"),
+        swerveDrive::getPose2d,
+        (pose, timestamp, stdDevs) -> swerveDrive.addVisionMeasurement(pose, timestamp, stdDevs));
+
+    angleSubsystem.setDistanceSupplier(() -> Meters.of(swerveDrive.getPose2d().getTranslation()
+        .getDistance(FieldUtil.getHubPosition()))
+        .in(Centimeters));
+    angleSubsystem.angleSyncCmd(15).schedule();
 
     configureBindings();
   }
 
   private void configureBindings() {
+    // 主 Driver
+    // swerve
     swerveDrive.setDefaultCommand(new SwerveControlCmd(
         swerveDrive, mainController, shouldSprint, shouldLockPose));
     mainController.start().onTrue(Commands.runOnce(() -> {
       swerveDrive.zeroGyro();
       swerveDrive.resetPose(new Pose2d(swerveDrive.getPose2d().getTranslation(), Rotation2d.fromDegrees(0)));
     }));
+
+    angleSubsystem.setDefaultCommand(new AutoAngleCmd(angleSubsystem,
+        swerveDrive));
+
+    mainController.rightTrigger().onTrue(intakeSubsystem.intakeCmd());
+    mainController.rightBumper().onTrue(intakeSubsystem.reverseIntakeCmd());
+    mainController.leftTrigger().whileTrue(
+        new ShooterComboCmd(
+            swerveDrive, shooterSubsystem,
+            transportSubsystem, feederSubsystem,
+            intakeSubsystem, angleSubsystem,
+            () -> true)
+            .alongWith(new AimAssistCmd(swerveDrive, mainController, shouldSprint, shouldLockPose,
+                visionSubsystem::isPoseTrusted)));
+
+    // 副 Driver
+    copilotController.a().whileTrue(intakeSubsystem.deployPivotCmd());
+    copilotController.y().whileTrue(intakeSubsystem.retractPivotCmd());
+    copilotController.b().whileTrue(intakeSubsystem.retakePivotCmd());
+    copilotController.x()
+        .onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.CLOSE)
+            .alongWith(shooterSubsystem.shootCmd(0)));
+
+    copilotController.rightTrigger().whileTrue(transportSubsystem.transportInCmd());
+    copilotController.leftTrigger().whileTrue(feederSubsystem.feedInCmd());
+
+    copilotController.povUp().whileTrue(shooterSubsystem.shootCmd());
+    copilotController.leftBumper().whileTrue(
+        new ManualAngleJoystickCmd(angleSubsystem, copilotController));
   }
 
    private void registerCommand() {
-    NamedCommands.registerCommand("Intake", Commands.runOnce(() -> intakeSubsystem.intake()));
+    NamedCommands.registerCommand("Intake", intakeSubsystem.intakeCmd());
     NamedCommands.registerCommand("StopIntake", Commands.runOnce(() -> intakeSubsystem.stopIntake()));
-    NamedCommands.registerCommand("DeployIntake", Commands.runOnce(() -> intakeSubsystem.deploy()));
-    NamedCommands.registerCommand("RetractIntake", Commands.runOnce(() -> intakeSubsystem.retract()));
-    NamedCommands.registerCommand("Shoot", Commands.runOnce(() -> shooterSubsystem.shoot()));
-  
+    NamedCommands.registerCommand("DeployIntake", intakeSubsystem.manualDeployPivotCmd());
+    NamedCommands.registerCommand("RetractIntake", intakeSubsystem.manualRetractPivotCmd());
+    NamedCommands.registerCommand("Shoot", shooterSubsystem.shootCmd());
    }
 
    public Command getAutonomousCommand() {
