@@ -27,6 +27,7 @@ import frc.robot.subsystems.swervedrive.SwerveDrive;
 import frc.robot.subsystems.swervedrive.SwerveDriveFactory;
 import frc.robot.subsystems.vision.VisionIoLimelight;
 import frc.robot.subsystems.vision.VisionSubsystem;
+
 import java.util.function.Supplier;
 
 public class RobotContainer {
@@ -52,7 +53,7 @@ public class RobotContainer {
     swerveDrive = SwerveDriveFactory.createSwerveDrive(
         SwerveDriveFactory.SwerveImplementation.WPILIB,
         SwerveDriveFactory.RobotVariant.TEST);
-
+        
     visionSubsystem = new VisionSubsystem(
         new VisionIoLimelight(() -> swerveDrive.getGyroRotation2d().getDegrees(),
             "limelight-intake", "limelight-shooter"),
@@ -88,8 +89,7 @@ public class RobotContainer {
             transportSubsystem, feederSubsystem,
             intakeSubsystem, angleSubsystem,
             () -> true)
-            .alongWith(new AimAssistCmd(swerveDrive, mainController, shouldSprint, shouldLockPose,
-                visionSubsystem::isPoseTrusted)));
+            .alongWith(new AimAssistCmd(swerveDrive, mainController, shouldSprint, shouldLockPose)));
 
     // 副 Driver
     copilotController.a().whileTrue(intakeSubsystem.deployPivotCmd());

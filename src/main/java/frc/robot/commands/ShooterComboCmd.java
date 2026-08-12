@@ -17,7 +17,8 @@ import java.util.function.BooleanSupplier;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class ShooterComboCmd extends ParallelCommandGroup {
-  public ShooterComboCmd(
+  public 
+  ShooterComboCmd(
       SwerveDrive swerveDrive,
       ShooterSubsystem shooterSubsystem,
       TransportSubsystem transportSubsystem,
