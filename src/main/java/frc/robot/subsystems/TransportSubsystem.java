@@ -21,11 +21,11 @@ public class TransportSubsystem extends SubsystemBase {
   }
 
   public void transportIn() {
-    transportMotor.set(ControlMode.PercentOutput, TransportConstants.transportMoterIn);
+    transportMotor.set(ControlMode.PercentOutput, TransportConstants.transportMotorIn);
   }
 
   public void transportOut() {
-    transportMotor.set(ControlMode.PercentOutput, TransportConstants.transportMoterOut);
+    transportMotor.set(ControlMode.PercentOutput, TransportConstants.transportMotorOut);
   }
 
   public void stopTransport() {

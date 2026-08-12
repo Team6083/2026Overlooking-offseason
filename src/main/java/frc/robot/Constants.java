@@ -141,8 +141,8 @@ public static class AutoConstants {
 
     public static final class TransportConstants {
       public static final int transportMotorID = 36;
-      public static final double transportMoterIn = 0.5;
-      public static final double transportMoterOut = -0.5;
+      public static final double transportMotorIn = 0.5;
+      public static final double transportMotorOut = -0.5;
       public static final boolean transportMotorInverted = false;
     }
 

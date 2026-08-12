@@ -136,7 +136,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("StopIntake", Commands.runOnce(() -> intakeSubsystem.stopIntake()));
     NamedCommands.registerCommand("DeployIntake", intakeSubsystem.manualDeployPivotCmd());
     NamedCommands.registerCommand("RetractIntake", intakeSubsystem.manualRetractPivotCmd());
-    NamedCommands.registerCommand("Shoot", shooterSubsystem.shootCmd());
+    NamedCommands.registerCommand("Shoot", shooterSubsystem.shootCmd().withTimeout(4));
    }
 
    public Command getAutonomousCommand() {
