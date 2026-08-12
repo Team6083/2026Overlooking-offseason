@@ -59,6 +59,7 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
+    // 主 Driver
     // swerve
     swerveDrive.setDefaultCommand(new SwerveControlCmd(
         swerveDrive, mainController, shouldSprint, shouldLockPose));
@@ -70,7 +71,6 @@ public class RobotContainer {
     angleSubsystem.setDefaultCommand(new AutoAngleCmd(angleSubsystem,
         swerveDrive));
 
-    // 主 Driver
     mainController.rightTrigger().onTrue(intakeSubsystem.intakeCmd());
     mainController.rightBumper().onTrue(intakeSubsystem.reverseIntakeCmd());
     mainController.leftTrigger().whileTrue(
@@ -84,8 +84,7 @@ public class RobotContainer {
     // 副 Driver
     copilotController.a().whileTrue(intakeSubsystem.deployPivotCmd());
     copilotController.y().whileTrue(intakeSubsystem.retractPivotCmd());
-    copilotController.b().whileTrue(intakeSubsystem.retakePivotCmd()
-        .andThen(intakeSubsystem.autoDeployPivotCmd()));
+    copilotController.b().whileTrue(intakeSubsystem.retakePivotCmd());
     copilotController.x()
         .onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.CLOSE)
             .alongWith(shooterSubsystem.shootCmd(0)));
