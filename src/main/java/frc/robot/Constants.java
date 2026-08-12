@@ -118,8 +118,8 @@ public class Constants {
       public static final boolean intakeInverted = false;
       public static final boolean pivotInverted = true;
 
-      public static final double intakeSpeed = 0.65;
-      public static final double reverseIntakeSpeed = -0.65;
+      public static final double intakeSpeed = 0.75;
+      public static final double reverseIntakeSpeed = -0.75;
 
       public static final double pivotManualSpeed = 0.3;
       public static final double pivotManualRetractSpeed = 0.3;
