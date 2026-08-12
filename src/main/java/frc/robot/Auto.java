@@ -20,9 +20,9 @@ public class Auto {
       RobotConfig config = RobotConfig.fromGUISettings();
 
       AutoBuilder.configure(
-          swerveDrive::getPose2d, // 現在位置
-          swerveDrive::resetPose, // 重設位置
-          swerveDrive::getRobotRelativeSpeeds, // 現在速度
+          swerveDrive::getPose2d, 
+          swerveDrive::resetPose, 
+          swerveDrive::getRobotRelativeSpeeds, 
 
           (speeds, feedforwards) -> swerveDrive.drive(speeds),
 
