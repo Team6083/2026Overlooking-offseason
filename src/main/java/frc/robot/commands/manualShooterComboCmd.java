@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import frc.robot.subsystems.AngleSubsystem;
 import frc.robot.subsystems.FeederSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TransportSubsystem;
@@ -15,17 +16,20 @@ import frc.robot.subsystems.TransportSubsystem;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class manualShooterComboCmd extends ParallelCommandGroup {
   public manualShooterComboCmd(
-    ShooterSubsystem shooterSubsystem,
-    FeederSubsystem feederSubsystem,
-    TransportSubsystem transportSubsystem) {
+      ShooterSubsystem shooterSubsystem,
+      FeederSubsystem feederSubsystem,
+      TransportSubsystem transportSubsystem,
+      AngleSubsystem angleSubsystem) {
     addCommands(
-      shooterSubsystem.shootCmd(),
-      Commands.idle().until(shooterSubsystem::isShooterAtSpeed).andThen(
-        Commands.parallel(
-          feederSubsystem.feedInCmd(),
-          transportSubsystem.transportInCmd()
-        )
-      )
-    );
+        angleSubsystem.adjustAngleCmd(
+            AngleSubsystem.AnglePreset.SHOOT),
+
+        shooterSubsystem.shootCmd(),
+        Commands.idle()
+            .until(shooterSubsystem::isShooterAtSpeed)
+            .andThen(
+                Commands.parallel(
+                    feederSubsystem.feedInCmd(),
+                    transportSubsystem.transportInCmd())));
   }
 }
