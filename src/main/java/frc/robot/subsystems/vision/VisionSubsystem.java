@@ -4,6 +4,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstant;
@@ -12,9 +13,12 @@ import java.util.function.Supplier;
 
 public class VisionSubsystem extends SubsystemBase {
 
+  private static final double kPoseTrustTimeoutSec = 0.5;
+
   private final VisionIo io;
   private final VisionIo.VisionIoInputs inputs = new VisionIo.VisionIoInputs();
   private final TriConsumer<Pose2d, Double, Matrix<N3, N1>> poseConsumer;
+  private double lastAcceptedTimestamp = Double.NEGATIVE_INFINITY;
 
   public VisionSubsystem(
       VisionIo io,
@@ -61,12 +65,19 @@ public class VisionSubsystem extends SubsystemBase {
       Matrix<N3, N1> stdDevs = estimate.isMultiTag() ? VisionConstant.multiTagStdDevs : VisionConstant.singleTagStdDevs;
       poseConsumer.accept(estimate.fieldToRobot(), estimate.timestampSeconds(), stdDevs);
       totalAccepted++;
+      lastAcceptedTimestamp = Timer.getFPGATimestamp();
 
       logCamera(i, estimate);
     }
 
     SmartDashboard.putNumber("Vision/AcceptedMeasurements", totalAccepted);
     SmartDashboard.putNumber("Vision/RejectedMeasurements", totalRejected);
+    SmartDashboard.putBoolean("Vision/PoseTrusted", isPoseTrusted());
+  }
+
+  /** True when a vision measurement was accepted recently enough to trust the fused pose. */
+  public boolean isPoseTrusted() {
+    return Timer.getFPGATimestamp() - lastAcceptedTimestamp < kPoseTrustTimeoutSec;
   }
 
   private MegatagPoseEstimate selectBestEstimate(VisionIo.CameraInputs camera) {
