@@ -174,7 +174,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("intake/intakeVoltage", intakeMotor.getBusVoltage() * intakeMotor.getAppliedOutput());
+    SmartDashboard.putNumber("intake/intakeVoltage", intakeMotor.getBusVoltage() * intakeMotor.getAppliedOutput()); // 用來看馬控是否有要求馬達輸出
     SmartDashboard.putNumber("intake/pivotPositionDeg", getPivotPosition());
     SmartDashboard.putNumber("intake/pivotVoltage", pivotMotor.getBusVoltage() * pivotMotor.getAppliedOutput());
     SmartDashboard.putData("intake/subsystem", this);
