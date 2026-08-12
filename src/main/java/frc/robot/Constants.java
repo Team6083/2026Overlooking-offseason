@@ -72,6 +72,15 @@ public class Constants {
       new SwerveModuleConstant(
           24, 25, 13, -0.242676, true, false, "BackRight"));
 
+public static class AutoConstants {
+    public static final double kpTranslation = 5.75;
+    public static final double kiTranslation = 0.0;
+    public static final double kdTranslation = 0.75;
+    public static final double kpRotation = 4.5;
+    public static final double kiRotation = 0.0;
+    public static final double kdRotation = 0.5;
+  }
+
   public static final class VisionConstant {
     public static final double minQualityThreshold = 0.3;
     public static final Matrix<N3, N1> singleTagStdDevs = VecBuilder.fill(0.9, 0.9, Math.toRadians(10));
