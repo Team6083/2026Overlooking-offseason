@@ -267,7 +267,7 @@ public class Constants {
       public static final double angleFeedforwardKg = 0.02; // 重力電壓
 
       public static final double angleMotorMaxAngle = 55; // 最大角度
-      public static final double angleMotorShootAngle = 15; // 初始角度(待測)
+      public static final double angleMotorShootAngle = 25; // 初始角度(待測)
       public static final double angleMotorMinAngle = 0; // 最小角度
       public static final double angleMotorTransAngle = 45;
 
@@ -277,7 +277,7 @@ public class Constants {
 
       public static final double angleTolerance = 0.45;
 
-      public static final double angleExpectedZero = 1.1;
+      public static final double angleExpectedZero = 0;
 
       public static final double angleDistanceMultiplier = 40;
       public static final double angleDistanceExponent = -0.001;
