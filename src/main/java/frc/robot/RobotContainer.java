@@ -123,7 +123,7 @@ public class RobotContainer {
     mainController.povUpLeft().whileTrue(shooterSubsystem.shootCmd(2900));
 
     // 副 Driver
-    copilotController.a().whileTrue(intakeSubsystem.deployPivotCmd()); //.
+    copilotController.a().whileTrue(intakeSubsystem.deployPivotCmd()); 
     copilotController.y().whileTrue(intakeSubsystem.retractPivotCmd());
     copilotController.b().whileTrue(intakeSubsystem.retakePivotCmd());
     copilotController.x()
