@@ -25,11 +25,8 @@ public class manualShooterComboCmd extends ParallelCommandGroup {
             AngleSubsystem.AnglePreset.SHOOT),
 
         shooterSubsystem.shootCmd(),
-        Commands.idle()
-            .until(shooterSubsystem::isShooterAtSpeed)
-            .andThen(
-                Commands.parallel(
-                    feederSubsystem.feedInCmd(),
-                    transportSubsystem.transportInCmd())));
+         Commands.idle().until(shooterSubsystem::isShooterAtSpeed)
+            .andThen(transportSubsystem.transportInCmd()
+                .alongWith(feederSubsystem.feedInCmd())));
   }
 }
