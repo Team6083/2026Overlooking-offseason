@@ -42,7 +42,7 @@ public class Constants {
   public static final class ModuleConstant {
     // define the radius of the wheel in meters
     public static final Distance kWheelRadius = Inches.of(2);
-    public static final LinearVelocity kMaxModuleSpeed = MetersPerSecond.of(4);
+    public static final LinearVelocity kMaxModuleSpeed = MetersPerSecond.of(8);
   }
 
   public static final class SwerveControlConstants {
@@ -242,7 +242,7 @@ public static class AutoConstants {
       public static final boolean shooterDownMotorInverted = false;
 
       public static final double shooterFeedforwardKs = 0.01; // 起始電壓
-      public static final double shooterFeedforwardKv = 0.00207; // 速度電壓
+      public static final double shooterFeedforwardKv = 0.00507; // 速度電壓
       public static final double shooterFeedforwardKa = 0; // 加速度電壓
 
       public static final int shooterCurrentLimit = 40; // NEO 550 用 20，NEO/Vortex 常見 40~60
