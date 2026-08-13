@@ -43,7 +43,7 @@ public class AngleSubsystem extends SubsystemBase {
   public AngleSubsystem() {
     SparkMaxConfig angleConfig = new SparkMaxConfig();
     angleConfig.idleMode(IdleMode.kBrake);
-    angleConfig.encoder.positionConversionFactor(45);
+    angleConfig.encoder.positionConversionFactor(45); //把圈數轉成自己想要的角度（角度??）
     angleConfig.softLimit.forwardSoftLimitEnabled(true);
     angleConfig.softLimit.forwardSoftLimit(AngleConstants.angleMotorMaxAngle);
 
