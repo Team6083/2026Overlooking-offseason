@@ -134,8 +134,8 @@ public class RobotContainer {
     mainController.povUpLeft().whileTrue(shooterSubsystem.shootCmd(2900));
 
     // 副 Driver
-    copilotController.a().whileTrue(intakeSubsystem.deployPivotCmd()); 
-    copilotController.y().whileTrue(intakeSubsystem.retractPivotCmd());
+    copilotController.a().whileTrue(intakeSubsystem.manualDeployPivotCmd()); 
+    copilotController.y().whileTrue(intakeSubsystem.manualRetractPivotCmd());
     copilotController.b().whileTrue(intakeSubsystem.retakePivotCmd());
     copilotController.x()
         .onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.CLOSE)
