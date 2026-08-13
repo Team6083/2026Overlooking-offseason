@@ -112,6 +112,15 @@ public class RobotContainer {
             .alongWith(new AimAssistCmd(
                 swerveDrive, mainController,
                 shouldSprint, shouldLockPose)));
+    // 轉速測試
+    mainController.povUp().onTrue(shooterSubsystem.shootCmd(5000));
+    mainController.povUpRight().onTrue(shooterSubsystem.shootCmd(4700));
+    mainController.povRight().onTrue(shooterSubsystem.shootCmd(4400));
+    mainController.povDownRight().onTrue(shooterSubsystem.shootCmd(4100));
+    mainController.povDown().onTrue(shooterSubsystem.shootCmd(3800));
+    mainController.povDownLeft().onTrue(shooterSubsystem.shootCmd(3500));
+    mainController.povLeft().onTrue(shooterSubsystem.shootCmd(3200));
+    mainController.povUpLeft().onTrue(shooterSubsystem.shootCmd(2900));
 
     // 副 Driver
     copilotController.a().whileTrue(intakeSubsystem.deployPivotCmd());
@@ -126,7 +135,7 @@ public class RobotContainer {
 
     copilotController.povUp().whileTrue(shooterSubsystem.shootCmd());
     copilotController.leftBumper().whileTrue(
-        new ManualJoystickCmd(angleSubsystem,intakeSubsystem, copilotController));
+        new ManualJoystickCmd(angleSubsystem, intakeSubsystem, copilotController));
   }
 
   private void registerCommand() {
