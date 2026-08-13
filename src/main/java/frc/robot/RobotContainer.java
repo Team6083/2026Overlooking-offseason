@@ -141,7 +141,7 @@ public class RobotContainer {
         .onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.CLOSE)
             .alongWith(shooterSubsystem.shootCmd(0)));
 
-    copilotControl[]\ler.rightTrigger().whileTrue(transportSubsystem.transportInCmd());
+    copilotController.rightTrigger().whileTrue(transportSubsystem.transportInCmd());
     copilotController.leftTrigger().whileTrue(feederSubsystem.feedInCmd());
 
     copilotController.povUp().whileTrue(shooterSubsystem.shootCmd());
