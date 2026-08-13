@@ -10,7 +10,9 @@ public record MegatagPoseEstimate(
     double timestampSeconds,
     double latency,
     double avgTagArea,
+    double avgTagDist,
     double quality,
+    int tagCount,
     int[] fiducialIds)
     implements StructSerializable {
 
@@ -23,12 +25,20 @@ public record MegatagPoseEstimate(
     }
   }
 
+  /**
+   * 用 botpose 回報的 tagCount,不是 rawfiducials 的長度 —— 相機可能看到 3 顆 tag 但只用 1 顆
+   * 解算,那時套用 multi-tag 的高信任度會過度信任。
+   */
   public boolean isMultiTag() {
-    return fiducialIds.length > 1;
+    return tagCount > 1;
   }
 
+  /**
+   * 只看 botpose 自己回報的 tagCount。賽季版可用的寫法就是只靠 tv + botpose 陣列,
+   * 不依賴 rawfiducials —— 那個 key 沒資料時整批量測會被靜默丟掉。
+   */
   public boolean isValid() {
-    return fiducialIds.length > 0 && quality > 0.0;
+    return tagCount > 0;
   }
 
   public static final Struct<MegatagPoseEstimate> struct = new MegatagPoseEstimateStruct();
@@ -52,12 +62,12 @@ public record MegatagPoseEstimate(
 
     @Override
     public int getSize() {
-      return Pose2d.struct.getSize() + 4 * Double.BYTES;
+      return Pose2d.struct.getSize() + 5 * Double.BYTES + Integer.BYTES;
     }
 
     @Override
     public String getSchema() {
-      return "Pose2d fieldToRobot;double timestampSeconds;double latency;double avgTagArea;double quality";
+      return "Pose2d fieldToRobot;double timestampSeconds;double latency;double avgTagArea;double avgTagDist;double quality;int32 tagCount";
     }
 
     @Override
@@ -73,6 +83,8 @@ public record MegatagPoseEstimate(
           bb.getDouble(),
           bb.getDouble(),
           bb.getDouble(),
+          bb.getDouble(),
+          bb.getInt(),
           new int[0]);
     }
 
@@ -82,7 +94,9 @@ public record MegatagPoseEstimate(
       bb.putDouble(value.timestampSeconds());
       bb.putDouble(value.latency());
       bb.putDouble(value.avgTagArea());
+      bb.putDouble(value.avgTagDist());
       bb.putDouble(value.quality());
+      bb.putInt(value.tagCount());
     }
   }
 }

@@ -81,7 +81,28 @@ public static class AutoConstants {
   }
 
   public static final class VisionConstant {
-    public static final double minQualityThreshold = 0.3;
+    /**
+     * 0 = 不做品質過濾,跟賽季版一致(它只看 tv 和 botpose,沒有品質門檻)。
+     * 原本的 0.3 會擋掉 avgTagArea 低於約 0.24% 的量測 —— 也就是絕大多數的遠距離 tag。
+     * 等定位確認正常之後再往上調。
+     */
+    public static final double minQualityThreshold = 0.0;
+
+    /**
+     * 信任度依平均 tag 距離加權,沿用賽季版可用的公式 min(0.4 + 距離 × 0.6, 5.0)。
+     * 數字越大代表越不信任(這是 stdDev,不是權重)。
+     */
+    public static final double trustBase = 0.4;
+    public static final double trustPerMeter = 0.6;
+    public static final double trustMax = 5.0;
+    public static final double multiTagTrustFactor = 0.6;
+
+    /**
+     * vision 的旋轉一律不融合。MegaTag2 的旋轉就是我們透過 robot_orientation_set 餵進去的
+     * gyro,把它融回 estimator 會變成 gyro 校正 gyro 的循環回饋。
+     */
+    public static final double untrustedRotationStd = 9999999;
+
     public static final Matrix<N3, N1> singleTagStdDevs = VecBuilder.fill(0.9, 0.9, Math.toRadians(10));
     public static final Matrix<N3, N1> multiTagStdDevs = VecBuilder.fill(0.3, 0.3, Math.toRadians(5));
 
@@ -126,7 +147,7 @@ public static class AutoConstants {
       public static final boolean intakeInverted = false;
       public static final boolean pivotInverted = true;
 
-      public static final double intakeSpeed = 0.65;
+      public static final double intakeSpeed = 0.75;
       public static final double reverseIntakeSpeed = -0.65;
 
       public static final double pivotManualSpeed = 0.15;
@@ -251,10 +272,10 @@ public static class AutoConstants {
       public static final double shooterDistanceMultiplier = 2207.31;
       public static final double shooterDistanceExponent = 0.0017;
 
-      public static final double shooterNominalTarget = 5100.00 / 1.5; // 上方轉速
-      public static final double complexNominalTarget = 5100.00 / 1.5; // 下方轉速
+      public static final double shooterNominalTarget = 3900.00 / 1.5; // 上方轉速
+      public static final double complexNominalTarget = 3900.00 / 1.5; // 下方轉速
       public static final double shooterLowGearTarget = 1500.00 / 1.5;
-      public static final double maxShooterVelocity = 7500 / 1.5;
+      public static final double maxShooterVelocity = 6000 / 1.5;
       public static final double passVelocity = 2100.00 / 1.5;
 
       public static final double shooterVelocityTolerance = 100; // RPM，待實測調整
@@ -275,7 +296,7 @@ public static class AutoConstants {
       public static final double angleFeedforwardKg = 0.02; // 重力電壓
 
       public static final double angleMotorMaxAngle = 55; // 最大角度
-      public static final double angleMotorShootAngle = 20; // 初始角度(待測)
+      public static final double angleMotorShootAngle = 25; // 初始角度(待測)
       public static final double angleMotorMinAngle = 0; // 最小角度
       public static final double angleMotorTransAngle = 45;
 
