@@ -97,8 +97,8 @@ public class RobotContainer {
     angleSubsystem.setDefaultCommand(new AutoAngleCmd(angleSubsystem,
         swerveDrive));
 
-    mainController.rightTrigger().onTrue(intakeSubsystem.intakeCmd());
-    mainController.rightBumper().onTrue(intakeSubsystem.reverseIntakeCmd());
+    mainController.rightTrigger().whileTrue(intakeSubsystem.intakeCmd());
+    mainController.rightBumper().whileTrue(intakeSubsystem.reverseIntakeCmd());
     mainController.leftBumper()
         .onTrue(new manualShooterComboCmd(
             shooterSubsystem, feederSubsystem,
@@ -114,7 +114,7 @@ public class RobotContainer {
                 shouldSprint, shouldLockPose)));
 
     // 副 Driver
-    copilotController.a().whileTrue(intakeSubsystem.deployPivotCmd());
+    copilotController.a().whileTrue(intakeSubsystem.deployPivotCmd()); //.
     copilotController.y().whileTrue(intakeSubsystem.retractPivotCmd());
     copilotController.b().whileTrue(intakeSubsystem.retakePivotCmd());
     copilotController.x()
