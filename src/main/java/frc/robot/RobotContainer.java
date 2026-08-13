@@ -21,9 +21,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.AimAssistCmd;
 import frc.robot.commands.AutoAngleCmd;
-import frc.robot.commands.ManualAngleJoystickCmd;
+import frc.robot.commands.ManualJoystickCmd;
 import frc.robot.commands.ShooterComboCmd;
 import frc.robot.commands.SwerveControlCmd;
+import frc.robot.commands.manualShooterComboCmd;
 import frc.robot.lib.FieldUtil;
 import frc.robot.subsystems.AngleSubsystem;
 import frc.robot.subsystems.AngleSubsystem.AnglePreset;
@@ -98,6 +99,10 @@ public class RobotContainer {
 
     mainController.rightTrigger().onTrue(intakeSubsystem.intakeCmd());
     mainController.rightBumper().onTrue(intakeSubsystem.reverseIntakeCmd());
+    mainController.leftBumper()
+        .onTrue(new manualShooterComboCmd(
+            shooterSubsystem, feederSubsystem,
+            transportSubsystem, angleSubsystem));
     mainController.leftTrigger().whileTrue(
         new ShooterComboCmd(
             swerveDrive, shooterSubsystem,
@@ -121,7 +126,7 @@ public class RobotContainer {
 
     copilotController.povUp().whileTrue(shooterSubsystem.shootCmd());
     copilotController.leftBumper().whileTrue(
-        new ManualAngleJoystickCmd(angleSubsystem, copilotController));
+        new ManualJoystickCmd(angleSubsystem,intakeSubsystem, copilotController));
   }
 
   private void registerCommand() {
