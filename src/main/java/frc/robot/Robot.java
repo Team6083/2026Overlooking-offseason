@@ -21,7 +21,7 @@ public class Robot extends TimedRobot {
 
   private final NetworkTableInstance ntInstance = NetworkTableInstance.getDefault();
   private final RobotContainer m_robotContainer;
-  private boolean savelog = false;
+  private boolean savelog = true;
   private Timer gcTimer = new Timer();
 
   public Robot() {
