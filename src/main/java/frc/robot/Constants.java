@@ -276,7 +276,7 @@ public static class AutoConstants {
       public static final double angleFeedforwardKg = 0.02; // 重力電壓
 
       public static final double angleMotorMaxAngle = 55; // 最大角度
-      public static final double angleMotorShootAngle = 25; // 初始角度(待測)
+      public static final double angleMotorShootAngle = 20; // 初始角度(待測)
       public static final double angleMotorMinAngle = 0; // 最小角度
       public static final double angleMotorTransAngle = 45;
 

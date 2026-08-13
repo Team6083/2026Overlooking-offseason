@@ -100,7 +100,7 @@ public class RobotContainer {
     mainController.rightTrigger().whileTrue(intakeSubsystem.intakeCmd());
     mainController.rightBumper().whileTrue(intakeSubsystem.reverseIntakeCmd());
     mainController.leftBumper()
-        .onTrue(new manualShooterComboCmd(
+        .whileTrue(new manualShooterComboCmd(
             shooterSubsystem, feederSubsystem,
             transportSubsystem, angleSubsystem));
     mainController.leftTrigger().whileTrue(
@@ -112,6 +112,15 @@ public class RobotContainer {
             .alongWith(new AimAssistCmd(
                 swerveDrive, mainController,
                 shouldSprint, shouldLockPose)));
+    // 轉速測試
+    mainController.povUp().whileTrue(shooterSubsystem.shootCmd(5000));
+    mainController.povUpRight().whileTrue(shooterSubsystem.shootCmd(4700));
+    mainController.povRight().whileTrue(shooterSubsystem.shootCmd(4400));
+    mainController.povDownRight().whileTrue(shooterSubsystem.shootCmd(4100));
+    mainController.povDown().whileTrue(shooterSubsystem.shootCmd(3800));
+    mainController.povDownLeft().whileTrue(shooterSubsystem.shootCmd(3500));
+    mainController.povLeft().whileTrue(shooterSubsystem.shootCmd(3200));
+    mainController.povUpLeft().whileTrue(shooterSubsystem.shootCmd(2900));
 
     // 副 Driver
     copilotController.a().whileTrue(intakeSubsystem.deployPivotCmd()); //.
@@ -126,7 +135,7 @@ public class RobotContainer {
 
     copilotController.povUp().whileTrue(shooterSubsystem.shootCmd());
     copilotController.leftBumper().whileTrue(
-        new ManualJoystickCmd(angleSubsystem,intakeSubsystem, copilotController));
+        new ManualJoystickCmd(angleSubsystem, intakeSubsystem, copilotController));
   }
 
   private void registerCommand() {
