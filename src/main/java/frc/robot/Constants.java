@@ -129,8 +129,8 @@ public static class AutoConstants {
       public static final double intakeSpeed = 0.65;
       public static final double reverseIntakeSpeed = -0.65;
 
-      public static final double pivotManualSpeed = 0.3;
-      public static final double pivotManualRetractSpeed = 0.3;
+      public static final double pivotManualSpeed = 0.15;
+      public static final double pivotManualRetractSpeed = 0.2;
       public static final double PivotRetakeSpeed = -0.2;
 
       public static final double pivotFollowKp = 0.03;

@@ -61,7 +61,7 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void manualPivotReverse() {
-    pivotMotor.set(-IntakeConstants.pivotManualSpeed);
+    pivotMotor.set(-IntakeConstants.pivotManualRetractSpeed);
   }
 
   public void manualPivotReverseRetake() {
