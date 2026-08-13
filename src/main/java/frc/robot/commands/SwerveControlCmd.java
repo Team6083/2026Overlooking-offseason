@@ -86,7 +86,7 @@ public class SwerveControlCmd extends Command {
   }
 
   protected double calcRotSpeed() {
-    return rotLimiter.calculate(MathUtil.applyDeadband(mainController.getRightX(), 0.1))
+    return -rotLimiter.calculate(MathUtil.applyDeadband(mainController.getRightX(), 0.1))
         * ModuleConstant.kMaxModuleSpeed.in(MetersPerSecond) * getRotMagnification();
   }
 
