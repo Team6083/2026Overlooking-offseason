@@ -155,8 +155,10 @@ public class RobotContainer {
     NamedCommands.registerCommand("DeployIntake", intakeSubsystem.manualDeployPivotCmd());
     NamedCommands.registerCommand("RetractIntake", intakeSubsystem.manualRetractPivotCmd());
     NamedCommands.registerCommand("Shoot", shooterSubsystem.shootCmd().withTimeout(4));
-   }
+    NamedCommands.registerCommand("adjustAngle" , angleSubsystem.adjustAngleCmd(AnglePreset.CLOSE));
+    NamedCommands.registerCommand("shootAngle" , angleSubsystem.adjustAngleCmd(AnglePreset.MAX));
 
+   }
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();
   }
