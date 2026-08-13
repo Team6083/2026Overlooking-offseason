@@ -127,8 +127,8 @@ public static class AutoConstants {
       public static final boolean intakeInverted = false;
       public static final boolean pivotInverted = true;
 
-      public static final double intakeSpeed = 0.75;
-      public static final double reverseIntakeSpeed = -0.75;
+      public static final double intakeSpeed = 0.65;
+      public static final double reverseIntakeSpeed = -0.65;
 
       public static final double pivotManualSpeed = 0.3;
       public static final double pivotManualRetractSpeed = 0.3;
@@ -141,8 +141,8 @@ public static class AutoConstants {
 
     public static final class TransportConstants {
       public static final int transportMotorID = 36;
-      public static final double transportMoterIn = 0.5;
-      public static final double transportMoterOut = -0.5;
+      public static final double transportMotorIn = 0.5;
+      public static final double transportMotorOut = -0.5;
       public static final boolean transportMotorInverted = false;
     }
 
@@ -255,12 +255,12 @@ public static class AutoConstants {
       public static final double shooterNominalTarget = 5100.00 / 1.5; // 上方轉速
       public static final double complexNominalTarget = 5100.00 / 1.5; // 下方轉速
       public static final double shooterLowGearTarget = 1500.00 / 1.5;
-      public static final double maxShooterVelocity = 6000.00 / 1.5;
+      public static final double maxShooterVelocity = 7500 / 1.5;
       public static final double passVelocity = 2100.00 / 1.5;
 
       public static final double shooterVelocityTolerance = 100; // RPM，待實測調整
 
-      public static final double shooterAccelLimit = 900 / 1.5;
+      public static final double shooterAccelLimit = 1200 / 1.5;
     }
 
     public static final class AngleConstants {
@@ -310,7 +310,7 @@ public static class AutoConstants {
     public static final double kToleranceDeg = 1.0;
     public static final double kMaxRotOutput = 1.5;
     public static final double kAlignDebounceSec = 0.1;
-    public static final double kDriverRotDeadband = 0.1;
+    public static final double kDriverRotDeadLine = 0.1;
 
     public static final double kBallSpeedMps = 12.0;
   }

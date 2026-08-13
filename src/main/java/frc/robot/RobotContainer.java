@@ -40,8 +40,8 @@ public class RobotContainer {
   private final CommandXboxController mainController = new CommandXboxController(0);
   private final CommandXboxController copilotController = new CommandXboxController(1);
 
-  private Supplier<Boolean> shouldSprint = () -> mainController.leftBumper().getAsBoolean();
-  private Supplier<Boolean> shouldLockPose = () -> mainController.a().getAsBoolean();
+  private Supplier<Boolean> shouldSprint = () -> mainController.x().getAsBoolean();
+  private Supplier<Boolean> shouldLockPose = () -> mainController.b().getAsBoolean();
   private final SendableChooser<Command> autoChooser;
   private SwerveDrive swerveDrive;
   private final IntakeSubsystem intakeSubsystem;

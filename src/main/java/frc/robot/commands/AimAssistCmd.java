@@ -54,7 +54,7 @@ public class AimAssistCmd extends SwerveControlCmd {
 
   @Override
   protected double calcRotSpeed() {
-    if (Math.abs(mainController.getRightX()) > AimAssistConstant.kDriverRotDeadband) {
+    if (Math.abs(mainController.getRightX()) > AimAssistConstant.kDriverRotDeadLine) {
       aligned = false;
       return super.calcRotSpeed();
     }

@@ -44,7 +44,7 @@ public class AdjustSpeedCmd extends Command {
         * Math.exp(ShooterConstants.shooterDistanceExponent * dis.in(Centimeters)),
         0.0, ShooterConstants.maxShooterVelocity);
 
-    shooterSubsystem.shoot(targetVelocity / 1.3);
+    shooterSubsystem.shoot(targetVelocity);
     angleSubsystem.angleSync(AngleConstants.angleMotorShootAngle);
 
     SmartDashboard.putNumber("adjustSpeed/distance", dis.in(Centimeters));
