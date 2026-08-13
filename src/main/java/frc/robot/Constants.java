@@ -42,7 +42,7 @@ public class Constants {
   public static final class ModuleConstant {
     // define the radius of the wheel in meters
     public static final Distance kWheelRadius = Inches.of(2);
-    public static final LinearVelocity kMaxModuleSpeed = MetersPerSecond.of(8);
+    public static final LinearVelocity kMaxModuleSpeed = MetersPerSecond.of(6);
   }
 
   public static final class SwerveControlConstants {
