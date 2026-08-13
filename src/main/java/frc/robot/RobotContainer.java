@@ -82,7 +82,11 @@ public class RobotContainer {
 
     SmartDashboard.putData("autoChooser", autoChooser);
     visionSubsystem = new VisionSubsystem(
-        new VisionIoLimelight(() -> swerveDrive.getGyroRotation2d().getDegrees(),
+        new VisionIoLimelight(
+            // MegaTag2 要的是場地座標下的朝向。estimator 的 rotation 才是 gyro + offset
+            // 之後的場地朝向;vision 不再修正旋轉,所以它等同於「gyro 加上開賽時對齊的偏移」。
+            () -> swerveDrive.getPose2d().getRotation().getDegrees(),
+            () -> Math.toDegrees(swerveDrive.getRobotRelativeSpeeds().omegaRadiansPerSecond),
             "limelight-intake", "limelight-shooter"),
         swerveDrive::getPose2d,
         (pose, timestamp, stdDevs) -> swerveDrive.addVisionMeasurement(pose, timestamp, stdDevs));

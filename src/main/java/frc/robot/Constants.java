@@ -81,7 +81,28 @@ public static class AutoConstants {
   }
 
   public static final class VisionConstant {
-    public static final double minQualityThreshold = 0.3;
+    /**
+     * 0 = 不做品質過濾,跟賽季版一致(它只看 tv 和 botpose,沒有品質門檻)。
+     * 原本的 0.3 會擋掉 avgTagArea 低於約 0.24% 的量測 —— 也就是絕大多數的遠距離 tag。
+     * 等定位確認正常之後再往上調。
+     */
+    public static final double minQualityThreshold = 0.0;
+
+    /**
+     * 信任度依平均 tag 距離加權,沿用賽季版可用的公式 min(0.4 + 距離 × 0.6, 5.0)。
+     * 數字越大代表越不信任(這是 stdDev,不是權重)。
+     */
+    public static final double trustBase = 0.4;
+    public static final double trustPerMeter = 0.6;
+    public static final double trustMax = 5.0;
+    public static final double multiTagTrustFactor = 0.6;
+
+    /**
+     * vision 的旋轉一律不融合。MegaTag2 的旋轉就是我們透過 robot_orientation_set 餵進去的
+     * gyro,把它融回 estimator 會變成 gyro 校正 gyro 的循環回饋。
+     */
+    public static final double untrustedRotationStd = 9999999;
+
     public static final Matrix<N3, N1> singleTagStdDevs = VecBuilder.fill(0.9, 0.9, Math.toRadians(10));
     public static final Matrix<N3, N1> multiTagStdDevs = VecBuilder.fill(0.3, 0.3, Math.toRadians(5));
 
