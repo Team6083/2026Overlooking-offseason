@@ -113,14 +113,14 @@ public class RobotContainer {
                 swerveDrive, mainController,
                 shouldSprint, shouldLockPose)));
     // 轉速測試
-    mainController.povUp().onTrue(shooterSubsystem.shootCmd(5000));
-    mainController.povUpRight().onTrue(shooterSubsystem.shootCmd(4700));
-    mainController.povRight().onTrue(shooterSubsystem.shootCmd(4400));
-    mainController.povDownRight().onTrue(shooterSubsystem.shootCmd(4100));
-    mainController.povDown().onTrue(shooterSubsystem.shootCmd(3800));
-    mainController.povDownLeft().onTrue(shooterSubsystem.shootCmd(3500));
-    mainController.povLeft().onTrue(shooterSubsystem.shootCmd(3200));
-    mainController.povUpLeft().onTrue(shooterSubsystem.shootCmd(2900));
+    mainController.povUp().whileTrue(shooterSubsystem.shootCmd(5000));
+    mainController.povUpRight().whileTrue(shooterSubsystem.shootCmd(4700));
+    mainController.povRight().whileTrue(shooterSubsystem.shootCmd(4400));
+    mainController.povDownRight().whileTrue(shooterSubsystem.shootCmd(4100));
+    mainController.povDown().whileTrue(shooterSubsystem.shootCmd(3800));
+    mainController.povDownLeft().whileTrue(shooterSubsystem.shootCmd(3500));
+    mainController.povLeft().whileTrue(shooterSubsystem.shootCmd(3200));
+    mainController.povUpLeft().whileTrue(shooterSubsystem.shootCmd(2900));
 
     // 副 Driver
     copilotController.a().whileTrue(intakeSubsystem.deployPivotCmd());
