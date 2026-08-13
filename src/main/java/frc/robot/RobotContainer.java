@@ -100,7 +100,7 @@ public class RobotContainer {
     mainController.rightTrigger().onTrue(intakeSubsystem.intakeCmd());
     mainController.rightBumper().onTrue(intakeSubsystem.reverseIntakeCmd());
     mainController.leftBumper()
-        .onTrue(new manualShooterComboCmd(
+        .whileTrue(new manualShooterComboCmd(
             shooterSubsystem, feederSubsystem,
             transportSubsystem, angleSubsystem));
     mainController.leftTrigger().whileTrue(
