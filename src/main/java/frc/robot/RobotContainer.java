@@ -152,7 +152,7 @@ public class RobotContainer {
    private void registerCommand() {
     NamedCommands.registerCommand("Intake", intakeSubsystem.intakeCmd());
     NamedCommands.registerCommand("StopIntake", Commands.runOnce(() -> intakeSubsystem.stopIntake()));
-    NamedCommands.registerCommand("DeployIntake", intakeSubsystem.manualDeployPivotCmd().withTimeout(4));
+    NamedCommands.registerCommand("DeployIntake", intakeSubsystem.manualDeployPivotCmd().withTimeout(1.2));
     NamedCommands.registerCommand("RetractIntake", intakeSubsystem.manualRetractPivotCmd());
     NamedCommands.registerCommand("Shoot", shooterSubsystem.shootCmd().withTimeout(4));
     NamedCommands.registerCommand("adjustAngle" , angleSubsystem.adjustAngleCmd(AnglePreset.CLOSE));
