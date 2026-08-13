@@ -7,11 +7,18 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Centimeters;
 import static edu.wpi.first.units.Units.Meters;
 
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.subsystems.FeederSubsystem;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import static edu.wpi.first.units.Units.Centimeters;
+import static edu.wpi.first.units.Units.Meters;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -25,6 +32,8 @@ import frc.robot.commands.ManualJoystickCmd;
 import frc.robot.commands.ShooterComboCmd;
 import frc.robot.commands.SwerveControlCmd;
 import frc.robot.commands.manualShooterComboCmd;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.lib.FieldUtil;
 import frc.robot.subsystems.AngleSubsystem;
 import frc.robot.subsystems.AngleSubsystem.AnglePreset;
@@ -32,6 +41,7 @@ import frc.robot.subsystems.FeederSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TransportSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveDrive;
 import frc.robot.subsystems.swervedrive.SwerveDriveFactory;
 import frc.robot.subsystems.vision.VisionIoLimelight;
@@ -52,6 +62,7 @@ public class RobotContainer {
   private final TransportSubsystem transportSubsystem;
   private final VisionSubsystem visionSubsystem;
 
+
   public RobotContainer() {
     feederSubsystem = new FeederSubsystem();
     intakeSubsystem = new IntakeSubsystem();
@@ -62,6 +73,14 @@ public class RobotContainer {
         SwerveDriveFactory.SwerveImplementation.WPILIB,
         SwerveDriveFactory.RobotVariant.TEST);
 
+
+    Auto.configureAutoBuilder(swerveDrive);
+
+    registerCommand();
+
+    autoChooser = AutoBuilder.buildAutoChooser();
+
+    SmartDashboard.putData("autoChooser", autoChooser);
     visionSubsystem = new VisionSubsystem(
         new VisionIoLimelight(() -> swerveDrive.getGyroRotation2d().getDegrees(),
             "limelight-intake", "limelight-shooter"),
@@ -72,14 +91,6 @@ public class RobotContainer {
         .getDistance(FieldUtil.getHubPosition()))
         .in(Centimeters));
     angleSubsystem.angleSyncCmd(15).schedule();
-
-    Auto.configureAutoBuilder(swerveDrive);
-
-    registerCommand();
-
-    autoChooser = AutoBuilder.buildAutoChooser();
-
-    SmartDashboard.putData("autoChooser", autoChooser);
 
     configureBindings();
   }
@@ -138,14 +149,13 @@ public class RobotContainer {
         new ManualJoystickCmd(angleSubsystem, intakeSubsystem, copilotController));
   }
 
-  private void registerCommand() {
-    NamedCommands.registerCommand("Intake", Commands.runOnce(() -> intakeSubsystem.intake()));
+   private void registerCommand() {
+    NamedCommands.registerCommand("Intake", intakeSubsystem.intakeCmd());
     NamedCommands.registerCommand("StopIntake", Commands.runOnce(() -> intakeSubsystem.stopIntake()));
-    NamedCommands.registerCommand("DeployIntake", Commands.runOnce(() -> intakeSubsystem.deployPivotCmd()));
-    NamedCommands.registerCommand("RetractIntake", Commands.runOnce(() -> intakeSubsystem.retractPivotCmd()));
-    NamedCommands.registerCommand("Shoot", Commands.runOnce(() -> shooterSubsystem.shootCmd()));
-
-  }
+    NamedCommands.registerCommand("DeployIntake", intakeSubsystem.manualDeployPivotCmd());
+    NamedCommands.registerCommand("RetractIntake", intakeSubsystem.manualRetractPivotCmd());
+    NamedCommands.registerCommand("Shoot", shooterSubsystem.shootCmd().withTimeout(4));
+   }
 
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();
