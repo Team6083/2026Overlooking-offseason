@@ -16,7 +16,6 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.lib.zone.CompositeZone;
 import frc.robot.lib.zone.RectZone;
 import frc.robot.lib.zone.Zone;
