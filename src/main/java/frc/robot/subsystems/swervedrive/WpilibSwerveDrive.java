@@ -9,7 +9,7 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import com.studica.frc.AHRS;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -18,6 +18,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
@@ -93,12 +94,12 @@ public class WpilibSwerveDrive extends SubsystemBase implements frc.robot.subsys
 
   @Override
   public void addVisionMeasurement(Pose2d visionRobotPose, double timestamp) {
-    // poseEstimator.addVisionMeasurement(visionRobotPose, timestamp);
+    poseEstimator.addVisionMeasurement(visionRobotPose, timestamp);
   }
 
   @Override
-  public void addVisionMeasurement(Pose2d visionRobotPose, double timestamp, Vector<N3> visionStdDevs) {
-    // poseEstimator.addVisionMeasurement(visionRobotPose, timestamp, visionStdDevs);
+  public void addVisionMeasurement(Pose2d visionRobotPose, double timestamp, Matrix<N3, N1> visionStdDevs) {
+    poseEstimator.addVisionMeasurement(visionRobotPose, timestamp, visionStdDevs);
   }
 
   @Override
