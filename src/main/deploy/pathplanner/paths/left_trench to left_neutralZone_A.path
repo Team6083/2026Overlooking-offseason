@@ -59,13 +59,13 @@
   "eventMarkers": [
     {
       "name": "DeployIntake",
-      "waypointRelativePos": 0.3867069486404804,
+      "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": null
     },
     {
       "name": "Intake",
-      "waypointRelativePos": 0.7929125138427396,
+      "waypointRelativePos": 0.20376522702104602,
       "endWaypointRelativePos": null,
       "command": null
     }
@@ -80,12 +80,12 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -93.27048792318355
+    "rotation": -90.0
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
-    "velocity": 0.0,
+    "velocity": 3.5,
     "rotation": 180.0
   },
   "useDefaultConstraints": false
