@@ -141,7 +141,7 @@ public class RobotContainer {
         .onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.CLOSE)
             .alongWith(shooterSubsystem.shootCmd(0)));
 
-    copilotController.rightTrigger().whileTrue(transportSubsystem.transportInCmd());
+    copilotControl[]\ler.rightTrigger().whileTrue(transportSubsystem.transportInCmd());
     copilotController.leftTrigger().whileTrue(feederSubsystem.feedInCmd());
 
     copilotController.povUp().whileTrue(shooterSubsystem.shootCmd());
@@ -152,7 +152,7 @@ public class RobotContainer {
    private void registerCommand() {
     NamedCommands.registerCommand("Intake", intakeSubsystem.intakeCmd());
     NamedCommands.registerCommand("StopIntake", Commands.runOnce(() -> intakeSubsystem.stopIntake()));
-    NamedCommands.registerCommand("DeployIntake", intakeSubsystem.manualDeployPivotCmd());
+    NamedCommands.registerCommand("DeployIntake", intakeSubsystem.manualDeployPivotCmd().withTimeout(4));
     NamedCommands.registerCommand("RetractIntake", intakeSubsystem.manualRetractPivotCmd());
     NamedCommands.registerCommand("Shoot", shooterSubsystem.shootCmd().withTimeout(4));
     NamedCommands.registerCommand("adjustAngle" , angleSubsystem.adjustAngleCmd(AnglePreset.CLOSE));
