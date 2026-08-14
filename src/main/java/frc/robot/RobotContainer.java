@@ -102,7 +102,7 @@ public class RobotContainer {
 
   public void putRobotPoseOnDashboard() {
     field.setRobotPose(swerveDrive.getPose2d());
-    SmartDashboard.putData("Field", field);
+    SmartDashboard.putData("Robot Pose", field);
   }
 
   private void configureBindings() {
