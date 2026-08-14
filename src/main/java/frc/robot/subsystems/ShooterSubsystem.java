@@ -64,7 +64,7 @@ public class ShooterSubsystem extends SubsystemBase {
     double feedforwardVoltage = shooterFeedforward.calculate(targetVelocity);
     shooterMotor1.setVoltage(feedforwardVoltage);
     complexMotor1.setVoltage(feedforwardVoltage);
-}
+  }
 
   public void shoot(double targetVelocity) {
     this.shooterTargetVelocity = shooterRateLimiter.calculate(targetVelocity);
