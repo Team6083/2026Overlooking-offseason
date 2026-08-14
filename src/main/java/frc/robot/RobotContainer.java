@@ -21,6 +21,7 @@ import static edu.wpi.first.units.Units.Centimeters;
 import static edu.wpi.first.units.Units.Meters;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -61,6 +62,7 @@ public class RobotContainer {
   private final AngleSubsystem angleSubsystem;
   private final TransportSubsystem transportSubsystem;
   private final VisionSubsystem visionSubsystem;
+  private final Field2d field = new Field2d();
 
 
   public RobotContainer() {
@@ -97,6 +99,11 @@ public class RobotContainer {
     angleSubsystem.angleSyncCmd(15).schedule();
 
     configureBindings();
+  }
+
+  public void putRobotPoseOnDashboard() {
+    field.setRobotPose(swerveDrive.getPose2d());
+    SmartDashboard.putData("Robot Pose", field);
   }
 
   private void configureBindings() {
