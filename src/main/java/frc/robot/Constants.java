@@ -272,11 +272,11 @@ public static class AutoConstants {
       public static final double shooterDistanceMultiplier = 2207.31;
       public static final double shooterDistanceExponent = 0.0017;
 
-      public static final double shooterNominalTarget = 4200.00 / 1.5; // 上方轉速
-      public static final double complexNominalTarget = 4200.00 / 1.5; // 下方轉速
-      public static final double shooterLowGearTarget = 1500.00 / 1.5;
-      public static final double maxShooterVelocity = 6000 / 1.5;
-      public static final double passVelocity = 2100.00 / 1.5;
+      public static final double shooterNominalTarget = 3400.00; // 上方轉速
+      public static final double complexNominalTarget = 3400.00; // 下方轉速
+      public static final double shooterLowGearTarget = 1500.00;
+      public static final double maxShooterVelocity = 6000;
+      public static final double passVelocity = 2100.00;
 
       public static final double shooterVelocityTolerance = 100; // RPM，待實測調整
 
@@ -296,7 +296,7 @@ public static class AutoConstants {
       public static final double angleFeedforwardKg = 0.018; // 重力電壓
 
       public static final double angleMotorMaxAngle = 55; // 最大角度
-      public static final double angleMotorShootAngle = 18; // 初始角度(待測)
+      public static final double angleMotorShootAngle = 14; // 初始角度(待測)
       public static final double angleMotorMinAngle = 0; // 最小角度
       public static final double angleMotorTransAngle = 45;
 
