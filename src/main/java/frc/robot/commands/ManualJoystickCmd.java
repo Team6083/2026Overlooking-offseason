@@ -42,7 +42,7 @@ public class ManualJoystickCmd extends Command {
   @Override
   public void initialize() {
     targetAngleX = angleSubsystem.getCurrentTargetAngle(); // 從目前角度接續，不要突然跳
-    targetAngleY = intakeSubsystem.getPivotPosition(); // 從目前角度接續，不要突然跳
+    targetAngleY = intakeSubsystem.getPivotPosition(); 
   }
 
   @Override
@@ -60,7 +60,6 @@ public class ManualJoystickCmd extends Command {
     targetAngleX += angleDeltaX;
     targetAngleY += angleDeltaY;
 
-    // 限制範圍: 上限用機構最大角度，下限鎖在10度(避免搖桿誤觸直接歸零撞底損壞shooter)
     targetAngleX = MathUtil.clamp(targetAngleX,
         AngleConstants.angleMinManualAngle, // = 10
         AngleConstants.angleMotorMaxAngle);

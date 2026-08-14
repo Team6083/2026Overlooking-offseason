@@ -3,35 +3,56 @@
   "grid_size": 128,
   "tabs": [
     {
-      "name": "Teleoperated",
+      "name": "checklist",
       "grid_layout": {
-        "layouts": [],
-        "containers": []
-      }
-    },
-    {
-      "name": "Autonomous",
-      "grid_layout": {
-        "layouts": [],
+        "layouts": [
+          {
+            "title": "Shooter",
+            "x": 768.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "shooterRPM",
+                "x": 640.0,
+                "y": 512.0,
+                "width": 256.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/shooter/shooterRPM",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "angleTargetSet",
+                "x": 768.0,
+                "y": 384.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/shooter/angleTargetSet",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              }
+            ]
+          }
+        ],
         "containers": [
           {
-            "title": "shooterRPM",
-            "x": 512.0,
-            "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/shooter/shooterRPM",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
             "title": "GitSHA",
-            "x": 512.0,
-            "y": 128.0,
+            "x": 384.0,
+            "y": 0.0,
             "width": 384.0,
             "height": 128.0,
             "type": "Text Display",
@@ -44,33 +65,59 @@
           },
           {
             "title": "gyroHeedingNonContinuous",
-            "x": 768.0,
+            "x": 1024.0,
             "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
+            "width": 640.0,
+            "height": 384.0,
+            "type": "Graph",
             "properties": {
               "topic": "/SmartDashboard/drive/gyroHeedingNonContinuous",
-              "period": 0.06,
+              "period": 0.033,
               "data_type": "double",
-              "show_submit_button": false
+              "time_displayed": 5.0,
+              "color": 4278238420,
+              "line_width": 2.0
+            }
+          },
+          {
+            "title": "gyroConnected",
+            "x": 768.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/SmartDashboard/drive/gyroConnected",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
             }
           },
           {
             "title": "angleDegree",
-            "x": 640.0,
-            "y": 0.0,
-            "width": 128.0,
+            "x": 512.0,
+            "y": 128.0,
+            "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
               "topic": "/SmartDashboard/shooter/angleDegree",
-              "period": 0.06,
+              "period": 0.033,
               "data_type": "double",
               "show_submit_button": false
             }
           }
         ]
+      }
+    },
+    {
+      "name": "driver",
+      "grid_layout": {
+        "layouts": [],
+        "containers": []
       }
     }
   ]
