@@ -323,8 +323,8 @@ public static class AutoConstants {
   public static final class AimAssistConstant {
     public static final Rotation2d kShooterYawOffset = Rotation2d.fromDegrees(180);
 
-    public static final double kP = 0.07;
-    public static final double kI = 0.002;
+    public static final double kP = 0.05;
+    public static final double kI = 0.0;
     public static final double kD = 0.0;
     public static final double kIZoneDeg = 3.0;
     public static final double kToleranceDeg = 1.0;
