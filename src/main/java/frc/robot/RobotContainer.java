@@ -21,6 +21,7 @@ import static edu.wpi.first.units.Units.Centimeters;
 import static edu.wpi.first.units.Units.Meters;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -61,7 +62,7 @@ public class RobotContainer {
   private final AngleSubsystem angleSubsystem;
   private final TransportSubsystem transportSubsystem;
   private final VisionSubsystem visionSubsystem;
-
+  private final Field2d field = new Field2d();
 
   public RobotContainer() {
     feederSubsystem = new FeederSubsystem();
@@ -72,7 +73,6 @@ public class RobotContainer {
     swerveDrive = SwerveDriveFactory.createSwerveDrive(
         SwerveDriveFactory.SwerveImplementation.WPILIB,
         SwerveDriveFactory.RobotVariant.TEST);
-
 
     Auto.configureAutoBuilder(swerveDrive);
 
@@ -96,7 +96,13 @@ public class RobotContainer {
         .in(Centimeters));
     angleSubsystem.angleSyncCmd(15).schedule();
 
+    SmartDashboard.putData("Field", field); // 提早註冊一次
     configureBindings();
+  }
+
+  public void putRobotPoseOnDashboard() {
+    field.setRobotPose(swerveDrive.getPose2d());
+    SmartDashboard.putData("Field", field);
   }
 
   private void configureBindings() {
@@ -129,7 +135,7 @@ public class RobotContainer {
                 shouldSprint, shouldLockPose)));
 
     // 副 Driver
-    copilotController.a().whileTrue(intakeSubsystem.manualDeployPivotCmd()); 
+    copilotController.a().whileTrue(intakeSubsystem.manualDeployPivotCmd());
     copilotController.y().whileTrue(intakeSubsystem.manualRetractPivotCmd());
     copilotController.b().whileTrue(intakeSubsystem.retakePivotCmd());
     copilotController.x()
@@ -144,16 +150,17 @@ public class RobotContainer {
         new ManualJoystickCmd(angleSubsystem, intakeSubsystem, copilotController));
   }
 
-   private void registerCommand() {
+  private void registerCommand() {
     NamedCommands.registerCommand("Intake", intakeSubsystem.intakeCmd());
     NamedCommands.registerCommand("StopIntake", Commands.runOnce(() -> intakeSubsystem.stopIntake()));
     NamedCommands.registerCommand("DeployIntake", intakeSubsystem.manualDeployPivotCmd().withTimeout(1.2));
     NamedCommands.registerCommand("RetractIntake", intakeSubsystem.manualRetractPivotCmd());
     NamedCommands.registerCommand("Shoot", shooterSubsystem.shootCmd().withTimeout(4));
-    NamedCommands.registerCommand("adjustAngle" , angleSubsystem.adjustAngleCmd(AnglePreset.CLOSE));
-    NamedCommands.registerCommand("shootAngle" , angleSubsystem.adjustAngleCmd(AnglePreset.MAX));
+    NamedCommands.registerCommand("adjustAngle", angleSubsystem.adjustAngleCmd(AnglePreset.CLOSE));
+    NamedCommands.registerCommand("shootAngle", angleSubsystem.adjustAngleCmd(AnglePreset.MAX));
 
-   }
+  }
+
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();
   }

@@ -23,6 +23,7 @@ public class Robot extends TimedRobot {
   private final RobotContainer m_robotContainer;
   private boolean savelog = true;
   private Timer gcTimer = new Timer();
+  RobotContainer robotContainer;
 
   public Robot() {
     if (!savelog) {
@@ -62,6 +63,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+    robotContainer.putRobotPoseOnDashboard();
   }
 
   @Override
