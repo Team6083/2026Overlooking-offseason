@@ -45,7 +45,7 @@ public class WpilibSwerveDrive extends SubsystemBase implements frc.robot.subsys
 
   /**
    * 純里程計,不吃任何 vision 修正。用來跟 vision pose 對照:
-   * poseEstimator 已經融合過 vision,拿它比對 vision 是循環的,看不出相機 offset 的誤差。
+   * poseEstimator 已經融合過 vision,拿它比對 vision 是循環的,看不出相機 offset 的誤差.
    */
   private final SwerveDriveOdometry odometry;
 
