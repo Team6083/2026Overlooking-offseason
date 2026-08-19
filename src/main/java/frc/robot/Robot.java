@@ -6,7 +6,6 @@ package frc.robot;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.revrobotics.util.StatusLogger;
-
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;

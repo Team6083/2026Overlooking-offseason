@@ -111,7 +111,7 @@ public class VisionSubsystem extends SubsystemBase {
 
   /**
    * 依平均 tag 距離加權,照賽季版的公式 min(0.4 + 距離 × 0.6, 5.0)。
-   * 旋轉一律給極大值 —— vision 的旋轉不參與融合。
+   * 旋轉一律給極大值 —— vision 的旋轉不參與融合.
    */
   private static Matrix<N3, N1> stdDevsFor(MegatagPoseEstimate estimate) {
     double trust = Math.min(
@@ -132,7 +132,7 @@ public class VisionSubsystem extends SubsystemBase {
 
   /**
    * 把兩種 MegaTag 的原始 botpose 發成 Pose2d/Pose3d struct 陣列,AdvantageScope 才畫得出來。
-   * 用陣列而不是單一 struct:沒有量測時發空陣列,場地圖上的殘影會消失,不會凍結在最後一次的位置。
+   * 用陣列而不是單一 struct:沒有量測時發空陣列,場地圖上的殘影會消失,不會凍結在最後一次的位置.
    */
   private void publishRawPoses(int index, VisionIo.CameraInputs camera) {
     CameraPublishers pubs = publishersFor(index);

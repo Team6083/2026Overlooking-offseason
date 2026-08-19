@@ -27,7 +27,7 @@ public record MegatagPoseEstimate(
 
   /**
    * 用 botpose 回報的 tagCount,不是 rawfiducials 的長度 —— 相機可能看到 3 顆 tag 但只用 1 顆
-   * 解算,那時套用 multi-tag 的高信任度會過度信任。
+   * 解算,那時套用 multi-tag 的高信任度會過度信任.
    */
   public boolean isMultiTag() {
     return tagCount > 1;
@@ -35,7 +35,7 @@ public record MegatagPoseEstimate(
 
   /**
    * 只看 botpose 自己回報的 tagCount。賽季版可用的寫法就是只靠 tv + botpose 陣列,
-   * 不依賴 rawfiducials —— 那個 key 沒資料時整批量測會被靜默丟掉。
+   * 不依賴 rawfiducials —— 那個 key 沒資料時整批量測會被靜默丟掉.
    */
   public boolean isValid() {
     return tagCount > 0;

@@ -30,7 +30,7 @@ public class VisionIoLimelight implements VisionIo {
         yawSupplierDegrees, kZero, cameraNames);
   }
 
-  /** MegaTag2 在機器人自轉時需要 yawRate 才能補償,賽季版有傳,這裡補上。 */
+  /** MegaTag2 在機器人自轉時需要 yawRate 才能補償,賽季版有傳,這裡補上. */
   public VisionIoLimelight(
       DoubleSupplier yawSupplierDegrees,
       DoubleSupplier yawRateSupplierDegrees,
@@ -158,7 +158,7 @@ public class VisionIoLimelight implements VisionIo {
   /**
    * 沒有 rawfiducials 資料時回傳 0(視為無歧義),而不是最壞的 1.0。
    * 回 1.0 會讓 computeQuality 算出 0 → 量測一律被拒絕,這是「什麼都看不到」的主因之一;
-   * 賽季版可用的寫法根本不讀 rawfiducials,這裡讓它退化成同樣的行為。
+   * 賽季版可用的寫法根本不讀 rawfiducials,這裡讓它退化成同樣的行為.
    */
   private static double minAmbiguity(FiducialObservation[] fiducials) {
     if (fiducials.length == 0) {
