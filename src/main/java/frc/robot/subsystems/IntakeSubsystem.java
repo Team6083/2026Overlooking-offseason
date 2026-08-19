@@ -4,179 +4,28 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.PersistMode;
-import com.revrobotics.ResetMode;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkMaxConfig;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.IntakeConstants;
 
 public class IntakeSubsystem extends SubsystemBase {
-  // intake 是把球吸進去的部位，pivot 是把整個 intake 抬降的部位
-  private final SparkMax intakeMotor = new SparkMax(
-      IntakeConstants.intakeMotorId,
-      MotorType.kBrushless);
-  private final SparkMax pivotMotor = new SparkMax(
-      IntakeConstants.pivotMotorId,
-      MotorType.kBrushless);
-  private final PIDController pivotFollowPidController = new PIDController(
-      IntakeConstants.pivotFollowKp,
-      IntakeConstants.pivotFollowKi,
-      IntakeConstants.pivotFollowKd);
+  /** Creates a new IntakeSubsystem. */
+  public IntakeSubsystem() {}
 
-  public IntakeSubsystem() {
-    SparkMaxConfig intakeConfig = new SparkMaxConfig();
-    intakeConfig.inverted(IntakeConstants.intakeInverted);
-    intakeMotor.configure(
-        intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    SparkMaxConfig pivotConfig = new SparkMaxConfig();
-    pivotConfig.inverted(IntakeConstants.pivotInverted);
-    pivotMotor.configure(pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    //pivotFollowPidController.enableContinuousInput(0, IntakeConstants.pivotEncoderFullRange);
-    pivotMotor.getEncoder().setPosition(IntakeConstants.pivotExpectedZero);
-  }
+  public void intake() {}
 
-  // intake
-  public void intake() {
-    intakeMotor.set(IntakeConstants.intakeSpeed);
-  }
+  public void reverseIntake() {}
 
-  public void reverseIntake() {
-    intakeMotor.set(IntakeConstants.reverseIntakeSpeed);
-  }
+  public void stopIntake() {}
 
-  public void stopIntake() {
-    intakeMotor.set(0);
-  }
+  public void deploy() {}
 
-  // Pivot
-  // 沒 PID 的，自己手動調到適合的角度
-  public void manualPivotDeploy() {
-    pivotMotor.set(IntakeConstants.pivotManualSpeed);
-  }
+  public void retract() {}
 
-  public void manualPivotReverse() {
-    pivotMotor.set(-IntakeConstants.pivotManualRetractSpeed);
-  }
+  public void manualDeploy() {}
 
-  public void manualPivotReverseRetake() {
-    pivotMotor.set(IntakeConstants.PivotRetakeSpeed);
-  }
-
-  public void stopRotate() {
-    pivotMotor.set(0);
-  }
-
-  // Sync Pivot
-  // 有 PID 的，會轉到固定角度
-  public void pivotDeploy() {
-    runPivotTarget(IntakeConstants.pivotDeployStopPosition, IntakeConstants.pivotMaxOutput);
-  }
-
-  public void pivotRetract() {
-    runPivotTarget(IntakeConstants.pivotRetractStopPosition, IntakeConstants.pivotMaxOutput);
-  }
-
-  public void pivotRetake() {
-    runPivotTarget(IntakeConstants.pivotRetakeStopPosition, IntakeConstants.pivotRetakeMaxOutput);
-  }
-
-  private void runPivotTarget(double targetPosition, double maxOutput) {
-    double currentPosition = pivotMotor.getEncoder().getPosition() / 9;
-    double pidOutput = pivotFollowPidController.calculate(currentPosition, targetPosition);
-    pidOutput = MathUtil.clamp(pidOutput, -1.8, maxOutput);
-    pivotMotor.set(pidOutput);
-  }
-
-  // Getters
-  public double getPivotPosition() {
-    return pivotMotor.getEncoder().getPosition() / 9;
-  }
-
-  // intake
-  public Command intakeCmd() {
-    Command cmd = runEnd(this::intake, this::stopIntake);
-    cmd.setName("intakeCmd");
-    return cmd;
-  }
-
-  public Command reverseIntakeCmd() {
-    Command cmd = runEnd(this::reverseIntake, this::stopIntake);
-    cmd.setName("reverseIntakeCmd");
-    return cmd;
-  }
-
-  // manual pivot
-  public Command manualDeployPivotCmd() {
-    Command cmd = runEnd(this::manualPivotDeploy, this::stopRotate);
-    cmd.setName("manualDeployPivotCmd");
-    return cmd;
-  }
-
-  public Command manualRetractPivotCmd() {
-    Command cmd = runEnd(this::manualPivotReverse, this::stopRotate);
-    cmd.setName("manualRetractPivotCmd");
-    return cmd;
-  }
-
-  // public Command pivotRetakeCmd() {
-  //   Command cmd = Commands.repeatingSequence(
-  //       Commands.run(
-  //         this::manualPivotReverseRetake
-  //       ).withTimeout(2),
-
-  //       Commands.run(
-  //         this::manualPivotDeploy()
-  //       ).withTimeout(1)
-  //   );
-  //   cmd.setName("pivotRetakeCmd");
-  //   return cmd;
-  // }
-
-  public Command retakePivotCmd() {
-    Command cmd = runEnd(this::manualPivotReverseRetake, this::stopRotate);
-    cmd.setName("retakePivotCmd");
-    return cmd;
-  }
-
-  // auto pivot （還不能用）
-  public Command deployPivotCmd() {
-    Command cmd = runEnd(this::pivotDeploy, this::stopRotate);
-    cmd.setName("deployPivotCmd");
-    return cmd;
-  }
-
-  public Command retractPivotCmd() {
-    Command cmd = runEnd(this::pivotRetract, this::stopRotate);
-    cmd.setName("retractPivotCmd");
-    return cmd;
-  }
-
-  public Command autoDeployPivotCmd() {
-    Command cmd = deployPivotCmd()
-        .until(() -> getPivotPosition() >= IntakeConstants.pivotDeployStopPosition);
-    cmd.setName("autoDeployPivotCmd");
-    return cmd;
-  }
-
-  public Command autoRetractPivotCmd() {
-    Command cmd = retractPivotCmd()
-        .until(() -> getPivotPosition() <= IntakeConstants.pivotRetractStopPosition);
-    cmd.setName("autoRetractPivotCmd");
-    return cmd;
-  }
+  public void manualRetract() {}
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("intake/intakeVoltage", intakeMotor.getBusVoltage() * intakeMotor.getAppliedOutput()); // 用來看馬控是否有要求馬達輸出
-    SmartDashboard.putNumber("intake/pivotPositionDeg", getPivotPosition());
-    SmartDashboard.putNumber("intake/pivotVoltage", pivotMotor.getBusVoltage() * pivotMotor.getAppliedOutput());
-    SmartDashboard.putData("intake/subsystem", this);
-    SmartDashboard.putData(pivotFollowPidController);
+    // This method will be called once per scheduler run
   }
 }
