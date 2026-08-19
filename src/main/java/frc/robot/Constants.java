@@ -16,9 +16,6 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
-import frc.robot.lib.zone.CompositeZone;
-import frc.robot.lib.zone.RectZone;
-import frc.robot.lib.zone.Zone;
 
 /** Add your docs here. */
 public class Constants {
@@ -198,59 +195,6 @@ public static class AutoConstants {
       public static final Distance trenchZoneLength = Meters.of(4);
 
       public static final double trenchAngleMargin = 0.3;
-    }
-
-    public static class FieldZones {
-      public static final double blueTrenchZoneMinX = FieldConstants.trenchToWall
-          .minus(FieldConstants.trenchZoneLength.div(2)).in(Meters);
-      public static final double blueTrenchZoneMaxX = FieldConstants.trenchToWall
-          .plus(FieldConstants.trenchZoneLength.div(2)).in(Meters);
-
-      public static final double redTrenchZoneMinX = FieldConstants.fieldLength
-          .minus(FieldConstants.trenchToWall)
-          .minus(FieldConstants.trenchZoneLength.div(2)).in(Meters);
-      public static final double redTrenchZoneMaxX = FieldConstants.fieldLength
-          .minus(FieldConstants.trenchToWall)
-          .plus(FieldConstants.trenchZoneLength.div(2)).in(Meters);
-
-      public static final double leftTrenchZoneMinY = FieldConstants.fieldWidth
-          .minus(FieldConstants.trenchWidth).in(Meters);
-      public static final double leftTrenchZoneMaxY = FieldConstants.fieldWidth.in(Meters) + 2;
-
-      public static final double rightTrenchZoneMinY = -2;
-      public static final double rightTrenchZoneMaxY = FieldConstants.trenchWidth.in(Meters);
-
-      public static final Zone blueLeftZone = new RectZone(
-          blueTrenchZoneMinX, blueTrenchZoneMaxX, leftTrenchZoneMinY, leftTrenchZoneMaxY);
-      public static final Zone blueRightZOne = new RectZone(
-          blueTrenchZoneMinX, blueTrenchZoneMaxX, rightTrenchZoneMinY, rightTrenchZoneMaxY);
-      public static final Zone redLeftZone = new RectZone(
-          redTrenchZoneMinX, redTrenchZoneMaxX, leftTrenchZoneMinY, leftTrenchZoneMaxY);
-      public static final Zone redRightZone = new RectZone(
-          redTrenchZoneMinX, redTrenchZoneMaxX, rightTrenchZoneMinY, rightTrenchZoneMaxY);
-
-      public static final CompositeZone trenchZone = new CompositeZone(
-          blueLeftZone, blueRightZOne, redLeftZone, redRightZone);
-
-      // 放大trench空間讓angle可以有誤差區和下降時間
-      private static final double margin = FieldConstants.trenchAngleMargin;
-
-      public static final Zone blueLeftZoneWithMargin = new RectZone(
-          blueTrenchZoneMinX - margin, blueTrenchZoneMaxX + margin,
-          leftTrenchZoneMinY - margin, leftTrenchZoneMaxY + margin);
-      public static final Zone blueRightZoneWithMargin = new RectZone(
-          blueTrenchZoneMinX - margin, blueTrenchZoneMaxX + margin,
-          rightTrenchZoneMinY - margin, rightTrenchZoneMaxY + margin);
-      public static final Zone redLeftZoneWithMargin = new RectZone(
-          redTrenchZoneMinX - margin, redTrenchZoneMaxX + margin,
-          leftTrenchZoneMinY - margin, leftTrenchZoneMaxY + margin);
-      public static final Zone redRightZoneWithMargin = new RectZone(
-          redTrenchZoneMinX - margin, redTrenchZoneMaxX + margin,
-          rightTrenchZoneMinY - margin, rightTrenchZoneMaxY + margin);
-
-      public static final CompositeZone trenchZoneWithMargin = new CompositeZone(
-          blueLeftZoneWithMargin, blueRightZoneWithMargin,
-          redLeftZoneWithMargin, redRightZoneWithMargin);
     }
 
     public static final class ShooterConstants {
