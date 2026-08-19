@@ -54,7 +54,6 @@ public class RobotContainer {
 
   private Supplier<Boolean> shouldSprint = () -> mainController.x().getAsBoolean();
   private Supplier<Boolean> shouldLockPose = () -> mainController.b().getAsBoolean();
-  private final SendableChooser<Command> autoChooser;
   private SwerveDrive swerveDrive;
   private final IntakeSubsystem intakeSubsystem;
   private final FeederSubsystem feederSubsystem;
@@ -73,14 +72,6 @@ public class RobotContainer {
     swerveDrive = SwerveDriveFactory.createSwerveDrive(
         SwerveDriveFactory.SwerveImplementation.WPILIB,
         SwerveDriveFactory.RobotVariant.TEST);
-
-    Auto.configureAutoBuilder(swerveDrive);
-
-    registerCommand();
-
-    autoChooser = AutoBuilder.buildAutoChooser();
-
-    SmartDashboard.putData("autoChooser", autoChooser);
     visionSubsystem = new VisionSubsystem(
         new VisionIoLimelight(
             // MegaTag2 要的是場地座標下的朝向。estimator 的 rotation 才是 gyro + offset
@@ -150,18 +141,7 @@ public class RobotContainer {
         new ManualJoystickCmd(angleSubsystem, intakeSubsystem, copilotController));
   }
 
-  private void registerCommand() {
-    NamedCommands.registerCommand("Intake", intakeSubsystem.intakeCmd());
-    NamedCommands.registerCommand("StopIntake", Commands.runOnce(() -> intakeSubsystem.stopIntake()));
-    NamedCommands.registerCommand("DeployIntake", intakeSubsystem.manualDeployPivotCmd().withTimeout(1.2));
-    NamedCommands.registerCommand("RetractIntake", intakeSubsystem.manualRetractPivotCmd());
-    NamedCommands.registerCommand("Shoot", shooterSubsystem.shootCmd().withTimeout(4));
-    NamedCommands.registerCommand("adjustAngle", angleSubsystem.adjustAngleCmd(AnglePreset.CLOSE));
-    NamedCommands.registerCommand("shootAngle", angleSubsystem.adjustAngleCmd(AnglePreset.MAX));
-
-  }
-
   public Command getAutonomousCommand() {
-    return autoChooser.getSelected();
+    return Commands.print("No autonomous command configured");
   }
 }
