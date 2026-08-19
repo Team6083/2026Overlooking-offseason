@@ -22,22 +22,11 @@ import static edu.wpi.first.units.Units.Meters;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.AimAssistCmd;
-import frc.robot.commands.AutoAngleCmd;
-import frc.robot.commands.ManualJoystickCmd;
-import frc.robot.commands.ShooterComboCmd;
 import frc.robot.commands.SwerveControlCmd;
-import frc.robot.commands.manualShooterComboCmd;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.lib.FieldUtil;
-import frc.robot.subsystems.AngleSubsystem;
-import frc.robot.subsystems.AngleSubsystem.AnglePreset;
 import frc.robot.subsystems.FeederSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -58,7 +47,6 @@ public class RobotContainer {
   private final IntakeSubsystem intakeSubsystem;
   private final FeederSubsystem feederSubsystem;
   private final ShooterSubsystem shooterSubsystem;
-  private final AngleSubsystem angleSubsystem;
   private final TransportSubsystem transportSubsystem;
   private final VisionSubsystem visionSubsystem;
   private final Field2d field = new Field2d();
@@ -67,7 +55,6 @@ public class RobotContainer {
     feederSubsystem = new FeederSubsystem();
     intakeSubsystem = new IntakeSubsystem();
     shooterSubsystem = new ShooterSubsystem();
-    angleSubsystem = new AngleSubsystem();
     transportSubsystem = new TransportSubsystem();
     swerveDrive = SwerveDriveFactory.createSwerveDrive(
         SwerveDriveFactory.SwerveImplementation.WPILIB,
@@ -82,11 +69,6 @@ public class RobotContainer {
         swerveDrive::getPose2d,
         (pose, timestamp, stdDevs) -> swerveDrive.addVisionMeasurement(pose, timestamp, stdDevs));
 
-    angleSubsystem.setDistanceSupplier(() -> Meters.of(swerveDrive.getPose2d().getTranslation()
-        .getDistance(FieldUtil.getHubPosition()))
-        .in(Centimeters));
-    angleSubsystem.angleSyncCmd(15).schedule();
-
     SmartDashboard.putData("Field", field); // 提早註冊一次
     configureBindings();
   }
@@ -97,7 +79,6 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    // 主 Driver
     // swerve
     swerveDrive.setDefaultCommand(new SwerveControlCmd(
         swerveDrive, mainController, shouldSprint, shouldLockPose));
@@ -105,40 +86,6 @@ public class RobotContainer {
       swerveDrive.zeroGyro();
       swerveDrive.resetPose(new Pose2d(swerveDrive.getPose2d().getTranslation(), Rotation2d.fromDegrees(0)));
     }));
-
-    angleSubsystem.setDefaultCommand(new AutoAngleCmd(angleSubsystem,
-        swerveDrive));
-
-    mainController.rightTrigger().whileTrue(intakeSubsystem.intakeCmd());
-    mainController.rightBumper().whileTrue(intakeSubsystem.reverseIntakeCmd());
-    mainController.leftBumper()
-        .whileTrue(new manualShooterComboCmd(
-            shooterSubsystem, feederSubsystem,
-            transportSubsystem, angleSubsystem));
-    mainController.leftTrigger().whileTrue(
-        new ShooterComboCmd(
-            swerveDrive, shooterSubsystem,
-            transportSubsystem, feederSubsystem,
-            intakeSubsystem, angleSubsystem,
-            () -> true)
-            .alongWith(new AimAssistCmd(
-                swerveDrive, mainController,
-                shouldSprint, shouldLockPose)));
-
-    // 副 Driver
-    copilotController.a().whileTrue(intakeSubsystem.manualDeployPivotCmd());
-    copilotController.y().whileTrue(intakeSubsystem.manualRetractPivotCmd());
-    copilotController.b().whileTrue(intakeSubsystem.retakePivotCmd());
-    copilotController.x()
-        .onTrue(angleSubsystem.adjustAngleCmd(AnglePreset.CLOSE)
-            .alongWith(shooterSubsystem.shootCmd(0)));
-
-    copilotController.rightTrigger().whileTrue(transportSubsystem.transportInCmd());
-    copilotController.leftTrigger().whileTrue(feederSubsystem.feedInCmd());
-
-    copilotController.povUp().whileTrue(shooterSubsystem.shootCmd());
-    copilotController.leftBumper().whileTrue(
-        new ManualJoystickCmd(angleSubsystem, intakeSubsystem, copilotController));
   }
 
   public Command getAutonomousCommand() {
