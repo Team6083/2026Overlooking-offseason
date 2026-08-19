@@ -7,7 +7,6 @@ package frc.robot.subsystems.swervedrive;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import com.studica.frc.AHRS;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -55,11 +54,11 @@ public class WpilibSwerveDrive extends SubsystemBase implements frc.robot.subsys
   private final StructArrayPublisher<SwerveModuleState> swerveCurrentStatePublisher = NetworkTableInstance
       .getDefault().getStructArrayTopic("CurrentStates", SwerveModuleState.struct).publish();
 
-  /** 融合後的位置(里程計 + vision)。 */
+  /** 融合後的位置(里程計 + vision). */
   private final StructPublisher<Pose2d> currentPosePublisher = NetworkTableInstance.getDefault()
       .getStructTopic("currentPose", Pose2d.struct).publish();
 
-  /** 純里程計位置,AdvantageScope 上拿來跟 Vision pose 對照用。 */
+  /** 純里程計位置,AdvantageScope 上拿來跟 Vision pose 對照用. */
   private final StructPublisher<Pose2d> odometryPosePublisher = NetworkTableInstance.getDefault()
       .getStructTopic("odometryPose", Pose2d.struct).publish();
 
@@ -174,7 +173,7 @@ public class WpilibSwerveDrive extends SubsystemBase implements frc.robot.subsys
     odometry.resetPosition(gyro.getRotation2d(), getSwerveModulePosition(), pose);
   }
 
-  /** 純里程計位置,不含 vision 修正。 */
+  /** 純里程計位置,不含 vision 修正. */
   public Pose2d getOdometryPose2d() {
     return odometry.getPoseMeters();
   }
