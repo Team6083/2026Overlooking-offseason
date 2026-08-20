@@ -64,7 +64,7 @@ public class ShooterSubsystem extends SubsystemBase {
     double feedforwardVoltage = shooterFeedforward.calculate(targetVelocity);
     shooterMotor1.setVoltage(feedforwardVoltage);
     complexMotor1.setVoltage(feedforwardVoltage);
-}
+  }
 
   public void shoot(double targetVelocity) {
     this.shooterTargetVelocity = shooterRateLimiter.calculate(targetVelocity);
@@ -90,6 +90,11 @@ public class ShooterSubsystem extends SubsystemBase {
     return getShooterVelocity() >= shooterTargetVelocity;
   }
 
+  public double getShooterVoltage() {
+    return shooterMotor1.getAppliedOutput();
+
+  }
+
   // Shooter commands (不打值會使用預設值)
   public Command shootCmd() {
     Command cmd = runEnd(() -> shoot(ShooterConstants.shooterNominalTarget), this::stopShooter);
@@ -109,6 +114,7 @@ public class ShooterSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("shooter/shooterRPM", getShooterVelocity());
     SmartDashboard.putNumber("shooter/complexRPM", getComplexVelocity());
     SmartDashboard.putNumber("shooter/targetRPM", shooterTargetVelocity);
+    SmartDashboard.putNumber("shooter/voltage", getShooterVoltage());
     SmartDashboard.putData("shooter/subsystem", this);
   }
 }

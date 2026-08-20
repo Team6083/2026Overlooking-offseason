@@ -272,11 +272,19 @@ public static class AutoConstants {
       public static final double shooterDistanceMultiplier = 2207.31;
       public static final double shooterDistanceExponent = 0.0017;
 
+<<<<<<< HEAD
       public static final double shooterNominalTarget = 5100.00 / 1.5; // 上方轉速
       public static final double complexNominalTarget = 5100.00 / 1.5; // 下方轉速
       public static final double shooterLowGearTarget = 1500.00 / 1.5;
       public static final double maxShooterVelocity = 6000 / 1.5;
       public static final double passVelocity = 2100.00 / 1.5;
+=======
+      public static final double shooterNominalTarget = 3100.00; // 上方轉速
+      public static final double complexNominalTarget = 3100.00; // 下方轉速
+      public static final double shooterLowGearTarget = 1500.00;
+      public static final double maxShooterVelocity = 6000;
+      public static final double passVelocity = 2100.00;
+>>>>>>> 27dacc2e6bb30dd54ff115709e73bab03e3b26f8
 
       public static final double shooterVelocityTolerance = 100; // RPM，待實測調整
 
@@ -296,7 +304,7 @@ public static class AutoConstants {
       public static final double angleFeedforwardKg = 0.018; // 重力電壓
 
       public static final double angleMotorMaxAngle = 55; // 最大角度
-      public static final double angleMotorShootAngle = 18; // 初始角度(待測)
+      public static final double angleMotorShootAngle = 14; // 初始角度(待測)
       public static final double angleMotorMinAngle = 0; // 最小角度
       public static final double angleMotorTransAngle = 45;
 
@@ -323,8 +331,8 @@ public static class AutoConstants {
   public static final class AimAssistConstant {
     public static final Rotation2d kShooterYawOffset = Rotation2d.fromDegrees(180);
 
-    public static final double kP = 0.07;
-    public static final double kI = 0.002;
+    public static final double kP = 0.05;
+    public static final double kI = 0.0;
     public static final double kD = 0.0;
     public static final double kIZoneDeg = 3.0;
     public static final double kToleranceDeg = 1.0;
