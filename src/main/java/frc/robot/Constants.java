@@ -272,19 +272,11 @@ public static class AutoConstants {
       public static final double shooterDistanceMultiplier = 2207.31;
       public static final double shooterDistanceExponent = 0.0017;
 
-<<<<<<< HEAD
-      public static final double shooterNominalTarget = 5100.00 / 1.5; // 上方轉速
-      public static final double complexNominalTarget = 5100.00 / 1.5; // 下方轉速
-      public static final double shooterLowGearTarget = 1500.00 / 1.5;
-      public static final double maxShooterVelocity = 6000 / 1.5;
-      public static final double passVelocity = 2100.00 / 1.5;
-=======
       public static final double shooterNominalTarget = 3100.00; // 上方轉速
       public static final double complexNominalTarget = 3100.00; // 下方轉速
       public static final double shooterLowGearTarget = 1500.00;
       public static final double maxShooterVelocity = 6000;
       public static final double passVelocity = 2100.00;
->>>>>>> 27dacc2e6bb30dd54ff115709e73bab03e3b26f8
 
       public static final double shooterVelocityTolerance = 100; // RPM，待實測調整
 
