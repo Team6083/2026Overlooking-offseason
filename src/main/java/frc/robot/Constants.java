@@ -147,7 +147,7 @@ public static class AutoConstants {
       public static final boolean intakeInverted = false;
       public static final boolean pivotInverted = true;
 
-      public static final double intakeSpeed = 0.75;
+      public static final double intakeSpeed = 0.65;
       public static final double reverseIntakeSpeed = -0.65;
 
       public static final double pivotManualSpeed = 0.15;
@@ -272,8 +272,8 @@ public static class AutoConstants {
       public static final double shooterDistanceMultiplier = 2207.31;
       public static final double shooterDistanceExponent = 0.0017;
 
-      public static final double shooterNominalTarget = 4200.00 / 1.5; // 上方轉速
-      public static final double complexNominalTarget = 4200.00 / 1.5; // 下方轉速
+      public static final double shooterNominalTarget = 5100.00 / 1.5; // 上方轉速
+      public static final double complexNominalTarget = 5100.00 / 1.5; // 下方轉速
       public static final double shooterLowGearTarget = 1500.00 / 1.5;
       public static final double maxShooterVelocity = 6000 / 1.5;
       public static final double passVelocity = 2100.00 / 1.5;
