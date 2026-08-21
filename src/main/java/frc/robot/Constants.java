@@ -71,16 +71,24 @@ public class Constants {
     public static final boolean shooterDownMotorInverted = false;
 
     public static final double shooterFeedforwardKs = 0.01; // 起始電壓
-    public static final double shooterFeedforwardKv = 0.00207; // 速度電壓
+    public static final double shooterFeedforwardKv = 0.00507; // 速度電壓
     public static final double shooterFeedforwardKa = 0; // 加速度電壓
 
     public static final int shooterCurrentLimit = 40; // NEO 550 用 20，NEO/Vortex 常見 40~60
-    public static final int complexCurrentLimit = 40;
+    public static final int complexCurrentLimit = 30;
 
-    public static final double shooterNominalTarget = 5000; // 上方轉速
-    public static final double complexNominalTarget = 5000; // 下方轉速
+    public static final double shooterDistanceMultiplier = 2207.31;
+    public static final double shooterDistanceExponent = 0.0017;
 
-    public static final double shooterLowGearTarget = 1500;
+    public static final double shooterNominalTarget = 3100.00; // 上方轉速
+    public static final double complexNominalTarget = 3100.00; // 下方轉速
+    public static final double shooterLowGearTarget = 1500.00;
+    public static final double maxShooterVelocity = 6000;
+    public static final double passVelocity = 2100.00;
+
+    public static final double shooterVelocityTolerance = 100; // RPM，待實測調整
+
+    public static final double shooterAccelLimit = 1200 / 1.5;
   }
 
   public static final class AngleConstants {
@@ -92,21 +100,26 @@ public class Constants {
 
     public static final double angleFeedforwardKs = 0.01; // 起始電壓
     public static final double angleFeedforwardKv = 0.00407; // 速度電壓
-    public static final double angleFeedforwardKa = 0.02; // 加速度電壓
-    public static final double angleFeedforwardKg = 0.04; // 重力電壓
+    public static final double angleFeedforwardKa = 0.01; // 加速度電壓
+    public static final double angleFeedforwardKg = 0.018; // 重力電壓
 
     public static final double angleMotorMaxAngle = 55; // 最大角度
-    public static final double angleMotorShootAngle = 25; // 初始角度(待測)
+    public static final double angleMotorShootAngle = 14; // 初始角度(待測)
     public static final double angleMotorMinAngle = 0; // 最小角度
-    public static final double angleMotorTransAngle = 35;
+    public static final double angleMotorTransAngle = 45;
 
-    public static final double angleMotorKp = 0.105;
+    public static final double angleMotorKp = 0.085;
     public static final double angleMotorKi = 0.0001;
     public static final double angleMotorKd = 0.002;
 
-    public static final double angleTolerance = 0.5;
+    public static final double angleTolerance = 0.45;
 
-    public static final double angleExpectedZero = 1.1;
+    public static final double angleExpectedZero = 0;
+
+    public static final double angleDistanceMultiplier = 40;
+    public static final double angleDistanceExponent = -0.001;
+
+    public static final double angleMinManualAngle = 10;
   }
 
   public static final class TransportConstants {

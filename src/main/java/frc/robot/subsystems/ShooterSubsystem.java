@@ -27,7 +27,7 @@ public class ShooterSubsystem extends SubsystemBase {
       ShooterConstants.shooterFeedforwardKv,
       ShooterConstants.shooterFeedforwardKa);
 
-  private final SlewRateLimiter shooterRateLimiter = new SlewRateLimiter(800);
+  private final SlewRateLimiter shooterRateLimiter = new SlewRateLimiter(ShooterConstants.shooterAccelLimit);
 
   private RelativeEncoder shooterEncoder;
   private RelativeEncoder complexEncoder;
@@ -45,6 +45,7 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterConfig.inverted(ShooterConstants.shooterUpMotorInverted);
     shooterFollowerConfig.follow(ShooterConstants.shooterMotorID1, false); // 馬達平行裝
     shooterConfig.smartCurrentLimit(ShooterConstants.shooterCurrentLimit);
+    shooterFollowerConfig.smartCurrentLimit(ShooterConstants.shooterCurrentLimit);
     shooterMotor1.configure(shooterConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     shooterMotor2.configure(shooterFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
@@ -53,24 +54,23 @@ public class ShooterSubsystem extends SubsystemBase {
     complexConfig.inverted(ShooterConstants.shooterDownMotorInverted);
     complexFollowerConfig.follow(ShooterConstants.complexMotorID1, false); // 馬達平行裝
     complexConfig.smartCurrentLimit(ShooterConstants.complexCurrentLimit);
+    complexFollowerConfig.smartCurrentLimit(ShooterConstants.complexCurrentLimit);
     complexMotor1.configure(complexConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     complexMotor2.configure(complexFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     shooterEncoder = shooterMotor1.getEncoder();
     complexEncoder = complexMotor1.getEncoder();
   }
-
-  // Shooter
+  
   private void setShooterVoltage(double targetVelocity) {
     double feedforwardVoltage = shooterFeedforward.calculate(targetVelocity);
-    // 計算前饋電壓，需要去測看看會不會每顆馬達都不一樣的前饋電壓
     shooterMotor1.setVoltage(feedforwardVoltage);
     complexMotor1.setVoltage(feedforwardVoltage);
   }
 
-  public void shoot() {
-    double target = shooterRateLimiter.calculate(ShooterConstants.shooterNominalTarget);
-    setShooterVoltage(target);
+  public void shoot(double targetVelocity) {
+    this.shooterTargetVelocity = shooterRateLimiter.calculate(targetVelocity);
+    setShooterVoltage(this.shooterTargetVelocity);
   }
 
   public void stopShooter() {
@@ -80,7 +80,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   // Getter
-  private double getShooterVelocity() {
+  public double getShooterVelocity() {
     return shooterEncoder.getVelocity();
   }
 
@@ -92,9 +92,13 @@ public class ShooterSubsystem extends SubsystemBase {
     return getShooterVelocity() >= shooterTargetVelocity;
   }
 
+  public double getShooterVoltage() {
+    return shooterMotor1.getAppliedOutput();
+  }
+
   // Shooter commands (不打值會使用預設值)
   public Command shootCmd() {
-    Command cmd = runEnd(() -> shoot(), this::stopShooter);
+    Command cmd = runEnd(() -> shoot(ShooterConstants.shooterNominalTarget), this::stopShooter);
     cmd.setName("shoot" + ShooterConstants.shooterNominalTarget + "Cmd");
     return cmd;
   }
@@ -111,6 +115,7 @@ public class ShooterSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("shooter/shooterRPM", getShooterVelocity());
     SmartDashboard.putNumber("shooter/complexRPM", getComplexVelocity());
     SmartDashboard.putNumber("shooter/targetRPM", shooterTargetVelocity);
+    SmartDashboard.putNumber("shooter/voltage", getShooterVoltage());
     SmartDashboard.putData("shooter/subsystem", this);
   }
 }
