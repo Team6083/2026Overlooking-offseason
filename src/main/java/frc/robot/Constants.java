@@ -275,7 +275,7 @@ public static class AutoConstants {
       public static final double shooterNominalTarget = 3100.00; // 上方轉速
       public static final double complexNominalTarget = 3100.00; // 下方轉速
       public static final double shooterLowGearTarget = 1500.00;
-      public static final double maxShooterVelocity = 6000;
+      public static final double maxShooterVelocity = 5000;
       public static final double passVelocity = 2100.00;
 
       public static final double shooterVelocityTolerance = 100; // RPM，待實測調整
@@ -296,7 +296,7 @@ public static class AutoConstants {
       public static final double angleFeedforwardKg = 0.018; // 重力電壓
 
       public static final double angleMotorMaxAngle = 55; // 最大角度
-      public static final double angleMotorShootAngle = 14; // 初始角度(待測)
+      public static final double angleMotorShootAngle = 16; // 初始角度(待測)
       public static final double angleMotorMinAngle = 0; // 最小角度
       public static final double angleMotorTransAngle = 45;
 

@@ -16,6 +16,7 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.lib.FieldUtil;
 import frc.robot.subsystems.AngleSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.AngleSubsystem.AnglePreset;
 import frc.robot.subsystems.swervedrive.SwerveDrive;
 
 /**
@@ -44,7 +45,7 @@ public class AdjustSpeedCmd extends Command {
         * Math.exp(ShooterConstants.shooterDistanceExponent * dis.in(Centimeters)),
         0.0, ShooterConstants.maxShooterVelocity);
 
-    angleSubsystem.angleSync(AngleConstants.angleMotorShootAngle);
+    angleSubsystem.adjustAngleCmd(AnglePreset.SHOOT);
     shooterSubsystem.shoot(targetVelocity);
 
     SmartDashboard.putNumber("adjustSpeed/distance", dis.in(Centimeters));

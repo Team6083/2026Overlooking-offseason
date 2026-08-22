@@ -100,6 +100,10 @@ public class RobotContainer {
     configureBindings();
   }
 
+  public AngleSubsystem getAngleSubsystem() {
+    return angleSubsystem;
+  }
+
   public void putRobotPoseOnDashboard() {
     field.setRobotPose(swerveDrive.getPose2d());
     SmartDashboard.putData("Robot Pose", field);

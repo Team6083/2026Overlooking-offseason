@@ -12,10 +12,9 @@ import frc.robot.subsystems.AngleSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 
 /**
- * 副手用左搖桿手動控制角度:
- * - 搖桿往上推到底(<= -deadLine附近全速) -> 逼近最大角度
- * - 搖桿往下推到底 -> 逼近最低可用角度(10度，不是完全歸零，避免誤觸直接關到底損害shooter)
- * - 搖桿推多少幅度，角度變化速度就跟著多快(比例控制，不是選固定preset)
+ * 副手用左右搖桿手動控制:
+ * - 左搖桿: 控制 angleSubsystem 角度 (比例控制, PID)
+ * - 右搖桿: 控制 intakeSubsystem pivot 方向 (固定速度, 不改動IntakeSubsystem
  */
 public class ManualJoystickCmd extends Command {
 
@@ -23,58 +22,55 @@ public class ManualJoystickCmd extends Command {
   private final AngleSubsystem angleSubsystem;
   private final CommandXboxController copilotController;
 
-  private double targetAngleX;
+  private double targetAngle;
 
-  private double targetAngleY;
-
-  private static final double deadLine = 0.1; // 搖桿死區，避免手把飄移誤觸發
-  private static final double maxDegreesPerSecond = 60; // 搖桿推到底時，每秒最多轉多少度，需依機構實測調整
-  private static final double loopPeriodSeconds = 0.02; // 標準 20ms loop
+  private static final double deadLine = 0.1;
+  private static final double maxDegreesPerSecond = 60;
 
   public ManualJoystickCmd(AngleSubsystem angleSubsystem, IntakeSubsystem intakeSubsystem,
       CommandXboxController copilotController) {
     this.intakeSubsystem = intakeSubsystem;
     this.angleSubsystem = angleSubsystem;
     this.copilotController = copilotController;
-    addRequirements(angleSubsystem);
+    addRequirements(angleSubsystem, intakeSubsystem);
   }
 
   @Override
   public void initialize() {
-    targetAngleX = angleSubsystem.getCurrentTargetAngle(); // 從目前角度接續，不要突然跳
-    targetAngleY = intakeSubsystem.getPivotPosition(); 
+    targetAngle = angleSubsystem.getCurrentTargetAngle();
   }
 
   @Override
   public void execute() {
-    double rawY = copilotController.getRightY(); // Xbox: 上推通常是負值
-    double rawX = copilotController.getLeftY(); // Xbox: 上推通常是負值
+    double rawLeftY = copilotController.getLeftY();
+    double rawRightY = copilotController.getRightY();
 
-    double stickValueY = MathUtil.applyDeadband(rawY, deadLine);
-    double stickValueX = MathUtil.applyDeadband(rawX, deadLine);
+    double stickAngle = MathUtil.applyDeadband(rawLeftY, deadLine);
+    double stickPivot = MathUtil.applyDeadband(rawRightY, deadLine);
 
-    // 上推(負值)要對應角度增加，所以取負號
-    double angleDeltaX = -stickValueX * maxDegreesPerSecond * loopPeriodSeconds;
-    double angleDeltaY = -stickValueY * maxDegreesPerSecond * loopPeriodSeconds;
-
-    targetAngleX += angleDeltaX;
-    targetAngleY += angleDeltaY;
-
-    targetAngleX = MathUtil.clamp(targetAngleX,
-        AngleConstants.angleMinManualAngle, // = 10
+    // Angle
+    double angleDelta = -stickAngle * maxDegreesPerSecond * 0.02;
+    targetAngle += angleDelta;
+    targetAngle = MathUtil.clamp(targetAngle,
+        AngleConstants.angleMinManualAngle,
         AngleConstants.angleMotorMaxAngle);
+    angleSubsystem.angleSync(targetAngle);
 
-    if (targetAngleY > 0) {
-      intakeSubsystem.deployPivotCmd();
-
-    } else if (targetAngleY < 0) {
-      intakeSubsystem.retractPivotCmd();
+    // pivot
+    if (stickPivot < 0) {
+      // 搖桿上推 -> deploy 方向
+      intakeSubsystem.manualPivotDeploy();
+    } else if (stickPivot > 0) {
+      // 搖桿下推 -> retract 方向
+      intakeSubsystem.manualPivotReverse();
+    } else {
+      intakeSubsystem.stopRotate();
     }
-    angleSubsystem.angleSync(targetAngleY);
   }
 
   @Override
   public void end(boolean interrupted) {
     angleSubsystem.lockCurrentAngle();
+    intakeSubsystem.stopRotate();
   }
 }
