@@ -11,7 +11,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.AngleConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.lib.FieldUtil;
 import frc.robot.subsystems.AngleSubsystem;
