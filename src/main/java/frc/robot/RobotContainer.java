@@ -5,7 +5,6 @@
 package frc.robot;
 
 import frc.robot.commands.SwerveControlCmd;
-import java.util.function.Supplier;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -21,6 +20,7 @@ import frc.robot.subsystems.swervedrive.SwerveDrive;
 import frc.robot.subsystems.swervedrive.SwerveDriveFactory;
 import frc.robot.subsystems.vision.VisionIoLimelight;
 import frc.robot.subsystems.vision.VisionSubsystem;
+import java.util.function.Supplier;
 
 public class RobotContainer {
   private final CommandXboxController mainController = new CommandXboxController(0);
