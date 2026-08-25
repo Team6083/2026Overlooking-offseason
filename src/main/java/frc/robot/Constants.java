@@ -96,7 +96,7 @@ public class Constants {
 
     /**
      * vision 的旋轉一律不融合。MegaTag2 的旋轉就是我們透過 robot_orientation_set 餵進去的
-     * gyro,把它融回 estimator 會變成 gyro 校正 gyro 的循環回饋。
+     * gyro,把它融回 estimator 會變成 gyro 校正 gyro 的循環回饋.
      */
     public static final double untrustedRotationStd = 9999999;
 
@@ -127,137 +127,137 @@ public class Constants {
 
     public static final double untrustedStd = 9999.0;
   }
-    public static final class IntakeConstants {
-      public static final int intakeMotorId = 34;
-      public static final int pivotMotorId = 35;
 
-      public static final double pivotExpectedZero = 0;
+  public static final class IntakeConstants {
+    public static final int intakeMotorId = 34;
+    public static final int pivotMotorId = 35;
 
-      public static final double pivotEncoderFullRange = 360;
-      public static final double pivotDeployStopPosition = 4;
-      public static final double pivotRetractStopPosition = 0.1;
-      public static final double pivotRetakeStopPosition = 30;
+    public static final double pivotExpectedZero = 0;
 
-      public static final double pivotMaxOutput = 1.8;
-      public static final double pivotRetakeMaxOutput = 0.05;
+    public static final double pivotEncoderFullRange = 360;
+    public static final double pivotDeployStopPosition = 4;
+    public static final double pivotRetractStopPosition = 0.1;
+    public static final double pivotRetakeStopPosition = 30;
 
-      public static final boolean intakeInverted = false;
-      public static final boolean pivotInverted = true;
+    public static final double pivotMaxOutput = 1.8;
+    public static final double pivotRetakeMaxOutput = 0.05;
 
-      public static final double intakeSpeed = 0.75;
-      public static final double reverseIntakeSpeed = -0.65;
+    public static final boolean intakeInverted = false;
+    public static final boolean pivotInverted = true;
 
-      public static final double pivotManualSpeed = 0.15;
-      public static final double pivotManualRetractSpeed = 0.2;
-      public static final double PivotRetakeSpeed = -0.2;
+    public static final double intakeSpeed = 0.75;
+    public static final double reverseIntakeSpeed = -0.65;
 
-      public static final double pivotFollowKp = 0.03;
-      public static final double pivotFollowKi = 0;
-      public static final double pivotFollowKd = 0;
-    }
+    public static final double pivotManualSpeed = 0.15;
+    public static final double pivotManualRetractSpeed = 0.2;
+    public static final double PivotRetakeSpeed = -0.2;
 
-    public static final class TransportConstants {
-      public static final int transportMotorID = 36;
-      public static final double transportMotorIn = 0.5;
-      public static final double transportMotorOut = -0.5;
-      public static final boolean transportMotorInverted = false;
-    }
+    public static final double pivotFollowKp = 0.03;
+    public static final double pivotFollowKi = 0;
+    public static final double pivotFollowKd = 0;
+  }
 
-    public final class FeederConstants {
-      public static final int feederMotorId = 32;
-      public static final boolean feederMotorInverted = false;
-      public static final double feederMotorIn = 0.5;
-      public static final double feederMotorOut = -0.5;
-    }
+  public static final class TransportConstants {
+    public static final int transportMotorID = 36;
+    public static final double transportMotorIn = 0.5;
+    public static final double transportMotorOut = -0.5;
+    public static final boolean transportMotorInverted = false;
+  }
 
-    public static class FieldConstants {
-      public static final double blueHubX = 4.611624;
-      public static final double blueHubY = 4.021328;
-      public static final double redHubX = 11.901424;
-      public static final double redHubY = 4.021328;
+  public final class FeederConstants {
+    public static final int feederMotorId = 32;
+    public static final boolean feederMotorInverted = false;
+    public static final double feederMotorIn = 0.5;
+    public static final double feederMotorOut = -0.5;
+  }
 
-      public static final double blueTrenchMinX = 3.65;
-      public static final double blueTrenchMaxX = 5.65;
-      public static final double redTrenchMinX = 10.95;
-      public static final double redTrenchMaxX = 12.95;
+  public static class FieldConstants {
+    public static final double blueHubX = 4.611624;
+    public static final double blueHubY = 4.021328;
+    public static final double redHubX = 11.901424;
+    public static final double redHubY = 4.021328;
 
-      public static final double blueLeftTrenchMinY = 6.25;
-      public static final double blueLeftTrenchMaxY = 8.25;
-      public static final double blueRightTrenchMinY = -0.25;
-      public static final double blueRightTrenchMaxY = 1.75;
+    public static final double blueTrenchMinX = 3.65;
+    public static final double blueTrenchMaxX = 5.65;
+    public static final double redTrenchMinX = 10.95;
+    public static final double redTrenchMaxX = 12.95;
 
-      public static final Distance fieldWidth = Inches.of(317.69);
-      public static final Distance fieldLength = Inches.of(651.22);
+    public static final double blueLeftTrenchMinY = 6.25;
+    public static final double blueLeftTrenchMaxY = 8.25;
+    public static final double blueRightTrenchMinY = -0.25;
+    public static final double blueRightTrenchMaxY = 1.75;
 
-      public static final Distance trenchToWall = Inches.of(182.11);
-      public static final Distance trenchWidth = Inches.of(50.35);
+    public static final Distance fieldWidth = Inches.of(317.69);
+    public static final Distance fieldLength = Inches.of(651.22);
 
-      public static final Distance trenchZoneLength = Meters.of(4);
+    public static final Distance trenchToWall = Inches.of(182.11);
+    public static final Distance trenchWidth = Inches.of(50.35);
 
-      public static final double trenchAngleMargin = 0.3;
-    }
+    public static final Distance trenchZoneLength = Meters.of(4);
 
-    public static final class ShooterConstants {
-      public static final int shooterMotorID1 = 28;
-      public static final int shooterMotorID2 = 29;
-      public static final int complexMotorID1 = 30;
-      public static final int complexMotorID2 = 31;
+    public static final double trenchAngleMargin = 0.3;
+  }
 
-      public static final boolean shooterUpMotorInverted = true;
-      public static final boolean shooterDownMotorInverted = false;
+  public static final class ShooterConstants {
+    public static final int shooterMotorID1 = 28;
+    public static final int shooterMotorID2 = 29;
+    public static final int complexMotorID1 = 30;
+    public static final int complexMotorID2 = 31;
 
-      public static final double shooterFeedforwardKs = 0.01; // 起始電壓
-      public static final double shooterFeedforwardKv = 0.00507; // 速度電壓
-      public static final double shooterFeedforwardKa = 0; // 加速度電壓
+    public static final boolean shooterUpMotorInverted = true;
+    public static final boolean shooterDownMotorInverted = false;
 
-      public static final int shooterCurrentLimit = 40; // NEO 550 用 20，NEO/Vortex 常見 40~60
-      public static final int complexCurrentLimit = 40;
+    public static final double shooterFeedforwardKs = 0.01; // 起始電壓
+    public static final double shooterFeedforwardKv = 0.00507; // 速度電壓
+    public static final double shooterFeedforwardKa = 0; // 加速度電壓
 
-      public static final double shooterDistanceMultiplier = 2207.31;
-      public static final double shooterDistanceExponent = 0.0017;
+    public static final int shooterCurrentLimit = 40; // NEO 550 用 20，NEO/Vortex 常見 40~60
+    public static final int complexCurrentLimit = 40;
 
-      public static final double shooterNominalTarget = 3100.00; // 上方轉速
-      public static final double complexNominalTarget = 3100.00; // 下方轉速
-      public static final double shooterLowGearTarget = 1500.00;
-      public static final double maxShooterVelocity = 6000;
-      public static final double passVelocity = 2100.00;
+    public static final double shooterDistanceMultiplier = 2207.31;
+    public static final double shooterDistanceExponent = 0.0017;
 
-      public static final double shooterVelocityTolerance = 100; // RPM，待實測調整
+    public static final double shooterNominalTarget = 3100.00; // 上方轉速
+    public static final double complexNominalTarget = 3100.00; // 下方轉速
+    public static final double shooterLowGearTarget = 1500.00;
+    public static final double maxShooterVelocity = 6000;
+    public static final double passVelocity = 2100.00;
 
-      public static final double shooterAccelLimit = 1200 / 1.5;
-    }
+    public static final double shooterVelocityTolerance = 100; // RPM，待實測調整
 
-    public static final class AngleConstants {
-      public static final int angleMotorID = 33;
-      public static final boolean angleInverted = true;
+    public static final double shooterAccelLimit = 1200 / 1.5;
+  }
 
-      public static final int angleFreeLimit = 35; // 角度機構通常不需要太大電流
-      public static final int angleStallLimit = 30;
+  public static final class AngleConstants {
+    public static final int angleMotorID = 33;
+    public static final boolean angleInverted = true;
 
-      public static final double angleFeedforwardKs = 0.01; // 起始電壓
-      public static final double angleFeedforwardKv = 0.00407; // 速度電壓
-      public static final double angleFeedforwardKa = 0.01; // 加速度電壓
-      public static final double angleFeedforwardKg = 0.018; // 重力電壓
+    public static final int angleFreeLimit = 35; // 角度機構通常不需要太大電流
+    public static final int angleStallLimit = 30;
 
-      public static final double angleMotorMaxAngle = 55; // 最大角度
-      public static final double angleMotorShootAngle = 14; // 初始角度(待測)
-      public static final double angleMotorMinAngle = 0; // 最小角度
-      public static final double angleMotorTransAngle = 45;
+    public static final double angleFeedforwardKs = 0.01; // 起始電壓
+    public static final double angleFeedforwardKv = 0.00407; // 速度電壓
+    public static final double angleFeedforwardKa = 0.01; // 加速度電壓
+    public static final double angleFeedforwardKg = 0.018; // 重力電壓
 
-      public static final double angleMotorKp = 0.085;
-      public static final double angleMotorKi = 0.0001;
-      public static final double angleMotorKd = 0.002;
+    public static final double angleMotorMaxAngle = 55; // 最大角度
+    public static final double angleMotorShootAngle = 14; // 初始角度(待測)
+    public static final double angleMotorMinAngle = 0; // 最小角度
+    public static final double angleMotorTransAngle = 45;
 
-      public static final double angleTolerance = 0.45;
+    public static final double angleMotorKp = 0.085;
+    public static final double angleMotorKi = 0.0001;
+    public static final double angleMotorKd = 0.002;
 
-      public static final double angleExpectedZero = 0;
+    public static final double angleTolerance = 0.45;
 
-      public static final double angleDistanceMultiplier = 40;
-      public static final double angleDistanceExponent = -0.001;
+    public static final double angleExpectedZero = 0;
 
-      public static final double angleMinManualAngle = 10;
-    }
-  
+    public static final double angleDistanceMultiplier = 40;
+    public static final double angleDistanceExponent = -0.001;
+
+    public static final double angleMinManualAngle = 10;
+  }
 
   public static final class FieldConstant {
     public static final Translation2d kBlueHub = new Translation2d(4.611624, 4.021328);
