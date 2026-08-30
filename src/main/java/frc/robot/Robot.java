@@ -4,8 +4,13 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.SignalLogger;
+import com.revrobotics.util.StatusLogger;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -15,9 +20,24 @@ public class Robot extends TimedRobot {
 
   private final NetworkTableInstance ntInstance = NetworkTableInstance.getDefault();
   private final RobotContainer m_robotContainer;
+  private boolean savelog = true;
+  private Timer gcTimer = new Timer();
+  RobotContainer robotContainer;
 
   public Robot() {
+    if (!savelog) {
+      StatusLogger.disableAutoLogging();
+    }
+
     m_robotContainer = new RobotContainer();
+    gcTimer.start();
+
+    if (savelog) {
+      DataLogManager.start();
+      DriverStation.startDataLog(DataLogManager.getLog());
+    }
+
+    SignalLogger.enableAutoLogging(savelog);
 
     ntInstance.getStringTopic("/Metadata/BuildDate").publish()
         .set(BuildConstants.BUILD_DATE);
@@ -42,6 +62,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+    m_robotContainer.putRobotPoseOnDashboard();
   }
 
   @Override

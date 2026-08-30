@@ -7,17 +7,18 @@ package frc.robot.subsystems.swervedrive;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import com.studica.frc.AHRS;
-
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
@@ -41,14 +42,25 @@ public class WpilibSwerveDrive extends SubsystemBase implements frc.robot.subsys
   private final SwerveDriveKinematics kinematics;
   private final SwerveDrivePoseEstimator poseEstimator;
 
+  /**
+   * 純里程計,不吃任何 vision 修正。用來跟 vision pose 對照:
+   * poseEstimator 已經融合過 vision,拿它比對 vision 是循環的,看不出相機 offset 的誤差.
+   */
+  private final SwerveDriveOdometry odometry;
+
   private SwerveModuleState[] desiredSwerveModuleStates = new SwerveModuleState[4];
   private final StructArrayPublisher<SwerveModuleState> swerveDesiredStatePublisher = NetworkTableInstance
       .getDefault().getStructArrayTopic("DesiredStates", SwerveModuleState.struct).publish();
   private final StructArrayPublisher<SwerveModuleState> swerveCurrentStatePublisher = NetworkTableInstance
       .getDefault().getStructArrayTopic("CurrentStates", SwerveModuleState.struct).publish();
 
+  /** 融合後的位置(里程計 + vision). */
   private final StructPublisher<Pose2d> currentPosePublisher = NetworkTableInstance.getDefault()
       .getStructTopic("currentPose", Pose2d.struct).publish();
+
+  /** 純里程計位置,AdvantageScope 上拿來跟 Vision pose 對照用. */
+  private final StructPublisher<Pose2d> odometryPosePublisher = NetworkTableInstance.getDefault()
+      .getStructTopic("odometryPose", Pose2d.struct).publish();
 
   private ChassisSpeeds desiredChassisSpeeds = new ChassisSpeeds();
   private final StructPublisher<ChassisSpeeds> currentChassisSpeedsPublisher = NetworkTableInstance.getDefault()
@@ -76,6 +88,12 @@ public class WpilibSwerveDrive extends SubsystemBase implements frc.robot.subsys
         getSwerveModulePosition(),
         new Pose2d());
 
+    odometry = new SwerveDriveOdometry(
+        kinematics,
+        gyro.getRotation2d(),
+        getSwerveModulePosition(),
+        new Pose2d());
+
     desiredSwerveModuleStates[0] = new SwerveModuleState();
     desiredSwerveModuleStates[1] = new SwerveModuleState();
     desiredSwerveModuleStates[2] = new SwerveModuleState();
@@ -93,12 +111,12 @@ public class WpilibSwerveDrive extends SubsystemBase implements frc.robot.subsys
 
   @Override
   public void addVisionMeasurement(Pose2d visionRobotPose, double timestamp) {
-    // poseEstimator.addVisionMeasurement(visionRobotPose, timestamp);
+    poseEstimator.addVisionMeasurement(visionRobotPose, timestamp);
   }
 
   @Override
-  public void addVisionMeasurement(Pose2d visionRobotPose, double timestamp, Vector<N3> visionStdDevs) {
-    // poseEstimator.addVisionMeasurement(visionRobotPose, timestamp, visionStdDevs);
+  public void addVisionMeasurement(Pose2d visionRobotPose, double timestamp, Matrix<N3, N1> visionStdDevs) {
+    poseEstimator.addVisionMeasurement(visionRobotPose, timestamp, visionStdDevs);
   }
 
   @Override
@@ -151,6 +169,13 @@ public class WpilibSwerveDrive extends SubsystemBase implements frc.robot.subsys
   @Override
   public void resetPose(Pose2d pose) {
     poseEstimator.resetPosition(gyro.getRotation2d(), getSwerveModulePosition(), pose);
+    // 兩者一起重設,不然對照圖的起點就先差開了。
+    odometry.resetPosition(gyro.getRotation2d(), getSwerveModulePosition(), pose);
+  }
+
+  /** 純里程計位置,不含 vision 修正. */
+  public Pose2d getOdometryPose2d() {
+    return odometry.getPoseMeters();
   }
 
   @Override
@@ -182,6 +207,7 @@ public class WpilibSwerveDrive extends SubsystemBase implements frc.robot.subsys
   @Override
   public void periodic() {
     poseEstimator.update(gyro.getRotation2d(), getSwerveModulePosition());
+    odometry.update(gyro.getRotation2d(), getSwerveModulePosition());
 
     SmartDashboard.putNumber("drive/gyroHeadingDeg", gyro.getRotation2d().getDegrees());
     SmartDashboard.putNumber("drive/gyroHeedingNonContinuous",
@@ -196,6 +222,7 @@ public class WpilibSwerveDrive extends SubsystemBase implements frc.robot.subsys
         backRight.getState()
     });
     currentPosePublisher.set(getPose2d());
+    odometryPosePublisher.set(odometry.getPoseMeters());
 
     currentChassisSpeedsPublisher.set(getRobotRelativeSpeeds());
     desiredChassisSpeedsPublisher.set(desiredChassisSpeeds);

@@ -12,30 +12,47 @@ import java.util.function.DoubleSupplier;
 
 public class VisionIoLimelight implements VisionIo {
 
+  private static final DoubleSupplier kZero = () -> 0.0;
+
   private final String[] cameraNames;
+  private final NetworkTableInstance nt;
   private final NetworkTable[] tables;
   private final DoubleSupplier timeSource;
   private final DoubleSupplier yawSupplierDegrees;
+  private final DoubleSupplier yawRateSupplierDegrees;
 
   public VisionIoLimelight(String... cameraNames) {
-    this(NetworkTableInstance.getDefault(), Timer::getFPGATimestamp, null, cameraNames);
+    this(NetworkTableInstance.getDefault(), Timer::getFPGATimestamp, null, kZero, cameraNames);
   }
 
   public VisionIoLimelight(DoubleSupplier yawSupplierDegrees, String... cameraNames) {
-    this(NetworkTableInstance.getDefault(), Timer::getFPGATimestamp, yawSupplierDegrees, cameraNames);
+    this(NetworkTableInstance.getDefault(), Timer::getFPGATimestamp,
+        yawSupplierDegrees, kZero, cameraNames);
+  }
+
+  /** MegaTag2 在機器人自轉時需要 yawRate 才能補償,賽季版有傳,這裡補上. */
+  public VisionIoLimelight(
+      DoubleSupplier yawSupplierDegrees,
+      DoubleSupplier yawRateSupplierDegrees,
+      String... cameraNames) {
+    this(NetworkTableInstance.getDefault(), Timer::getFPGATimestamp,
+        yawSupplierDegrees, yawRateSupplierDegrees, cameraNames);
   }
 
   VisionIoLimelight(
       NetworkTableInstance nt,
       DoubleSupplier timeSource,
       DoubleSupplier yawSupplierDegrees,
+      DoubleSupplier yawRateSupplierDegrees,
       String... cameraNames) {
     if (cameraNames.length == 0) {
       throw new IllegalArgumentException("VisionIOLimelight requires at least one camera name");
     }
     this.cameraNames = cameraNames.clone();
+    this.nt = nt;
     this.timeSource = timeSource;
     this.yawSupplierDegrees = yawSupplierDegrees;
+    this.yawRateSupplierDegrees = yawRateSupplierDegrees;
     this.tables = new NetworkTable[cameraNames.length];
     for (int i = 0; i < cameraNames.length; i++) {
       this.tables[i] = nt.getTable(cameraNames[i]);
@@ -50,6 +67,17 @@ public class VisionIoLimelight implements VisionIo {
         inputs.cameras[i] = new CameraInputs();
       }
     }
+    // 先把姿態推給所有相機再一次 flush,MegaTag2 下一輪解算才拿得到最新的 yaw。
+    // 少了 flush,yaw 要等下一個 NT 週期才送出,LL 會用過期的角度解 botpose_orb。
+    if (yawSupplierDegrees != null) {
+      double[] orientation = {
+          yawSupplierDegrees.getAsDouble(), yawRateSupplierDegrees.getAsDouble(), 0, 0, 0, 0 };
+      for (NetworkTable table : tables) {
+        table.getEntry("robot_orientation_set").setDoubleArray(orientation);
+      }
+      nt.flush();
+    }
+
     double now = timeSource.getAsDouble();
     for (int i = 0; i < tables.length; i++) {
       updateCamera(tables[i], inputs.cameras[i], now);
@@ -57,11 +85,6 @@ public class VisionIoLimelight implements VisionIo {
   }
 
   private void updateCamera(NetworkTable table, CameraInputs cam, double now) {
-    if (yawSupplierDegrees != null) {
-      table.getEntry("robot_orientation_set")
-          .setDoubleArray(new double[] { yawSupplierDegrees.getAsDouble(), 0, 0, 0, 0, 0 });
-    }
-
     boolean seesTarget = table.getEntry("tv").getDouble(0.0) > 0.5;
     cam.seesTarget = seesTarget;
 
@@ -96,8 +119,10 @@ public class VisionIoLimelight implements VisionIo {
     double latencyMs = p[VisionConstant.botposeLatency];
     double timestamp = now - latencyMs / 1000.0;
     double avgArea = p[VisionConstant.botposeAvgArea];
+    double avgDist = p[VisionConstant.botposeAvgDist];
     double quality = computeQuality(count, avgArea, minAmbiguity);
-    return new MegatagPoseEstimate(pose, timestamp, latencyMs, avgArea, quality, fiducialIds(fiducials));
+    return new MegatagPoseEstimate(
+        pose, timestamp, latencyMs, avgArea, avgDist, quality, count, fiducialIds(fiducials));
   }
 
   private static double computeQuality(int tagCount, double avgTagArea, double minAmbiguity) {
@@ -130,7 +155,15 @@ public class VisionIoLimelight implements VisionIo {
     return out;
   }
 
+  /**
+   * 沒有 rawfiducials 資料時回傳 0(視為無歧義),而不是最壞的 1.0。
+   * 回 1.0 會讓 computeQuality 算出 0 → 量測一律被拒絕,這是「什麼都看不到」的主因之一;
+   * 賽季版可用的寫法根本不讀 rawfiducials,這裡讓它退化成同樣的行為.
+   */
   private static double minAmbiguity(FiducialObservation[] fiducials) {
+    if (fiducials.length == 0) {
+      return 0.0;
+    }
     double min = 1.0;
     for (FiducialObservation f : fiducials) {
       min = Math.min(min, f.ambiguity());

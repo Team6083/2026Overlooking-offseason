@@ -19,13 +19,13 @@ public class FeederSubsystem extends SubsystemBase {
   SparkMax feederMotor = new SparkMax(FeederConstants.feederMotorId, MotorType.kBrushless);
 
   public FeederSubsystem() {
-  SparkMaxConfig feederMotorConfig = new SparkMaxConfig();
-  feederMotorConfig.inverted(FeederConstants.feederMotorInverted);
-  feederMotor.configure(feederMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    SparkMaxConfig feederMotorConfig = new SparkMaxConfig();
+    feederMotorConfig.inverted(FeederConstants.feederMotorInverted);
+    feederMotor.configure(feederMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   public void feedIn() {
-    feederMotor.set(FeederConstants.feederMotorIn);;
+    feederMotor.set(FeederConstants.feederMotorIn);
   }
 
   public void feedOut() {
@@ -44,8 +44,9 @@ public class FeederSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("feeder/feederVoltage", feederMotor.getOutputCurrent());
+    SmartDashboard.putNumber("feeder/currentOutput", feederMotor.getOutputCurrent()); // 馬達實際吃到的電流
+    SmartDashboard.putNumber("feeder/appliedOutput", feederMotor.getBusVoltage() * feederMotor.getAppliedOutput());
     SmartDashboard.putData("feeder/subsystem", this);
-     // This method will be called once per scheduler run
-  } 
+    // This method will be called once per scheduler run
+  }
 }
